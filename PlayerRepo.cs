@@ -4,24 +4,25 @@ using System.Collections.Generic;
 using UnityStomp;
 
 namespace RFNEet {
-    public abstract class PlayerRepo<T> where T : SyncObject {
+    public abstract class PlayerRepo<T> where T : SyncObject  {
+        internal RemoteApier api;
+        internal string pid;
+        internal Dictionary<string, T> objectMap = new Dictionary<string, T>();
 
-        private string pid;
-        private Dictionary<string, T> objectMap = new Dictionary<string, T>();
-
-        protected PlayerRepo(string pid) {
+        internal PlayerRepo(string pid, RemoteApier api) {
             this.pid = pid;
-        }
-        
-        public void create() {
-            T t = newOne();
-            t.pid = pid;
-            t.oid = UidUtils.getRandomString(8);
+            this.api = api;
         }
 
-        public abstract T newOne();
+        public T inject(GameObject go) {
+            string oid = UidUtils.getRandomString(7);
+            T ans = injectComponent(go);
+            ans.init(pid, oid, api);
+            objectMap.Add(ans.oid, ans);
+            return ans;
+        }
 
-
+        internal abstract T injectComponent(GameObject go);
 
     }
 }
