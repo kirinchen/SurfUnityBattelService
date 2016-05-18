@@ -8,10 +8,10 @@ namespace RFNEet {
         private LocalPlayerRepo localRepo;
         private Dictionary<string, RemotePlayerRepo> remoteRepos = new Dictionary<string, RemotePlayerRepo>();
         private RemoteApier api;
-        public Func<object> getCurrentInfoFunc;
-        public Action<RemotePlayerRepo, string> onRemoteFirstSyncAction;
+        private SyncHandler hanlder;
 
-        public void init(string url, string roomId) {
+        public void init(string url, string roomId, SyncHandler sh) {
+            hanlder = sh;
             api = new RemoteApier(url, roomId);
             api.newPlayerJoinedCb = onNewPlayerJoined;
             api.onRemotePlayerSyncCb = onRemoteFirstSync;
@@ -40,21 +40,23 @@ namespace RFNEet {
         }
 
         private void onNewPlayerJoined(string sid) {
-            if (!sid.Equals(api.meId)) {
+            if (sid.Equals(api.meId)) {
+                hanlder.onSelfInRoomAction(localRepo);
+            } else {
                 RemotePlayerRepo rpr = addRemoteRepo(sid);
                 tellNewPlayerMyInfo(rpr);
             }
         }
 
         private void tellNewPlayerMyInfo(RemotePlayerRepo rpr) {
-            object co = getCurrentInfoFunc();
+            object co = hanlder.getCurrentInfoFunc();
             Debug.Log("tellNewPlayerMyInfo "+co);
             rpr.sendToInbox(co);
         }
 
         private void onRemoteFirstSync(string sid, string msg) {
             RemotePlayerRepo rpr = remoteRepos[sid];
-            onRemoteFirstSyncAction(rpr, msg);
+            hanlder.onRemoteFirstSync(rpr, msg);
         }
     }
 }

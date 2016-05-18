@@ -65,9 +65,10 @@ namespace RFNEet {
             });
         }
 
-        public void subscribeShooted(string pid, Action<string> cb) {
+        public void subscribeShooted(string pid, Action<RemoteData> cb) {
             sc.Subscribe("/message/rooms/" + roomId + "/player/" + pid + "/shooted", (message) => {
-                cb(message);
+                RemoteData rd = JsonConvert.DeserializeObject<RemoteData>(message);
+                cb(rd);
             });
         }
 
@@ -87,7 +88,10 @@ namespace RFNEet {
 
         }
 
-
+        internal void shoot(object o) {
+            string path = "/app/" + roomId + "/shoot";
+            send(path,o);            
+        }
     }
 
     public class HandshakeDto {

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityStomp;
 
 namespace RFNEet {
-    public abstract class PlayerRepo<T> where T : SyncObject  {
+    public abstract class PlayerRepo<T,H> where T : SyncObject<H>  {
         internal RemoteApier api;
         internal string pid;
         internal Dictionary<string, T> objectMap = new Dictionary<string, T>();
@@ -14,10 +14,10 @@ namespace RFNEet {
             this.api = api;
         }
 
-        public T inject(GameObject go) {
+        public virtual T inject(GameObject go, H handler) {
             string oid = UidUtils.getRandomString(7);
             T ans = injectComponent(go);
-            ans.init(pid, oid, api);
+            ans.init(pid, oid, api, handler);
             objectMap.Add(ans.oid, ans);
             return ans;
         }

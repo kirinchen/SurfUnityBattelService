@@ -6,10 +6,16 @@ using Newtonsoft.Json;
 using UnityStomp;
 
 namespace RFNEet {
-    public class LocalPlayerRepo : PlayerRepo<LocalObject> {
+    public class LocalPlayerRepo : PlayerRepo<LocalObject, LocalObjectHandler> {
 
 
         internal LocalPlayerRepo(string pid, RemoteApier api) : base(pid, api) {
+        }
+
+        public override LocalObject inject(GameObject go, LocalObjectHandler h) {
+            LocalObject ans= base.inject(go,h);
+            ans.postCreateData();
+            return ans;
         }
 
         internal override LocalObject injectComponent(GameObject go) {

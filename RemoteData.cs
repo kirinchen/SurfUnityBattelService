@@ -6,13 +6,13 @@ namespace RFNEet {
         private static readonly string KEY_OID = "oid";
         private static readonly string KEY_PID = "pid";
 
-        protected RemoteData(int pid, int oid) {
+        internal RemoteData(string pid, string oid) {
             Add(KEY_OID, oid);
             Add(KEY_PID, pid);
         }
 
-        public int getOid() {
-            return int.Parse(this[KEY_OID].ToString());
+        public string getOid() {
+            return this[KEY_OID].ToString();
         }
 
 

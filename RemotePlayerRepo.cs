@@ -4,14 +4,14 @@ using System.Collections.Generic;
 using System;
 
 namespace RFNEet {
-    public class RemotePlayerRepo : PlayerRepo<RemoteObject> {
+    public class RemotePlayerRepo : PlayerRepo<RemoteObject, RemoteObjectHandler> {
 
         internal RemotePlayerRepo(string pid, RemoteApier api) : base(pid, api) {
             Debug.Log("subscribeShooted pid="+pid);
             api.subscribeShooted(pid, onShooted);
         }
 
-        private void onShooted(string s) {
+        private void onShooted(RemoteData s) {
 
         }
 
