@@ -9,8 +9,9 @@ namespace RFNEet {
     public class RemoteApier {
         private static readonly string KEY_ME_ID = "meId";
         private static readonly string KEY_SESSION_ID = "sessionId";
-        private static readonly string KEY_PLAYER_LIST = "playList";
-        private static readonly string KEY_INFORMATION = "information";
+        private static readonly string KEY_SENDER_ID = "senderId";
+        public static readonly string KEY_TYPE = "type";
+        public static readonly string KEY_TYPE_NEW_PLAYER_JOINED = "NewPlayerJoined";
         private StompClient sc;
         internal string roomId {
             get; private set;
@@ -19,29 +20,30 @@ namespace RFNEet {
             get; private set;
         }
         private Action<string, List<string>> handshakeCb;
+        internal Action<string> newPlayerJoinedCb;
+        internal Action<string,string> onRemotePlayerSyncCb;
 
         public RemoteApier(string url, string roomId) {
             sc = new StompClientAll(url);
             this.roomId = roomId;
         }
 
-        public void connect(Action<string,List<string>> handshakeCb) {
+        public void connect(Action<string, List<string>> handshakeCb) {
             this.handshakeCb = handshakeCb;
             sc.StompConnect(onConnected);
         }
 
         private void onConnected(object o) {
             sc.Subscribe("/app/" + roomId + "/joinBattle", (message) => {
-                message = message.Substring(0, message.Length - 3);
                 parseHandshake(message);
             });
-            /*sc.Subscribe("/message/rooms/" + roomId + "/player/ready", (message) => {
-            });*/
             sc.Subscribe("/message/rooms/" + roomId + "/broadcast", (message) => {
-                message = message.Substring(0, message.Length - 3);
-                Debug.Log("broadcast="+message);
-                string s = parse(message, KEY_SESSION_ID).ToString();
-                Debug.Log("s=" + s);
+                Dictionary<string, object> d = JsonConvert.DeserializeObject<Dictionary<string, object>>(message);
+                string ts = d[KEY_TYPE].ToString();
+                if (ts.Equals(KEY_TYPE_NEW_PLAYER_JOINED)) {
+                    string newSid = d[KEY_SESSION_ID].ToString();
+                    newPlayerJoinedCb(newSid);
+                }
             });
             sc.Subscribe("/message/rooms/" + roomId + "/player/leave", (message) => {
 
@@ -52,29 +54,39 @@ namespace RFNEet {
             HandshakeDto d = JsonConvert.DeserializeObject<HandshakeDto>(msg);
             meId = d.meId;
             subscribeInbox();
-            Loom.QueueOnMainThread(()=> {
-                handshakeCb(meId,d.information.playList);
-            });
+            handshakeCb(meId, d.information.playList);
         }
 
         private void subscribeInbox() {
             sc.Subscribe("/message/rooms/" + roomId + "/player/" + meId + "/inbox", (message) => {
-
+                Debug.Log("subscribeInbox="+message);
+                string sid = parse(message, KEY_SENDER_ID).ToString();
+                onRemotePlayerSyncCb(sid, message);
             });
         }
 
-        public void subscribeShooted(string pid,Action<string> cb) {
+        public void subscribeShooted(string pid, Action<string> cb) {
             sc.Subscribe("/message/rooms/" + roomId + "/player/" + pid + "/shooted", (message) => {
                 cb(message);
             });
         }
 
+        public void sendToInbox(string sendTo,object o) {
+            string path = "/app/" + roomId + "/send/"+ sendTo;
+            send(path,o);
+        }
+
+        public void send(string path,object o) {
+            string json = JsonConvert.SerializeObject(o);
+            sc.SendMessage(path, json);
+        }
 
         public static object parse(string msg, string key) {
             Dictionary<string, object> d = JsonConvert.DeserializeObject<Dictionary<string, object>>(msg);
             return d[key];
 
         }
+
 
     }
 

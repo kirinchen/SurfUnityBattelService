@@ -15,5 +15,7 @@ namespace RFNEet {
         internal override LocalObject injectComponent(GameObject go) {
             return go.AddComponent<LocalObject>();
         }
+
+        
     }
 }

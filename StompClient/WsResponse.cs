@@ -48,7 +48,7 @@ namespace UnityStomp {
                 } else if (s.IndexOf("content-length:") == 0) {
                     contentLength = Convert.ToInt32(s.Replace("content-length:", ""));
                 } else if (i == (sArray.Length - 1)) {
-                    message = s;
+                    message = s.Substring(0, contentLength);
                 }
                 i++;
             }

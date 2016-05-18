@@ -8,29 +8,53 @@ namespace RFNEet {
         private LocalPlayerRepo localRepo;
         private Dictionary<string, RemotePlayerRepo> remoteRepos = new Dictionary<string, RemotePlayerRepo>();
         private RemoteApier api;
-        
-
-        void Awake() {
-
-        }
+        public Func<object> getCurrentInfoFunc;
+        public Action<RemotePlayerRepo, string> onRemoteFirstSyncAction;
 
         public void init(string url, string roomId) {
             api = new RemoteApier(url, roomId);
+            api.newPlayerJoinedCb = onNewPlayerJoined;
+            api.onRemotePlayerSyncCb = onRemoteFirstSync;
         }
 
         public void connect(Action<LocalPlayerRepo> handshakeCb) {
-            api.connect((meid,list) => {
+            api.connect((meid, list) => {
                 localRepo = new LocalPlayerRepo(meid, api);
-                createRemoteList(list);
+                createRemoteList(meid, list);
                 handshakeCb(localRepo);
             });
         }
 
-        private void createRemoteList(List<string> ids) {
+        private void createRemoteList(string meId, List<string> ids) {
             foreach (string id in ids) {
-                RemotePlayerRepo rpr = new RemotePlayerRepo(id,api);
-                remoteRepos.Add(id,rpr);
+                if (!id.Equals(meId)) {
+                    addRemoteRepo(id);
+                }
             }
+        }
+
+        private RemotePlayerRepo addRemoteRepo(string sid) {
+            RemotePlayerRepo rpr = new RemotePlayerRepo(sid, api);
+            remoteRepos.Add(sid, rpr);
+            return rpr;
+        }
+
+        private void onNewPlayerJoined(string sid) {
+            if (!sid.Equals(api.meId)) {
+                RemotePlayerRepo rpr = addRemoteRepo(sid);
+                tellNewPlayerMyInfo(rpr);
+            }
+        }
+
+        private void tellNewPlayerMyInfo(RemotePlayerRepo rpr) {
+            object co = getCurrentInfoFunc();
+            Debug.Log("tellNewPlayerMyInfo "+co);
+            rpr.sendToInbox(co);
+        }
+
+        private void onRemoteFirstSync(string sid, string msg) {
+            RemotePlayerRepo rpr = remoteRepos[sid];
+            onRemoteFirstSyncAction(rpr, msg);
         }
     }
 }
