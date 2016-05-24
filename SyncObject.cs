@@ -15,6 +15,13 @@ namespace RFNEet {
             this.handler = h;
         }
 
+        public RemoteData setup(RemoteData rd) {
+            rd.oid = oid;
+            rd.pid = pid;
+            return rd;
+        }
+
+
 
     }
 

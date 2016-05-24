@@ -54,9 +54,9 @@ namespace RFNEet {
             rpr.sendToInbox(co);
         }
 
-        private void onRemoteFirstSync(string sid, string msg) {
+        private void onRemoteFirstSync(string sid, AllSyncDataResp asdr) {
             RemotePlayerRepo rpr = remoteRepos[sid];
-            hanlder.onRemoteFirstSync(rpr, msg);
+            hanlder.onRemoteFirstSync(rpr, asdr.toAllSyncData());
         }
     }
 }

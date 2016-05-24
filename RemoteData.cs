@@ -1,20 +1,23 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using Newtonsoft.Json;
 using System.Collections.Generic;
+using UnityEngine;
+
 namespace RFNEet {
-    public class RemoteData : Dictionary<string, object> {
-        private static readonly string KEY_OID = "oid";
-        private static readonly string KEY_PID = "pid";
+    public class RemoteData  {
 
-        internal RemoteData(string pid, string oid) {
-            Add(KEY_OID, oid);
-            Add(KEY_PID, pid);
+        public string pid;
+        public string oid;
+        public string tag;
+        internal string _source;
+
+        internal void setSource(string s) {
+            _source = s;
         }
 
-        public string getOid() {
-            return this[KEY_OID].ToString();
+        public T to<T>() {
+            Debug.Log(_source);
+            return JsonConvert.DeserializeObject<T>(_source);
         }
-
 
     }
 }

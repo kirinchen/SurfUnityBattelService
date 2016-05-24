@@ -1,11 +1,11 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections.Generic;
+
 namespace RFNEet {
     public interface SyncHandler {
 
-        object getCurrentInfoFunc();
+        AllSyncData getCurrentInfoFunc();
 
-        void onRemoteFirstSync(RemotePlayerRepo rpr, string msg);
+        void onRemoteFirstSync(RemotePlayerRepo rpr, AllSyncData msg);
 
         void onSelfInRoomAction(LocalPlayerRepo lpr);
     }

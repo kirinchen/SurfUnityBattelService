@@ -14,7 +14,6 @@ namespace RFNEet {
 
         public override LocalObject inject(GameObject go, LocalObjectHandler h) {
             LocalObject ans= base.inject(go,h);
-            ans.postCreateData();
             return ans;
         }
 
