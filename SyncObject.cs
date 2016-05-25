@@ -1,18 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
 namespace RFNEet {
-    public class SyncObject<T> : MonoBehaviour {
+    public class SyncObject : MonoBehaviour {
 
         internal string pid;
         internal string oid;
         internal RemoteApier api;
-        internal T handler;
 
-        internal  void init(string pid,string oid,RemoteApier api,T h) {
+        internal  void init(string pid,string oid,RemoteApier api) {
             this.api = api;
             this.pid = pid;
             this.oid = oid;
-            this.handler = h;
         }
 
         public RemoteData setup(RemoteData rd) {

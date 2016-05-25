@@ -33,8 +33,14 @@ namespace RFNEet {
             }
         }
 
-        private IEnumerator sendCreatSelfObjectsData() {
-
+        private IEnumerator waitSomeRemoteHandShakeThanSend() {
+            foreach (RemotePlayerRepo rpr in remoteRepos.Values) {
+                int waitTimes = 0;
+                while (!rpr.handshaked && waitTimes < 5) {
+                    yield return new WaitForSeconds(0.35f);
+                }
+            }
+            hanlder.onAllRemotePlayerReadyed(localRepo);
         }
 
         private RemotePlayerRepo addRemoteRepo(string sid) {
@@ -53,7 +59,7 @@ namespace RFNEet {
         }
 
         private void tellNewPlayerMyInfo(RemotePlayerRepo rpr) {
-            object co = hanlder.getCurrentInfoFunc();
+            object co = hanlder.getCurrentInfoFunc(localRepo);
             Debug.Log("tellNewPlayerMyInfo "+co);
             rpr.sendToInbox(co);
         }
@@ -61,6 +67,7 @@ namespace RFNEet {
         private void onRemoteFirstSync(string sid, AllSyncDataResp asdr) {
             RemotePlayerRepo rpr = remoteRepos[sid];
             hanlder.onRemoteFirstSync(rpr, asdr.toAllSyncData());
+            rpr.handshake();
         }
     }
 }
