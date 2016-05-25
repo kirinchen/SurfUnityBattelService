@@ -20,8 +20,8 @@ namespace RFNEet {
             get; private set;
         }
         private Action<string, List<string>> handshakeCb;
-        internal Action<string> newPlayerJoinedCb;
-        internal Action<string, AllSyncDataResp> onRemotePlayerSyncCb;
+        internal Action<string> onNewPlayerJoined;
+        internal Action<string, AllSyncDataResp> onRemoteFirstSync;
 
         public RemoteApier(string url, string roomId) {
             sc = new StompClientAll(url);
@@ -42,7 +42,7 @@ namespace RFNEet {
                 string ts = d[KEY_TYPE].ToString();
                 if (ts.Equals(KEY_TYPE_NEW_PLAYER_JOINED)) {
                     string newSid = d[KEY_SESSION_ID].ToString();
-                    newPlayerJoinedCb(newSid);
+                    onNewPlayerJoined(newSid);
                 }
             });
             sc.Subscribe("/message/rooms/" + roomId + "/player/leave", (message) => {
@@ -62,7 +62,7 @@ namespace RFNEet {
                 Debug.Log("subscribeInbox="+message);
                 AllSyncDataResp asdr = JsonConvert.DeserializeObject<AllSyncDataResp>(message);
                 string sid = asdr.senderId;
-                onRemotePlayerSyncCb(sid, asdr);
+                onRemoteFirstSync(sid, asdr);
             });
         }
 

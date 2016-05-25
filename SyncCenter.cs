@@ -13,8 +13,8 @@ namespace RFNEet {
         public void init(string url, string roomId, SyncHandler sh) {
             hanlder = sh;
             api = new RemoteApier(url, roomId);
-            api.newPlayerJoinedCb = onNewPlayerJoined;
-            api.onRemotePlayerSyncCb = onRemoteFirstSync;
+            api.onNewPlayerJoined = onNewPlayerJoined;
+            api.onRemoteFirstSync = onRemoteFirstSync;
         }
 
         public void connect(Action<LocalPlayerRepo> handshakeCb) {
@@ -31,6 +31,10 @@ namespace RFNEet {
                     addRemoteRepo(id);
                 }
             }
+        }
+
+        private IEnumerator sendCreatSelfObjectsData() {
+
         }
 
         private RemotePlayerRepo addRemoteRepo(string sid) {
