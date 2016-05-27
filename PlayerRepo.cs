@@ -14,10 +14,10 @@ namespace RFNEet {
             this.api = api;
         }
 
-        public virtual T inject(T o) {
-            string oid = UidUtils.getRandomString(7);
+        public virtual T inject(string oid,T o) {
+            //string oid = UidUtils.getRandomString(7);
             o.init(pid, oid, api);
-            objectMap.Add(o.oid, o);
+            objectMap.Add(oid, o);
             return o;
         }
 

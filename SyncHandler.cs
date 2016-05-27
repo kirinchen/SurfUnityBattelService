@@ -10,5 +10,7 @@ namespace RFNEet {
         void onSelfInRoomAction(LocalPlayerRepo lpr);
 
         void onAllRemotePlayerReadyed(LocalPlayerRepo localRepo);
+
+        RemoteObject onNewRemoteObjectCreated(RemotePlayerRepo rpr, RemoteData rd);
     }
 }

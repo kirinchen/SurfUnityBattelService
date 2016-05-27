@@ -8,14 +8,17 @@ namespace RFNEet {
         public string pid;
         public string oid;
         public string tag;
-        internal string _source;
+        private string _source;
 
         internal void setSource(string s) {
             _source = s;
         }
 
+        public string getSource() {
+            return _source;
+        }
+
         public T to<T>() {
-            Debug.Log(_source);
             return JsonConvert.DeserializeObject<T>(_source);
         }
 

@@ -69,6 +69,7 @@ namespace RFNEet {
         public void subscribeShooted(string pid, Action<RemoteData> cb) {
             sc.Subscribe("/message/rooms/" + roomId + "/player/" + pid + "/shooted", (message) => {
                 RemoteData rd = JsonConvert.DeserializeObject<RemoteData>(message);
+                rd.setSource(message);
                 cb(rd);
             });
         }

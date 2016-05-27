@@ -26,10 +26,15 @@ namespace RFNEet {
         }
 
         private void createRemoteList(string meId, List<string> ids) {
+            bool hasRemoteRepo = false;
             foreach (string id in ids) {
                 if (!id.Equals(meId)) {
                     addRemoteRepo(id);
+                    hasRemoteRepo = true;
                 }
+            }
+            if (hasRemoteRepo) {
+                StartCoroutine(waitSomeRemoteHandShakeThanSend());
             }
         }
 
@@ -44,7 +49,7 @@ namespace RFNEet {
         }
 
         private RemotePlayerRepo addRemoteRepo(string sid) {
-            RemotePlayerRepo rpr = new RemotePlayerRepo(sid, api);
+            RemotePlayerRepo rpr = new RemotePlayerRepo(sid, api, hanlder.onNewRemoteObjectCreated);
             remoteRepos.Add(sid, rpr);
             return rpr;
         }
@@ -66,7 +71,11 @@ namespace RFNEet {
 
         private void onRemoteFirstSync(string sid, AllSyncDataResp asdr) {
             RemotePlayerRepo rpr = remoteRepos[sid];
-            hanlder.onRemoteFirstSync(rpr, asdr.toAllSyncData());
+            AllSyncData asd = asdr.toAllSyncData();
+            foreach (RemoteData rd in asd.objectList) {
+                rpr.createNewObject(rd);
+            }
+            hanlder.onRemoteFirstSync(rpr, asd);
             rpr.handshake();
         }
     }
