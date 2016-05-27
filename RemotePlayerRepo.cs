@@ -18,7 +18,6 @@ namespace RFNEet {
         }
 
         private void onShooted(RemoteData s) {
-            Debug.Log("onShooted=" + s.getSource());
             if (objectMap.ContainsKey(s.oid)) {
                 objectMap[s.oid].onRemoteUpdate(s);
             } else {
@@ -27,10 +26,11 @@ namespace RFNEet {
         }
 
         internal void createNewObject(RemoteData s) {
-                Loom.QueueOnMainThread(() => {
-                    RemoteObject ro = onNewRemoteObjectCreated(this, s);
-                    inject(s.oid, ro);
-                });
+            Debug.Log("createNewObject=" + s);
+            Loom.QueueOnMainThread(() => {
+                RemoteObject ro = onNewRemoteObjectCreated(this, s);
+                inject(s.oid, ro);
+            });
         }
 
         internal void handshake() {
