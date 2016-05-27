@@ -6,11 +6,13 @@ namespace RFNEet {
         internal string pid;
         internal string oid;
         internal RemoteApier api;
+        internal SyncObjectListener listener;
 
-        internal  void init(string pid,string oid,RemoteApier api) {
+        internal  void init(string pid,string oid,RemoteApier api, SyncObjectListener listener) {
             this.api = api;
             this.pid = pid;
             this.oid = oid;
+            this.listener = listener;
         }
 
         public RemoteData setup(RemoteData rd) {
@@ -19,8 +21,15 @@ namespace RFNEet {
             return rd;
         }
 
+        public virtual void removeMe() {
+           // listener.onRemoveMe(this);
+        }
 
 
+    }
+
+    public interface SyncObjectListener {
+         void onRemoveMe(SyncObject so);
     }
 
 }

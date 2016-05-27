@@ -22,6 +22,7 @@ namespace RFNEet {
         private Action<string, List<string>> handshakeCb;
         internal Action<string> onNewPlayerJoined;
         internal Action<string, AllSyncDataResp> onRemoteFirstSync;
+        internal Action<string> onPlayerLeaved;
 
         public RemoteApier(string url, string roomId) {
             sc = new StompClientAll(url);
@@ -46,7 +47,8 @@ namespace RFNEet {
                 }
             });
             sc.Subscribe("/message/rooms/" + roomId + "/player/leave", (message) => {
-
+                string sid = parse(message,KEY_SESSION_ID).ToString();
+                onPlayerLeaved(sid);
             });
         }
 
@@ -59,7 +61,6 @@ namespace RFNEet {
 
         private void subscribeInbox() {
             sc.Subscribe("/message/rooms/" + roomId + "/player/" + meId + "/inbox", (message) => {
-                Debug.Log("subscribeInbox="+message);
                 AllSyncDataResp asdr = JsonConvert.DeserializeObject<AllSyncDataResp>(message);
                 string sid = asdr.senderId;
                 onRemoteFirstSync(sid, asdr);

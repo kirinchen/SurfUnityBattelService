@@ -19,7 +19,7 @@ namespace RFNEet {
 
         private void onShooted(RemoteData s) {
             if (objectMap.ContainsKey(s.oid)) {
-                objectMap[s.oid].onRemoteUpdate(s);
+                objectMap[s.oid].update(s);
             } else {
                 createNewObject(s);
             }

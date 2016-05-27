@@ -10,6 +10,12 @@ namespace RFNEet {
             api.shoot(o);
         }
 
+        void OnDestroy() {
+            /*RemoteData rd = new RemoteData();
+            post(rd);*/
+            removeMe();
+        }
+
 
     }
 }

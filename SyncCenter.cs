@@ -15,6 +15,7 @@ namespace RFNEet {
             api = new RemoteApier(url, roomId);
             api.onNewPlayerJoined = onNewPlayerJoined;
             api.onRemoteFirstSync = onRemoteFirstSync;
+            api.onPlayerLeaved = onPlayerLeaved;
         }
 
         public void connect(Action<LocalPlayerRepo> handshakeCb) {
@@ -52,6 +53,10 @@ namespace RFNEet {
             RemotePlayerRepo rpr = new RemotePlayerRepo(sid, api, hanlder.onNewRemoteObjectCreated);
             remoteRepos.Add(sid, rpr);
             return rpr;
+        }
+
+        private void onPlayerLeaved(string sid) {
+            
         }
 
         private void onNewPlayerJoined(string sid) {
