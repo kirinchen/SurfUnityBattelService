@@ -44,6 +44,7 @@ namespace RFNEet {
                 int waitTimes = 0;
                 while (!rpr.handshaked && waitTimes < 5) {
                     yield return new WaitForSeconds(0.35f);
+                    waitTimes++;
                 }
             }
             hanlder.onAllRemotePlayerReadyed(localRepo);
@@ -63,16 +64,22 @@ namespace RFNEet {
 
         private void onNewPlayerJoined(string sid) {
             if (sid.Equals(api.meId)) {
-                hanlder.onSelfInRoomAction(localRepo);
+                Loom.QueueOnMainThread(() => {
+                    hanlder.onSelfInRoomAction(localRepo);
+                });
             } else {
+                //TODO 要確定 onSelfInRoomAction 的Local 物件都見好 才能做 tellNewPlayerMyInfo
                 RemotePlayerRepo rpr = addRemoteRepo(sid);
                 tellNewPlayerMyInfo(rpr);
             }
         }
 
+
+
+
         private void tellNewPlayerMyInfo(RemotePlayerRepo rpr) {
             object co = hanlder.getCurrentInfoFunc(localRepo);
-            Debug.Log("tellNewPlayerMyInfo "+co);
+            Debug.Log("tellNewPlayerMyInfo " + co);
             rpr.sendToInbox(co);
         }
 
