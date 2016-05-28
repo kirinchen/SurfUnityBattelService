@@ -16,13 +16,15 @@ namespace UnityStomp {
         public WebSocket websocket;
         public static string acceptVersion = "1.1,1.0";
         public static string heartBeat = "10000,10000";
+        private string sessionId;
 
         private Dictionary<string, OnMessageListener> actionMap = new Dictionary<string, OnMessageListener>();
         public int subNo;
 
 
         public StompClientCs(string connectString) {
-            connectString += "/" + UidUtils.getRandomNumber(3) + "/" + UidUtils.getRandomString(8) + "/websocket";
+            sessionId = UidUtils.getRandomString(8);
+            connectString += "/" + UidUtils.getRandomNumber(3) + "/" + sessionId + "/websocket";
             websocket = new WebSocket(connectString);
             subNo = 0;
         }
@@ -146,6 +148,9 @@ namespace UnityStomp {
             return result;
         }
 
+        public string getSessionId() {
+            return sessionId;
+        }
     }
 }
 

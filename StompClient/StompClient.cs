@@ -13,5 +13,8 @@ namespace UnityStomp {
         void SendMessage(string destination, string message);
 
         void CloseWebSocket();
+
+        string getSessionId();
+
     }
 }

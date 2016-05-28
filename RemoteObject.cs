@@ -7,12 +7,21 @@ namespace RFNEet {
 
 
         internal void update(RemoteData s) {
-            onRemoteUpdate(s);
+            if (s.getSysTag() == RemoteData.SysTag.NONE) {
+                onRemoteUpdate(s);
+            } else if (s.getSysTag() == RemoteData.SysTag.DELETED) {
+                onRemoved();
+                removeMe();
+            }
         }
 
         internal abstract void onRemoved();
 
         internal abstract void onRemoteUpdate(RemoteData s);
+
+        internal void destoryMe() {
+            Destroy(gameObject);
+        }
     }
 
 }

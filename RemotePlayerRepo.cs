@@ -40,5 +40,13 @@ namespace RFNEet {
         internal void sendToInbox(object o) {
             api.sendToInbox(pid, o);
         }
+
+        internal void destoryAll() {
+            foreach (string k in objectMap.Keys) {
+                RemoteObject ro = objectMap[k];
+                ro.destoryMe();
+            }
+            objectMap.Clear();
+        }
     }
 }

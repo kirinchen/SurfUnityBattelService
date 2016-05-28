@@ -26,6 +26,7 @@ namespace RFNEet {
 
         public RemoteApier(string url, string roomId) {
             sc = new StompClientAll(url);
+            meId = sc.getSessionId();
             this.roomId = roomId;
         }
 
@@ -50,21 +51,19 @@ namespace RFNEet {
                 string sid = parse(message,KEY_SESSION_ID).ToString();
                 onPlayerLeaved(sid);
             });
+
+            sc.Subscribe("/message/rooms/" + roomId + "/player/" + meId + "/inbox", (message) => {
+                Debug.Log("subscribeInbox=" + message);
+                AllSyncDataResp asdr = JsonConvert.DeserializeObject<AllSyncDataResp>(message);
+                string sid = asdr.senderId;
+                onRemoteFirstSync(sid, asdr);
+            });
         }
 
         private void parseHandshake(string msg) {
             HandshakeDto d = JsonConvert.DeserializeObject<HandshakeDto>(msg);
             meId = d.meId;
-            subscribeInbox();
             handshakeCb(meId, d.information.playList);
-        }
-
-        private void subscribeInbox() {
-            sc.Subscribe("/message/rooms/" + roomId + "/player/" + meId + "/inbox", (message) => {
-                AllSyncDataResp asdr = JsonConvert.DeserializeObject<AllSyncDataResp>(message);
-                string sid = asdr.senderId;
-                onRemoteFirstSync(sid, asdr);
-            });
         }
 
         public void subscribeShooted(string pid, Action<RemoteData> cb) {

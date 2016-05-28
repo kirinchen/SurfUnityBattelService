@@ -11,8 +11,9 @@ namespace RFNEet {
         }
 
         void OnDestroy() {
-            /*RemoteData rd = new RemoteData();
-            post(rd);*/
+            RemoteData rd = new RemoteData();
+            rd.setSysTag(RemoteData.SysTag.DELETED);
+            post(rd);
             removeMe();
         }
 

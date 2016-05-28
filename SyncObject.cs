@@ -22,7 +22,7 @@ namespace RFNEet {
         }
 
         public virtual void removeMe() {
-           // listener.onRemoveMe(this);
+            listener.onRemoveMe(this);
         }
 
 

@@ -56,7 +56,9 @@ namespace RFNEet {
         }
 
         private void onPlayerLeaved(string sid) {
-            
+            RemotePlayerRepo rpr = remoteRepos[sid];
+            rpr.destoryAll();
+            remoteRepos.Remove(sid);
         }
 
         private void onNewPlayerJoined(string sid) {
