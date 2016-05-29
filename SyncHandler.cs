@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace RFNEet {
     public interface SyncHandler {
@@ -7,7 +8,7 @@ namespace RFNEet {
 
         void onRemoteFirstSync(RemotePlayerRepo rpr, AllSyncData msg);
 
-        void onSelfInRoomAction(LocalPlayerRepo lpr);
+        void onSelfInRoom(LocalPlayerRepo lpr,Action inRoomMark);
 
         void onAllRemotePlayerReadyed(LocalPlayerRepo localRepo);
 
