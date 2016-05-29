@@ -9,6 +9,7 @@ namespace RFNEet {
         private Dictionary<string, RemotePlayerRepo> remoteRepos = new Dictionary<string, RemotePlayerRepo>();
         private RemoteApier api;
         private SyncHandler hanlder;
+        
 
         public void init(string url, string roomId, SyncHandler sh) {
             hanlder = sh;
@@ -62,20 +63,28 @@ namespace RFNEet {
             remoteRepos.Remove(sid);
         }
 
+        private bool _localObjectSetuped = false;
         private void onNewPlayerJoined(string sid) {
             if (sid.Equals(api.meId)) {
                 Loom.QueueOnMainThread(() => {
-                    hanlder.onSelfInRoomAction(localRepo);
+                    Action inRoomToken = () => {
+                        _localObjectSetuped = true;
+                    };
+                    hanlder.onSelfInRoom(localRepo, inRoomToken);
                 });
             } else {
-                //TODO 要確定 onSelfInRoomAction 的Local 物件都見好 才能做 tellNewPlayerMyInfo
-                RemotePlayerRepo rpr = addRemoteRepo(sid);
-                tellNewPlayerMyInfo(rpr);
+                StartCoroutine(addRemoteRepoDependsSelfInRoom(sid));
             }
         }
 
-
-
+        private IEnumerator addRemoteRepoDependsSelfInRoom(string sid) {
+            while (!_localObjectSetuped) {
+                yield return new WaitForSeconds(0.5f);
+                Debug.Log("wait for onSelfInRoom _localObjectSetuped="+ _localObjectSetuped);
+            }
+            RemotePlayerRepo rpr = addRemoteRepo(sid);
+            tellNewPlayerMyInfo(rpr);
+        }
 
         private void tellNewPlayerMyInfo(RemotePlayerRepo rpr) {
             object co = hanlder.getCurrentInfoFunc(localRepo);
