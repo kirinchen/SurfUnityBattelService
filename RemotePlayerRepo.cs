@@ -28,8 +28,10 @@ namespace RFNEet {
         internal void createNewObject(RemoteData s) {
             Debug.Log("createNewObject=" + s);
             Loom.QueueOnMainThread(() => {
-                RemoteObject ro = onNewRemoteObjectCreated(this, s);
-                inject(s.oid, ro);
+                if (!hasObjectById(s.oid)) {
+                    RemoteObject ro = onNewRemoteObjectCreated(this, s);
+                    inject(s.oid, ro);
+                }
             });
         }
 

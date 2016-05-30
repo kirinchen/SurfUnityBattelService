@@ -22,6 +22,10 @@ namespace RFNEet {
             return o;
         }
 
+        public bool hasObjectById(string oid) {
+            return objectMap.ContainsKey(oid);
+        }
+
         public void onRemoveMe(SyncObject so) {
             //objectMap.Remove(so.oid);
         }
