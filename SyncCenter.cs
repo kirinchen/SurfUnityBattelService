@@ -19,6 +19,10 @@ namespace RFNEet {
             api.onPlayerLeaved = onPlayerLeaved;
         }
 
+        public void setErrorCb(Action<ErrorBundle> ecb) {
+            api.onErrorCb = ecb;
+        }
+
         public void connect(Action<LocalPlayerRepo> handshakeCb) {
             api.connect((meid, list) => {
                 localRepo = new LocalPlayerRepo(meid, api);

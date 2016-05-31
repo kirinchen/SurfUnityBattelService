@@ -23,9 +23,13 @@ namespace RFNEet {
         internal Action<string> onNewPlayerJoined;
         internal Action<string, AllSyncDataResp> onRemoteFirstSync;
         internal Action<string> onPlayerLeaved;
+        internal Action<ErrorBundle> onErrorCb;
 
         public RemoteApier(string url, string roomId) {
             sc = new StompClientAll(url);
+            sc.setOnError((s)=> {
+                throwErrorBundle(ErrorBundle.Type.SeverError,s);
+            });
             meId = sc.getSessionId();
             this.roomId = roomId;
         }
@@ -35,8 +39,19 @@ namespace RFNEet {
             sc.StompConnect(onConnected);
         }
 
+        private void throwErrorBundle(ErrorBundle.Type t,string msg) {
+            ErrorBundle eb = new ErrorBundle(t);
+            eb.message = msg;
+            onErrorCb(eb);
+        }
+
         private void onConnected(object o) {
+            sc.Subscribe("/user/message/errors/", (message) => {
+                Debug.Log("/message/errors/" + message);
+                throwErrorBundle(ErrorBundle.Type.Runtime,message);
+            });
             sc.Subscribe("/app/" + roomId + "/joinBattle", (message) => {
+                Debug.Log("joinBattle="+message);
                 parseHandshake(message);
             });
             sc.Subscribe("/message/rooms/" + roomId + "/broadcast", (message) => {
@@ -58,12 +73,19 @@ namespace RFNEet {
                 string sid = asdr.senderId;
                 onRemoteFirstSync(sid, asdr);
             });
+
         }
+
+        
 
         private void parseHandshake(string msg) {
             HandshakeDto d = JsonConvert.DeserializeObject<HandshakeDto>(msg);
-            meId = d.meId;
-            handshakeCb(meId, d.information.playList);
+            if (d.success) {
+                meId = d.meId;
+                handshakeCb(meId, d.information.playList);
+            } else {
+                throwErrorBundle(ErrorBundle.Type.HandShake,d.exceptionName);
+            }
         }
 
         public void subscribeShooted(string pid, Action<RemoteData> cb) {
@@ -99,6 +121,8 @@ namespace RFNEet {
     public class HandshakeDto {
         public string meId;
         public Information information;
+        public bool success;
+        public string exceptionName;
 
         public class Information {
             public List<string> playList;

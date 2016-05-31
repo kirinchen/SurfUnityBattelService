@@ -15,7 +15,7 @@ namespace UnityStomp {
         public WebSocket websocket;
         public static string acceptVersion = "1.1,1.0";
         public static string heartBeat = "10000,10000";
-
+        private Action<string> onErrorCb = (s)=> { };
         private Dictionary<string, OnMessageListener> actionMap = new Dictionary<string, OnMessageListener>();
         public int subNo;
 
@@ -54,6 +54,7 @@ namespace UnityStomp {
 
             websocket.OnError += (sender, e) => {
                 Debug.Log("Error message : " + e.Message);
+                onErrorCb(e.Message);
             };
 
             websocket.Open();
@@ -138,6 +139,10 @@ namespace UnityStomp {
 
         public string getSessionId() {
             return sessionId;
+        }
+
+        public void setOnError(Action<string> errorCb) {
+            onErrorCb = errorCb;
         }
     }
 }

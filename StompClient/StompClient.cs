@@ -8,6 +8,8 @@ namespace UnityStomp {
 
         void StompConnect(Action<object> openAction);
 
+        void setOnError(Action<string> errorCb);
+
         void Subscribe(string destination, OnMessageListener act);
 
         void SendMessage(string destination, string message);
