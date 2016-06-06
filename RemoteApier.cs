@@ -12,6 +12,7 @@ namespace RFNEet {
         private static readonly string KEY_SENDER_ID = "senderId";
         public static readonly string KEY_TYPE = "type";
         public static readonly string KEY_TYPE_NEW_PLAYER_JOINED = "NewPlayerJoined";
+        public static readonly string KEY_TYPE_GENERAL = "General";
         private StompClient sc;
         internal string roomId {
             get; private set;
@@ -59,9 +60,11 @@ namespace RFNEet {
             sc.Subscribe("/message/rooms/" + roomId + "/broadcast", (message) => {
                 Dictionary<string, object> d = JsonConvert.DeserializeObject<Dictionary<string, object>>(message);
                 string ts = d[KEY_TYPE].ToString();
-                if (ts.Equals(KEY_TYPE_NEW_PLAYER_JOINED)) {
+                if (KEY_TYPE_NEW_PLAYER_JOINED.Equals(ts)) {
                     string newSid = d[KEY_SESSION_ID].ToString();
                     onNewPlayerJoined(newSid);
+                } else if (KEY_TYPE_GENERAL.Equals(ts)) {
+
                 }
             });
             sc.Subscribe("/message/rooms/" + roomId + "/player/leave", (message) => {

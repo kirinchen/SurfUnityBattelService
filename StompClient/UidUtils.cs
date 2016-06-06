@@ -1,9 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Net;
-using WebSocketSharp;	//https://github.com/sta/websocket-sharp
-using Newtonsoft.Json;
 
 
 
@@ -14,11 +9,10 @@ namespace UnityStomp
 		public static string getRandomString(int size){
 			var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 			var stringChars = new char[size];
-			var random = new Random();
 			
 			for (int i = 0; i < stringChars.Length; i++)
 			{
-				stringChars[i] = chars[random.Next(chars.Length)];
+				stringChars[i] = chars[UnityEngine.Random.Range(0, chars.Length)];
 			}
 			
 			return new String(stringChars);
@@ -31,7 +25,7 @@ namespace UnityStomp
 			
 			for (int i = 0; i < stringChars.Length; i++)
 			{
-				stringChars[i] = chars[random.Next(chars.Length)];
+				stringChars[i] = chars[UnityEngine.Random.Range(0, chars.Length)];
 			}
 			
 			return new String(stringChars);

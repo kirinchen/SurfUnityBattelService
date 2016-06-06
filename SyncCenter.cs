@@ -5,7 +5,9 @@ using System.Collections.Generic;
 
 namespace RFNEet {
     public class SyncCenter : MonoBehaviour {
-        private LocalPlayerRepo localRepo;
+        internal LocalPlayerRepo localRepo {
+            get;private set;
+        }
         private Dictionary<string, RemotePlayerRepo> remoteRepos = new Dictionary<string, RemotePlayerRepo>();
         private RemoteApier api;
         private SyncHandler hanlder;
