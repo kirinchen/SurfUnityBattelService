@@ -19,6 +19,8 @@ namespace RFNEet {
         internal string meId {
             get; private set;
         }
+        internal float lastSyncServerTime;
+        internal float lastSyncLocalTime;
         private Action<string, List<string>> handshakeCb;
         internal Action<string> onNewPlayerJoined;
         internal Action<string, AllSyncDataResp> onRemoteFirstSync;
@@ -50,7 +52,7 @@ namespace RFNEet {
                 Debug.Log("/message/errors/" + message);
                 throwErrorBundle(ErrorBundle.Type.Runtime,message);
             });
-            sc.Subscribe("/app/" + roomId + "/joinBattle", (message) => {
+            sc.Subscribe("/app/" + roomId + "/joinBattle/"+Time.time, (message) => {
                 Debug.Log("joinBattle="+message);
                 parseHandshake(message);
             });
@@ -76,16 +78,28 @@ namespace RFNEet {
 
         }
 
-        
-
         private void parseHandshake(string msg) {
             HandshakeDto d = JsonConvert.DeserializeObject<HandshakeDto>(msg);
             if (d.success) {
+                setupSyncTime(d.playedTime,d.stamp);
                 meId = d.meId;
                 handshakeCb(meId, d.information.playList);
             } else {
                 throwErrorBundle(ErrorBundle.Type.HandShake,d.exceptionName);
             }
+        }
+
+        private void setupSyncTime(long playedTime, string stamp) {
+            float beforeLT = float.Parse(stamp);
+            lastSyncLocalTime = Time.time;
+            lastSyncServerTime = playedTime * 0.001f;
+            float lDT_half = (lastSyncLocalTime - beforeLT)*0.5f;
+            lastSyncServerTime += lDT_half;
+        }
+
+        public float getCurrentServerTime() {
+            float lD = Time.time - lastSyncLocalTime;
+            return lastSyncServerTime + lD;
         }
 
         public void subscribeShooted(string pid, Action<RemoteData> cb) {
@@ -122,6 +136,8 @@ namespace RFNEet {
         public string meId;
         public Information information;
         public bool success;
+        public string stamp;
+        public long playedTime;
         public string exceptionName;
 
         public class Information {
