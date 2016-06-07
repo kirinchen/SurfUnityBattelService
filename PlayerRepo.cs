@@ -27,7 +27,11 @@ namespace RFNEet {
         }
 
         public void onRemoveMe(SyncObject so) {
-            //objectMap.Remove(so.oid);
+            objectMap.Remove(so.oid);
+        }
+
+        public Dictionary<string, T> getMap() {
+            return objectMap;
         }
     }
 
