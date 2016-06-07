@@ -19,6 +19,7 @@ namespace RFNEet {
             api.onNewPlayerJoined = onNewPlayerJoined;
             api.onRemoteFirstSync = onRemoteFirstSync;
             api.onPlayerLeaved = onPlayerLeaved;
+            api.onBroadcast = onBroadcast;
         }
 
         public void setErrorCb(Action<ErrorBundle> ecb) {
@@ -106,6 +107,23 @@ namespace RFNEet {
             }
             hanlder.onRemoteFirstSync(rpr, asd);
             rpr.handshake();
+        }
+
+        private void onBroadcast(RemoteBroadcastData rbd) {
+            if (rbd.getSysTag() == RemoteData.SysTag.ObjectChnage) {
+                if (rbd.senderId != api.meId) {
+                    updateObjectByBroadcast(rbd); 
+                }
+            }
+        }
+
+        private void updateObjectByBroadcast(RemoteBroadcastData rbd) {
+            if (rbd.pid == api.meId) {
+                localRepo.objectMap[rbd.oid].updateByBroadcast(rbd);
+            } else {
+                remoteRepos[rbd.pid].objectMap[rbd.oid].updateByBroadcast(rbd);
+            }
+
         }
     }
 }

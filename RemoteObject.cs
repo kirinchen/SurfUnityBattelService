@@ -22,6 +22,15 @@ namespace RFNEet {
         internal void destoryMe() {
             Destroy(gameObject);
         }
+
+        public void postBroadcast(RemoteBroadcastData b) {
+            setup(b);
+            b.setSysTag(RemoteData.SysTag.ObjectChnage);
+            api.broadcastUpdate(b);
+        }
+
     }
+
+
 
 }

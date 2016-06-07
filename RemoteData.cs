@@ -7,7 +7,7 @@ namespace RFNEet {
     public class RemoteData  {
 
         public enum SysTag {
-            NONE,DELETED
+            NONE,DELETED,ObjectChnage
         }
 
         public string pid;

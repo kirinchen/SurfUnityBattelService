@@ -27,6 +27,7 @@ namespace RFNEet {
         internal Action<string, AllSyncDataResp> onRemoteFirstSync;
         internal Action<string> onPlayerLeaved;
         internal Action<ErrorBundle> onErrorCb;
+        internal Action<RemoteBroadcastData> onBroadcast;
 
         public RemoteApier(string url, string roomId) {
             sc = new StompClientAll(url);
@@ -58,13 +59,12 @@ namespace RFNEet {
                 parseHandshake(message);
             });
             sc.Subscribe("/message/rooms/" + roomId + "/broadcast", (message) => {
-                Dictionary<string, object> d = JsonConvert.DeserializeObject<Dictionary<string, object>>(message);
-                string ts = d[KEY_TYPE].ToString();
-                if (KEY_TYPE_NEW_PLAYER_JOINED.Equals(ts)) {
-                    string newSid = d[KEY_SESSION_ID].ToString();
-                    onNewPlayerJoined(newSid);
-                } else if (KEY_TYPE_GENERAL.Equals(ts)) {
-
+                RemoteBroadcastData d = JsonConvert.DeserializeObject<RemoteBroadcastData>(message);
+                d.setSource(message);
+                if (KEY_TYPE_NEW_PLAYER_JOINED.Equals(d.type)) {
+                    onNewPlayerJoined(d.senderId);
+                } else if (KEY_TYPE_GENERAL.Equals(d.type)) {
+                    onBroadcast(d);
                 }
             });
             sc.Subscribe("/message/rooms/" + roomId + "/player/leave", (message) => {
@@ -133,6 +133,12 @@ namespace RFNEet {
             string path = "/app/" + roomId + "/shoot";
             send(path,o);            
         }
+
+        internal void broadcastUpdate(RemoteBroadcastData b) {
+            string path = "/app/" + roomId + "/broadcast";
+            send(path, b);
+        }
+
     }
 
     public class HandshakeDto {
@@ -146,7 +152,6 @@ namespace RFNEet {
         public class Information {
             public List<string> playList;
         }
-
     }
 }
 

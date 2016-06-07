@@ -25,7 +25,8 @@ namespace RFNEet {
             listener.onRemoveMe(this);
         }
 
-
+        public virtual void updateByBroadcast(RemoteBroadcastData rbd) {
+        }
     }
 
     public interface SyncObjectListener {
