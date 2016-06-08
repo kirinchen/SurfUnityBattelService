@@ -13,5 +13,9 @@ namespace RFNEet {
         void onAllRemotePlayerReadyed(LocalPlayerRepo localRepo);
 
         RemoteObject onNewRemoteObjectCreated(RemotePlayerRepo rpr, RemoteData rd);
+
+        LocalObject handoverToMe(RemoteObject ro);
+
+        bool handoverToOther(RemoteObject ro);
     }
 }

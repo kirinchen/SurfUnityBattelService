@@ -64,9 +64,14 @@ namespace RFNEet {
             return rpr;
         }
 
-        private void onPlayerLeaved(string sid) {
+        private void onPlayerLeaved(string sid,string handoverId) {
             RemotePlayerRepo rpr = remoteRepos[sid];
-            rpr.destoryAll();
+            if (handoverId.Equals(api.meId)) {
+                localRepo.addAll(rpr, hanlder.handoverToMe);
+            } else {
+                RemotePlayerRepo orpr = remoteRepos[handoverId];
+                orpr.addAll(rpr, hanlder.handoverToOther);
+            }
             remoteRepos.Remove(sid);
         }
 

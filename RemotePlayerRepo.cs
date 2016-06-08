@@ -51,5 +51,15 @@ namespace RFNEet {
             }
             objectMap.Clear();
         }
+
+        internal void addAll(RemotePlayerRepo rpr,Func<RemoteObject,bool> cf) {
+            foreach (RemoteObject ro in rpr.objectMap.Values) {
+                if (cf(ro)) {
+                    inject(ro.oid, ro);
+                } else {
+                    ro.destoryMe();
+                }
+            }
+        }
     }
 }

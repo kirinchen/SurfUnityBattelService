@@ -9,6 +9,7 @@ namespace RFNEet {
     public class RemoteApier {
         private static readonly string KEY_ME_ID = "meId";
         private static readonly string KEY_SESSION_ID = "sessionId";
+        private static readonly string KEY_HANDOVER_ID = "handoverId";
         private static readonly string KEY_SENDER_ID = "senderId";
         public static readonly string KEY_TYPE = "type";
         public static readonly string KEY_TYPE_NEW_PLAYER_JOINED = "NewPlayerJoined";
@@ -25,7 +26,7 @@ namespace RFNEet {
         private Action<string, List<string>> handshakeCb;
         internal Action<string> onNewPlayerJoined;
         internal Action<string, AllSyncDataResp> onRemoteFirstSync;
-        internal Action<string> onPlayerLeaved;
+        internal Action<string,string> onPlayerLeaved;
         internal Action<ErrorBundle> onErrorCb;
         internal Action<RemoteBroadcastData> onBroadcast;
 
@@ -68,8 +69,10 @@ namespace RFNEet {
                 }
             });
             sc.Subscribe("/message/rooms/" + roomId + "/player/leave", (message) => {
-                string sid = parse(message,KEY_SESSION_ID).ToString();
-                onPlayerLeaved(sid);
+                Dictionary<string, string> d = JsonConvert.DeserializeObject<Dictionary<string, string>>(message);
+                string sid = d[KEY_SESSION_ID];
+                string hid = d[KEY_HANDOVER_ID];
+                onPlayerLeaved(sid, hid);
             });
 
             sc.Subscribe("/message/rooms/" + roomId + "/player/" + meId + "/inbox", (message) => {

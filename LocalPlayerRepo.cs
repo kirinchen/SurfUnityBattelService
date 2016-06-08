@@ -14,9 +14,18 @@ namespace RFNEet {
 
         public virtual LocalObject inject(LocalObject o) {
             string oid = UidUtils.getRandomString(7);
-            return inject(oid,o);
+            return inject(oid, o);
         }
 
-
+        internal void addAll(RemotePlayerRepo rpr, Func<RemoteObject, LocalObject> convert) {
+            foreach (RemoteObject ro in rpr.objectMap.Values) {
+                LocalObject lo = convert(ro);
+                if (lo != null) {
+                    inject(ro.oid, lo);
+                } else {
+                    ro.destoryMe();
+                }
+            }
+        }
     }
 }
