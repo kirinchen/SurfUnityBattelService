@@ -19,8 +19,14 @@ namespace RFNEet {
 
         internal abstract void onRemoteUpdate(RemoteData s);
 
-        internal void destoryMe() {
-            Destroy(gameObject);
+        internal void destoryMe(bool isCallRemoveMe = false) {
+            onRemoved();
+            if (gameObject != null) {
+                Destroy(gameObject);
+            }
+            if (isCallRemoveMe) {
+                removeMe();
+            }
         }
 
         public void postBroadcast(RemoteBroadcastData b) {
