@@ -15,7 +15,7 @@ namespace UnityStomp {
         public WebSocket websocket;
         public static string acceptVersion = "1.1,1.0";
         public static string heartBeat = "10000,10000";
-        private Action<string> onErrorCb = (s)=> { };
+        private Action<string> onErrorCb = (s) => { };
         private Dictionary<string, OnMessageListener> actionMap = new Dictionary<string, OnMessageListener>();
         public int subNo;
 
@@ -53,8 +53,12 @@ namespace UnityStomp {
             };
 
             websocket.OnError += (sender, e) => {
-                Debug.Log("Error message : " + e.Message);
-                onErrorCb(e.Message);
+                try {
+                    Debug.Log("Error message : " + e.Message);
+                    onErrorCb(e.Message);
+                } catch (Exception ex) {
+                    Debug.LogWarning(ex);
+                }
             };
 
             websocket.Open();
@@ -102,19 +106,20 @@ namespace UnityStomp {
 
         //Send Message
         public void SendMessage(string destination, string message) {
+            try {
+                string jsonMessage = message;
+                string contentLength = jsonMessage.Length.ToString();
+                jsonMessage = jsonMessage.Replace("\"", "\\\"");
 
-            //string jsonMessage = JsonConvert.SerializeObject(new { content = message });
-            string jsonMessage = message;
-            string contentLength = jsonMessage.Length.ToString();
-            jsonMessage = jsonMessage.Replace("\"", "\\\"");
+                var sendString = "[\"SEND\\n" +
+                    "destination:" + destination + "\\n" +
+                        "content-length:" + contentLength + "\\n\\n" +
+                        jsonMessage + "\\u0000\"]";
 
-            var sendString = "[\"SEND\\n" +
-                "destination:" + destination + "\\n" +
-                    "content-length:" + contentLength + "\\n\\n" +
-                    jsonMessage + "\\u0000\"]";
-
-            //websocket.SendAsync(sendString, result => Console.WriteLine(result));
-            websocket.Send(sendString);
+                websocket.Send(sendString);
+            } catch (Exception e) {
+                Debug.LogWarning(e);
+            }
         }
 
         //Close 
