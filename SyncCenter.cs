@@ -115,10 +115,8 @@ namespace RFNEet {
         }
 
         private void onBroadcast(RemoteBroadcastData rbd) {
-            if (rbd.getSysTag() == RemoteData.SysTag.ObjectChnage) {
-                if (rbd.senderId != api.meId) {
-                    updateObjectByBroadcast(rbd);
-                }
+            if (rbd.senderId != api.meId) {
+                updateObjectByBroadcast(rbd);
             }
         }
 
