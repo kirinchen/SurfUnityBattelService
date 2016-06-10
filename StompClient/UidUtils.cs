@@ -21,7 +21,6 @@ namespace UnityStomp
 		public static string getRandomNumber(int size){
 			var chars = "0123456789";
 			var stringChars = new char[size];
-			var random = new Random();
 			
 			for (int i = 0; i < stringChars.Length; i++)
 			{

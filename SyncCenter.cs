@@ -47,7 +47,9 @@ namespace RFNEet {
         }
 
         private IEnumerator waitSomeRemoteHandShakeThanSend() {
-            foreach (RemotePlayerRepo rpr in remoteRepos.Values) {
+            List<string> keys = new List<string>(remoteRepos.Keys);
+            foreach (string key in keys) {
+                RemotePlayerRepo rpr = remoteRepos[key];
                 int waitTimes = 0;
                 while (!rpr.handshaked && waitTimes < 5) {
                     yield return new WaitForSeconds(0.35f);
@@ -84,8 +86,9 @@ namespace RFNEet {
                     hanlder.onSelfInRoom(localRepo, inRoomToken);
                 });
             } else {
-                Debug.Log("SyncCenter name=" + gameObject);
-                StartCoroutine(addRemoteRepoDependsSelfInRoom(sid));
+                if (!remoteRepos.ContainsKey(sid)) {
+                    StartCoroutine(addRemoteRepoDependsSelfInRoom(sid));
+                }
             }
         }
 
@@ -94,13 +97,13 @@ namespace RFNEet {
                 yield return new WaitForSeconds(0.5f);
                 Debug.Log("wait for onSelfInRoom _localObjectSetuped=" + _localObjectSetuped);
             }
+            Debug.Log("addRemoteRepoDependsSelfInRoom=" + sid);
             RemotePlayerRepo rpr = addRemoteRepo(sid);
             tellNewPlayerMyInfo(rpr);
         }
 
         private void tellNewPlayerMyInfo(RemotePlayerRepo rpr) {
             object co = hanlder.getCurrentInfoFunc(localRepo);
-            Debug.Log("tellNewPlayerMyInfo " + co);
             rpr.sendToInbox(co);
         }
 

@@ -12,7 +12,6 @@ namespace RFNEet {
         }
 
         internal RemotePlayerRepo(string pid, RemoteApier api, Func<RemotePlayerRepo, RemoteData, RemoteObject> oca) : base(pid, api) {
-            Debug.Log("subscribeShooted pid=" + pid);
             onNewRemoteObjectCreated = oca;
             api.subscribeShooted(pid, onShooted);
         }
