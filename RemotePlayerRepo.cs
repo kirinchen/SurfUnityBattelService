@@ -25,14 +25,14 @@ namespace RFNEet {
         }
 
         internal void createNewObject(RemoteData s) {
-            Loom.QueueOnMainThread(() => {
+            //Loom.QueueOnMainThread(() => {
                 if (!hasObjectById(s.oid)) {
                     RemoteObject ro = onNewRemoteObjectCreated(this, s);
                     if (ro != null) {
                         inject(s.oid, ro);
                     }
                 }
-            });
+            //});
         }
 
         internal void handshake() {

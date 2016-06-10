@@ -9,7 +9,6 @@ using System.Text.RegularExpressions;
 namespace UnityStomp {
     public class StompClientAll : StompClient {
 
-        private WebSocket webSocket;
         private string sessionId;
 
         public WebSocket websocket;

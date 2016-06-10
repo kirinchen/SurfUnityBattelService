@@ -79,12 +79,12 @@ namespace RFNEet {
         private bool _localObjectSetuped = false;
         private void onNewPlayerJoined(string sid) {
             if (sid.Equals(api.meId)) {
-                Loom.QueueOnMainThread(() => {
-                    Action inRoomToken = () => {
-                        _localObjectSetuped = true;
-                    };
-                    hanlder.onSelfInRoom(localRepo, inRoomToken);
-                });
+                //Loom.QueueOnMainThread(() => {
+                Action inRoomToken = () => {
+                    _localObjectSetuped = true;
+                };
+                hanlder.onSelfInRoom(localRepo, inRoomToken);
+                //});
             } else {
                 if (!remoteRepos.ContainsKey(sid)) {
                     StartCoroutine(addRemoteRepoDependsSelfInRoom(sid));
