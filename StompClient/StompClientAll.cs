@@ -53,15 +53,12 @@ namespace UnityStomp {
             };
 
             websocket.OnError += (sender, e) => {
-                try {
-                    Debug.Log("Error message : " + e.Message);
-                    onErrorCb(e.Message);
-                } catch (Exception ex) {
-                    Debug.LogWarning(ex);
-                }
+                Debug.Log("Error message : " + e.Message);
+                onErrorCb(e.Message);
             };
 
             websocket.Open();
+            
         }
 
         private string getKeyByDestination(string d) {

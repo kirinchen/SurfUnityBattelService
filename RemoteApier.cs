@@ -26,14 +26,14 @@ namespace RFNEet {
         private Action<string, List<string>> handshakeCb;
         internal Action<string> onNewPlayerJoined;
         internal Action<string, AllSyncDataResp> onRemoteFirstSync;
-        internal Action<string,string> onPlayerLeaved;
+        internal Action<string, string> onPlayerLeaved;
         internal Action<ErrorBundle> onErrorCb;
         internal Action<RemoteBroadcastData> onBroadcast;
 
         public RemoteApier(string url, string roomId) {
             sc = new StompClientAll(url);
-            sc.setOnError((s)=> {
-                throwErrorBundle(ErrorBundle.Type.SeverError,s);
+            sc.setOnError((s) => {
+                throwErrorBundle(ErrorBundle.Type.SeverError, s);
             });
             meId = sc.getSessionId();
             this.roomId = roomId;
@@ -44,7 +44,7 @@ namespace RFNEet {
             sc.StompConnect(onConnected);
         }
 
-        private void throwErrorBundle(ErrorBundle.Type t,string msg) {
+        private void throwErrorBundle(ErrorBundle.Type t, string msg) {
             ErrorBundle eb = new ErrorBundle(t);
             eb.message = msg;
             onErrorCb(eb);
@@ -53,10 +53,10 @@ namespace RFNEet {
         private void onConnected(object o) {
             sc.Subscribe("/user/message/errors/", (message) => {
                 Debug.Log("/message/errors/" + message);
-                throwErrorBundle(ErrorBundle.Type.Runtime,message);
+                throwErrorBundle(ErrorBundle.Type.Runtime, message);
             });
-            sc.Subscribe("/app/" + roomId + "/joinBattle/"+Time.time, (message) => {
-                Debug.Log("joinBattle="+message);
+            sc.Subscribe("/app/" + roomId + "/joinBattle/" + Time.time, (message) => {
+                Debug.Log("joinBattle=" + message);
                 parseHandshake(message);
             });
             sc.Subscribe("/message/rooms/" + roomId + "/broadcast", (message) => {
@@ -87,11 +87,11 @@ namespace RFNEet {
         private void parseHandshake(string msg) {
             HandshakeDto d = JsonConvert.DeserializeObject<HandshakeDto>(msg);
             if (d.success) {
-                setupSyncTime(d.playedTime,d.stamp);
+                setupSyncTime(d.playedTime, d.stamp);
                 meId = d.meId;
                 handshakeCb(meId, d.information.playList);
             } else {
-                throwErrorBundle(ErrorBundle.Type.HandShake,d.exceptionName);
+                throwErrorBundle(ErrorBundle.Type.HandShake, d.exceptionName);
             }
         }
 
@@ -99,7 +99,7 @@ namespace RFNEet {
             float beforeLT = float.Parse(stamp);
             lastSyncLocalTime = Time.time;
             lastSyncServerTime = playedTime * 0.001f;
-            float lDT_half = (lastSyncLocalTime - beforeLT)*0.5f;
+            float lDT_half = (lastSyncLocalTime - beforeLT) * 0.5f;
             lastSyncServerTime += lDT_half;
         }
 
@@ -116,14 +116,24 @@ namespace RFNEet {
             });
         }
 
-        public void sendToInbox(string sendTo,object o) {
-            string path = "/app/" + roomId + "/send/"+ sendTo;
-            send(path,o);
+        public void sendToInbox(string sendTo, object o) {
+            string path = "/app/" + roomId + "/send/" + sendTo;
+            send(path, o);
         }
 
-        public void send(string path,object o) {
+        public void send(string path, object o) {
             string json = JsonConvert.SerializeObject(o);
             sc.SendMessage(path, json);
+        }
+
+        internal void close() {
+            sc.CloseWebSocket();
+            handshakeCb = null;
+            onNewPlayerJoined = null;
+            onRemoteFirstSync = null;
+            onPlayerLeaved = null;
+            onErrorCb = null;
+            onBroadcast = null;
         }
 
         public static object parse(string msg, string key) {
@@ -134,7 +144,7 @@ namespace RFNEet {
 
         internal void shoot(object o) {
             string path = "/app/" + roomId + "/shoot";
-            send(path,o);            
+            send(path, o);
         }
 
         internal void broadcastUpdate(RemoteBroadcastData b) {

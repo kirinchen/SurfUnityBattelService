@@ -12,7 +12,6 @@ namespace RFNEet {
         private RemoteApier api;
         private SyncHandler hanlder;
 
-
         public void init(string url, string roomId, SyncHandler sh) {
             hanlder = sh;
             api = new RemoteApier(url, roomId);
@@ -85,6 +84,7 @@ namespace RFNEet {
                     hanlder.onSelfInRoom(localRepo, inRoomToken);
                 });
             } else {
+                Debug.Log("SyncCenter name=" + gameObject);
                 StartCoroutine(addRemoteRepoDependsSelfInRoom(sid));
             }
         }
@@ -131,5 +131,10 @@ namespace RFNEet {
             }
 
         }
+
+        void OnDestroy() {
+            api.close();
+        }
+
     }
 }
