@@ -25,7 +25,13 @@ namespace RFNEet {
             listener.onRemoveMe(this);
         }
 
-        public virtual void updateByBroadcast(RemoteBroadcastData rbd) {
+        public  void updateByBroadcast(RemoteBroadcastData rbd) {
+            if (gameObject != null) {
+                updateByBroadcast(rbd.btag,rbd);
+            }
+        }
+
+        public virtual void updateByBroadcast(string btag,RemoteBroadcastData rbd) {
         }
     }
 

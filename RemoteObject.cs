@@ -10,8 +10,7 @@ namespace RFNEet {
             if (s.getSysTag() == RemoteData.SysTag.NONE) {
                 onRemoteUpdate(s);
             } else if (s.getSysTag() == RemoteData.SysTag.DELETED) {
-                onRemoved();
-                removeMe();
+                destoryMe(true);
             }
         }
 
@@ -21,9 +20,6 @@ namespace RFNEet {
 
         internal void destoryMe(bool isCallRemoveMe = false) {
             onRemoved();
-            if (gameObject != null) {
-                Destroy(gameObject);
-            }
             if (isCallRemoveMe) {
                 removeMe();
             }

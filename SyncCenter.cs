@@ -6,12 +6,12 @@ using System.Collections.Generic;
 namespace RFNEet {
     public class SyncCenter : MonoBehaviour {
         internal LocalPlayerRepo localRepo {
-            get;private set;
+            get; private set;
         }
         private Dictionary<string, RemotePlayerRepo> remoteRepos = new Dictionary<string, RemotePlayerRepo>();
         private RemoteApier api;
         private SyncHandler hanlder;
-        
+
 
         public void init(string url, string roomId, SyncHandler sh) {
             hanlder = sh;
@@ -64,7 +64,7 @@ namespace RFNEet {
             return rpr;
         }
 
-        private void onPlayerLeaved(string sid,string handoverId) {
+        private void onPlayerLeaved(string sid, string handoverId) {
             RemotePlayerRepo rpr = remoteRepos[sid];
             if (handoverId.Equals(api.meId)) {
                 localRepo.addAll(rpr, hanlder.handoverToMe);
@@ -92,7 +92,7 @@ namespace RFNEet {
         private IEnumerator addRemoteRepoDependsSelfInRoom(string sid) {
             while (!_localObjectSetuped) {
                 yield return new WaitForSeconds(0.5f);
-                Debug.Log("wait for onSelfInRoom _localObjectSetuped="+ _localObjectSetuped);
+                Debug.Log("wait for onSelfInRoom _localObjectSetuped=" + _localObjectSetuped);
             }
             RemotePlayerRepo rpr = addRemoteRepo(sid);
             tellNewPlayerMyInfo(rpr);
@@ -117,16 +117,19 @@ namespace RFNEet {
         private void onBroadcast(RemoteBroadcastData rbd) {
             if (rbd.getSysTag() == RemoteData.SysTag.ObjectChnage) {
                 if (rbd.senderId != api.meId) {
-                    updateObjectByBroadcast(rbd); 
+                    updateObjectByBroadcast(rbd);
                 }
             }
         }
 
         private void updateObjectByBroadcast(RemoteBroadcastData rbd) {
-            if (rbd.pid == api.meId) {
+            if (rbd.pid == api.meId && localRepo.objectMap.ContainsKey(rbd.oid)) {
                 localRepo.objectMap[rbd.oid].updateByBroadcast(rbd);
-            } else {
-                remoteRepos[rbd.pid].objectMap[rbd.oid].updateByBroadcast(rbd);
+            } else if (remoteRepos.ContainsKey(rbd.pid)) {
+                RemotePlayerRepo rpr = remoteRepos[rbd.pid];
+                if (rpr.objectMap.ContainsKey(rbd.oid)) {
+                    rpr.objectMap[rbd.oid].updateByBroadcast(rbd);
+                }
             }
 
         }
