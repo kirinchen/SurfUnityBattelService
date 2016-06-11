@@ -25,6 +25,14 @@ namespace RFNEet {
             api.onErrorCb = ecb;
         }
 
+        public SyncObject findSyncObject(string pid, string oid) {
+            if (api.meId.Equals(pid)) {
+                return localRepo.objectMap[oid];
+            } else {
+                return remoteRepos[pid].objectMap[oid];
+            }
+        }
+
         public void connect(Action<LocalPlayerRepo> handshakeCb) {
             api.connect((meid, list) => {
                 localRepo = new LocalPlayerRepo(meid, api);

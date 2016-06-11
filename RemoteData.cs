@@ -6,13 +6,14 @@ using UnityEngine;
 namespace RFNEet {
     public class RemoteData  {
 
-        public enum SysTag {
+        public enum SysCmd {
             NONE,DELETED,ObjectChnage
         }
 
         public string pid;
         public string oid;
         public string tag;
+        public SysCmd cmd = SysCmd.NONE;
         private string _source;
         //internal Cmd cmd;
 
@@ -20,20 +21,12 @@ namespace RFNEet {
             _source = s;
         }
 
-        internal void setSysTag(SysTag st) {
-            tag = "#"+st.ToString();
+        internal void setSysTag(SysCmd st) {
+            cmd = st;
         }
 
-        internal SysTag getSysTag() {
-            if (tag == null || tag.Length<=0) {
-                return SysTag.NONE;
-            }
-            string[] ss= tag.Split('#');
-            if (ss.Length == 2) {
-                return (SysTag)Enum.Parse(typeof(SysTag), ss[1]);
-            } else {
-                return SysTag.NONE;
-            }
+        internal SysCmd getSysTag() {
+            return cmd;
         }
 
         public string getSource() {

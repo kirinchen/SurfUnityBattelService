@@ -30,20 +30,20 @@ namespace RFNEet {
 
         public void updateByBroadcast(RemoteBroadcastData rbd) {
             if (gameObject != null) {
-                if (rbd.getSysTag() == RemoteData.SysTag.NONE) {
+                if (rbd.getSysTag() == RemoteData.SysCmd.NONE) {
                     updateByBroadcast(rbd.btag, rbd);
-                } else if (rbd.getSysTag() == RemoteData.SysTag.DELETED) {
-                    destoryMe(true);
+                } else if (rbd.getSysTag() == RemoteData.SysCmd.DELETED) {
+                    destoryMe(true, rbd);
                 }
             }
         }
 
-        internal abstract void onRemoved();
+        internal abstract void onRemoved(RemoteData rd);
 
-        internal void destoryMe(bool isCallRemoveMe = false) {
+        internal void destoryMe(bool isCallRemoveMe = false,RemoteData rd = null) {
             if (!_destoryedMe) {
                 _destoryedMe = true;
-                onRemoved();
+                onRemoved(rd);
                 if (isCallRemoveMe) {
                     removeMe();
                 }
@@ -54,10 +54,10 @@ namespace RFNEet {
             postRemoveSelf();
         }
 
-        public void postRemoveSelf() {
+        public void postRemoveSelf(object target = null) {
             if (!_destoryedMe) {
                 _destoryedMe = true;
-                postRemoveData();
+                postRemoveData(target);
                 removeMe();
             }
         }
@@ -65,7 +65,7 @@ namespace RFNEet {
         public virtual void updateByBroadcast(string btag, RemoteBroadcastData rbd) {
         }
 
-        internal abstract void postRemoveData();
+        internal abstract void postRemoveData(object target);
     }
 
     public interface SyncObjectListener {
