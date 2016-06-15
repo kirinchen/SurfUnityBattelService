@@ -52,8 +52,8 @@ namespace UnityStomp {
             };
 
             websocket.OnError += (sender, e) => {
-                Debug.Log("Error message : " + e.Message);
-                onErrorCb(e.Message);
+                //Debug.Log("Error message : " + e.Message);
+                onErrorCb("");
             };
 
             websocket.Open();
