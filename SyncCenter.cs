@@ -21,6 +21,15 @@ namespace RFNEet {
             api.onBroadcast = onBroadcast;
         }
 
+        private void initCommRepo() {
+            CommRemoteRepo crr = new CommRemoteRepo(api, hanlder.onNewRemoteObjectCreated);
+            remoteRepos.Add(crr.pid, crr);
+        }
+
+        public CommRemoteRepo getCommRemoteRepo() {
+            return (CommRemoteRepo)remoteRepos[CommRemoteRepo.COMM_PID];
+        }
+
         public void setErrorCb(Action<ErrorBundle> ecb) {
             api.onErrorCb = ecb;
         }
@@ -38,6 +47,7 @@ namespace RFNEet {
                 localRepo = new LocalPlayerRepo(meid, api);
                 createRemoteList(meid, list);
                 handshakeCb(localRepo);
+                initCommRepo();
             });
         }
 
@@ -85,41 +95,44 @@ namespace RFNEet {
         }
 
         private bool _localObjectSetuped = false;
-        private void onNewPlayerJoined(string sid) {
-            if (sid.Equals(api.meId)) {
-                //Loom.QueueOnMainThread(() => {
+        private void onNewPlayerJoined(RemoteBroadcastData rbd) {
+            if (rbd.senderId.Equals(api.meId)) {
                 Action inRoomToken = () => {
                     _localObjectSetuped = true;
                 };
                 hanlder.onSelfInRoom(localRepo, inRoomToken);
-                //});
             } else {
-                if (!remoteRepos.ContainsKey(sid)) {
-                    StartCoroutine(addRemoteRepoDependsSelfInRoom(sid));
+                if (!remoteRepos.ContainsKey(rbd.senderId)) {
+                    StartCoroutine(addRemoteRepoDependsSelfInRoom(rbd));
                 }
             }
         }
 
-        private IEnumerator addRemoteRepoDependsSelfInRoom(string sid) {
+        private IEnumerator addRemoteRepoDependsSelfInRoom(RemoteBroadcastData rbd) {
             while (!_localObjectSetuped) {
                 yield return new WaitForSeconds(0.5f);
                 Debug.Log("wait for onSelfInRoom _localObjectSetuped=" + _localObjectSetuped);
             }
-            Debug.Log("addRemoteRepoDependsSelfInRoom=" + sid);
-            RemotePlayerRepo rpr = addRemoteRepo(sid);
-            tellNewPlayerMyInfo(rpr);
+            Debug.Log("addRemoteRepoDependsSelfInRoom=" + rbd.senderId+" tellerids="+rbd.tellerIds);
+            RemotePlayerRepo rpr = addRemoteRepo(rbd.senderId);
+            bool hasCommData = rbd.tellerIds != null && rbd.tellerIds.Contains(api.meId);
+            tellNewPlayerMyInfo(rpr, hasCommData);
         }
 
-        private void tellNewPlayerMyInfo(RemotePlayerRepo rpr) {
-            object co = hanlder.getCurrentInfoFunc(localRepo);
+        private void tellNewPlayerMyInfo(RemotePlayerRepo rpr,bool hasCommData) {
+            object co = hanlder.getCurrentInfoFunc(localRepo, hasCommData);
             rpr.sendToInbox(co);
         }
 
         private void onRemoteFirstSync(string sid, AllSyncDataResp asdr) {
             RemotePlayerRepo rpr = remoteRepos[sid];
+            CommRemoteRepo crr = getCommRemoteRepo();
             AllSyncData asd = asdr.toAllSyncData();
             foreach (RemoteData rd in asd.objectList) {
                 rpr.createNewObject(rd);
+            }
+            foreach (RemoteData rd in asd.commList) {
+                crr.createNewObject(rd);
             }
             hanlder.onRemoteFirstSync(rpr, asd);
             rpr.handshake();

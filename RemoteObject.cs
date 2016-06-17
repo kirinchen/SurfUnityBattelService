@@ -17,7 +17,6 @@ namespace RFNEet {
 
         public void postBroadcast(RemoteBroadcastData b) {
             setup(b);
-            b.setSysTag(RemoteData.SysCmd.ObjectChnage);
             api.broadcastUpdate(b);
         }
 

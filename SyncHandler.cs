@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace RFNEet {
     public interface SyncHandler {
 
-        AllSyncData getCurrentInfoFunc(LocalPlayerRepo localRepo);
+        AllSyncData getCurrentInfoFunc(LocalPlayerRepo localRepo,bool hasCommData);
 
         void onRemoteFirstSync(RemotePlayerRepo rpr, AllSyncData msg);
 

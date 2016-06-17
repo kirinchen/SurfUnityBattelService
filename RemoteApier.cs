@@ -24,7 +24,7 @@ namespace RFNEet {
         internal float lastSyncServerTime;
         internal float lastSyncLocalTime;
         private Action<string, List<string>> handshakeCb;
-        internal Action<string> onNewPlayerJoined;
+        internal Action<RemoteBroadcastData> onNewPlayerJoined;
         internal Action<string, AllSyncDataResp> onRemoteFirstSync;
         internal Action<string, string> onPlayerLeaved;
         internal Action<ErrorBundle> onErrorCb;
@@ -62,7 +62,7 @@ namespace RFNEet {
                 RemoteBroadcastData d = JsonConvert.DeserializeObject<RemoteBroadcastData>(message);
                 d.setSource(message);
                 if (KEY_TYPE_NEW_PLAYER_JOINED.Equals(d.type)) {
-                    onNewPlayerJoined(d.senderId);
+                    onNewPlayerJoined(d);
                 } else if (KEY_TYPE_GENERAL.Equals(d.type)) {
                     onBroadcast(d);
                 }
@@ -143,6 +143,11 @@ namespace RFNEet {
 
         internal void shoot(object o) {
             string path = "/app/" + roomId + "/shoot";
+            send(path, o);
+        }
+
+        internal void shootWithPid(object o,string pid) {
+            string path = "/app/" + roomId + "/shoot/"+ pid;
             send(path, o);
         }
 

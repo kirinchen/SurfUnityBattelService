@@ -6,6 +6,7 @@ using System;
 namespace RFNEet {
     public class RemotePlayerRepo : PlayerRepo<RemoteObject> {
 
+
         private Func<RemotePlayerRepo, RemoteData, RemoteObject> onNewRemoteObjectCreated;
         public bool handshaked {
             get; private set;
@@ -16,7 +17,9 @@ namespace RFNEet {
             api.subscribeShooted(pid, onShooted);
         }
 
-        private void onShooted(RemoteData s) {
+        internal virtual void onShooted(RemoteData s) {
+
+
             if (objectMap.ContainsKey(s.oid)) {
                 objectMap[s.oid].update(s);
             } else {
@@ -25,14 +28,16 @@ namespace RFNEet {
         }
 
         internal void createNewObject(RemoteData s) {
-            //Loom.QueueOnMainThread(() => {
-                if (!hasObjectById(s.oid)) {
-                    RemoteObject ro = onNewRemoteObjectCreated(this, s);
-                    if (ro != null) {
-                        inject(s.oid, ro);
-                    }
+            if (!hasObjectById(s.oid)) {
+                RemoteObject ro = onNewRemoteObjectCreated(this, s);
+                setupNewObject(s, ro);
+                if (ro != null) {
+                    inject(s.oid, ro);
                 }
-            //});
+            }
+        }
+
+        internal virtual void setupNewObject(RemoteData s, RemoteObject ro) {
         }
 
         internal void handshake() {
@@ -51,7 +56,7 @@ namespace RFNEet {
             objectMap.Clear();
         }
 
-        internal void addAll(RemotePlayerRepo rpr,Func<RemoteObject,bool> cf) {
+        internal void addAll(RemotePlayerRepo rpr, Func<RemoteObject, bool> cf) {
             foreach (RemoteObject ro in rpr.objectMap.Values) {
                 if (cf(ro)) {
                     inject(ro.oid, ro);

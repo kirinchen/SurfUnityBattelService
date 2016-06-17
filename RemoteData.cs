@@ -7,10 +7,12 @@ namespace RFNEet {
     public class RemoteData  {
 
         public enum SysCmd {
-            NONE,DELETED,ObjectChnage
+            NONE,DELETED
+            
         }
 
         public string pid;
+        public string sid; //sender id it`s only for comm object use
         public string oid;
         public string tag;
         public SysCmd cmd = SysCmd.NONE;

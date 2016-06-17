@@ -7,6 +7,7 @@ namespace RFNEet {
     public class AllSyncData {
 
         public List<RemoteData> objectList = new List<RemoteData>();
+        public List<RemoteData> commList = new List<RemoteData>();
 
 
     }
@@ -14,17 +15,25 @@ namespace RFNEet {
     internal class AllSyncDataResp : InboxData {
         
         public List<object> objectList = new List<object>();
+        public List<object> commList = new List<object>();
 
         public AllSyncData toAllSyncData() {
             AllSyncData ad = new AllSyncData();
-            foreach (object o in objectList) {
+            ad.objectList = convert(objectList);
+            ad.commList = convert(commList);
+            return ad;
+        }
+
+        private List<RemoteData> convert(List<object> ol) {
+            List<RemoteData> ans = new List<RemoteData>();
+            foreach (object o in ol) {
                 string s = JsonConvert.SerializeObject(o);
                 //TODO Opp perfomace
                 RemoteData rd = JsonConvert.DeserializeObject<RemoteData>(s);
                 rd.setSource(s);
-                ad.objectList.Add(rd);
+                ans.Add(rd);
             }
-            return ad;
+            return ans;
         }
 
     }
