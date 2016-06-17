@@ -12,6 +12,13 @@ namespace RFNEet {
         internal LocalPlayerRepo(string pid, RemoteApier api) : base(pid, api) {
         }
 
+        public LocalObject create(LocalObject cro) {
+            string oid = UidUtils.getRandomString(7);
+            inject(oid, cro);
+            cro.postInitDto();
+            return cro;
+        }
+
         public virtual LocalObject inject(LocalObject o) {
             string oid = UidUtils.getRandomString(7);
             return inject(oid, o);

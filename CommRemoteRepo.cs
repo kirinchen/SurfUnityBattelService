@@ -14,7 +14,12 @@ namespace RFNEet {
 
         internal override void onShooted(RemoteData s) {
             if (!api.meId.Equals(s.sid)) {
-                base.onShooted(s);
+                try {
+                    base.onShooted(s);
+                } catch (Exception e) {
+                    Debug.LogException(e);
+                    base.onShooted(s);
+                }
             }
         }
 
@@ -28,7 +33,8 @@ namespace RFNEet {
 
         internal override void setupNewObject(RemoteData s, RemoteObject ro) {
             CommRemoteObject cro = (CommRemoteObject)ro;
-            cro.creator = api.meId;
+            cro.creator = s.sid;
+            Debug.Log("setupNewObject  cro.creator : "+ cro.creator+" sid="+ s.sid);
         }
 
 

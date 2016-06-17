@@ -7,7 +7,7 @@ namespace RFNEet {
     public class RemoteData  {
 
         public enum SysCmd {
-            NONE,DELETED
+            NONE,NEW_OBJECT,DELETED
             
         }
 

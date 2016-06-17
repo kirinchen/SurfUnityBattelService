@@ -19,10 +19,9 @@ namespace RFNEet {
 
         internal virtual void onShooted(RemoteData s) {
 
-
             if (objectMap.ContainsKey(s.oid)) {
                 objectMap[s.oid].update(s);
-            } else {
+            } else if(s.getSysTag() == RemoteData.SysCmd.NEW_OBJECT) {
                 createNewObject(s);
             }
         }

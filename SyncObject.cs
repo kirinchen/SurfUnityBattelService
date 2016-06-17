@@ -18,7 +18,7 @@ namespace RFNEet {
             this.listener = listener;
         }
 
-        public RemoteData setup(RemoteData rd) {
+        public virtual RemoteData setup(RemoteData rd) {
             rd.oid = oid;
             rd.pid = pid;
             return rd;
