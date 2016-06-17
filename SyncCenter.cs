@@ -91,7 +91,19 @@ namespace RFNEet {
                 RemotePlayerRepo orpr = remoteRepos[handoverId];
                 orpr.addAll(rpr, hanlder.handoverToOther);
             }
+            transferCreatorForCommObjects(sid, handoverId);
             remoteRepos.Remove(sid);
+        }
+
+        private void transferCreatorForCommObjects(string sid, string handoverId) {
+            Dictionary<string, RemoteObject> m = getCommRemoteRepo().objectMap;
+            List<string> keys = new List<string>(m.Keys);
+            foreach (string k in keys) {
+                CommRemoteObject co = (CommRemoteObject)m[k];
+                if (co.creator.Equals(sid)) {
+                    co.creator = handoverId;
+                }
+            }
         }
 
         private bool _localObjectSetuped = false;
