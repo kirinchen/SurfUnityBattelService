@@ -11,6 +11,7 @@ namespace RFNEet {
         private Dictionary<string, RemotePlayerRepo> remoteRepos = new Dictionary<string, RemotePlayerRepo>();
         private RemoteApier api;
         private SyncHandler hanlder;
+        private bool connected = false;
 
         public void init(string url, string roomId, SyncHandler sh) {
             hanlder = sh;
@@ -24,6 +25,10 @@ namespace RFNEet {
         private void initCommRepo() {
             CommRemoteRepo crr = new CommRemoteRepo(api, hanlder.onNewRemoteObjectCreated);
             remoteRepos.Add(crr.pid, crr);
+        }
+
+        public bool isConnected() {
+            return connected;
         }
 
         public CommRemoteRepo getCommRemoteRepo() {
@@ -44,6 +49,7 @@ namespace RFNEet {
 
         public void connect(Action<LocalPlayerRepo> handshakeCb) {
             api.connect((meid, list) => {
+                connected = true;
                 localRepo = new LocalPlayerRepo(meid, api);
                 createRemoteList(meid, list);
                 handshakeCb(localRepo);
