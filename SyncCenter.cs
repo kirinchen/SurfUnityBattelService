@@ -22,6 +22,10 @@ namespace RFNEet {
             api.onBroadcast = onBroadcast;
         }
 
+        public Dictionary<string, RemotePlayerRepo> getRemoteRepos() {
+            return new Dictionary<string, RemotePlayerRepo>(remoteRepos);
+        }
+
         private void initCommRepo() {
             CommRemoteRepo crr = new CommRemoteRepo(api, hanlder.onNewRemoteObjectCreated);
             remoteRepos.Add(crr.pid, crr);

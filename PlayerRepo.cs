@@ -31,7 +31,7 @@ namespace RFNEet {
         }
 
         public Dictionary<string, T> getMap() {
-            return objectMap;
+            return new Dictionary<string, T>(objectMap) ;
         }
     }
 
