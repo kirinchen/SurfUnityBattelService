@@ -19,7 +19,9 @@ namespace RFNEet {
             api.onNewPlayerJoined = onNewPlayerJoined;
             api.onRemoteFirstSync = onRemoteFirstSync;
             api.onPlayerLeaved = onPlayerLeaved;
+            api.onPlayerLeavedByIndex = onPlayerLeavedByIndex;
             api.onBroadcast = onBroadcast;
+            api.onRepairLostPlayer = onRepairLostPlayer;
         }
 
         public Dictionary<string, RemotePlayerRepo> getRemoteRepos() {
@@ -54,11 +56,17 @@ namespace RFNEet {
         public void connect(Action<LocalPlayerRepo> handshakeCb) {
             api.connect((meid, list) => {
                 connected = true;
+                initCommRepo();
                 localRepo = new LocalPlayerRepo(meid, api);
                 createRemoteList(meid, list);
                 handshakeCb(localRepo);
-                initCommRepo();
+                InvokeRepeating("routineCheckPlayerList", 7, 7);
             });
+        }
+
+        void routineCheckPlayerList() {
+            PlayerListChecker pc = new PlayerListChecker(new List<string>(remoteRepos.Keys));
+            api.checkPlayerList(pc.clac().reslut);
         }
 
         private void createRemoteList(string meId, List<string> ids) {
@@ -93,15 +101,27 @@ namespace RFNEet {
             return rpr;
         }
 
+        /*some player leaved*/
         private void onPlayerLeaved(string sid, string handoverId) {
             RemotePlayerRepo rpr = remoteRepos[sid];
-            if (handoverId.Equals(api.meId)) {
-                localRepo.addAll(rpr, hanlder.handoverToMe);
-            } else {
-                RemotePlayerRepo orpr = remoteRepos[handoverId];
-                orpr.addAll(rpr, hanlder.handoverToOther);
+            if (handoverId != null && handoverId.Length > 0) {
+                if (handoverId.Equals(api.meId)) {
+                    localRepo.addAll(rpr, hanlder.handoverToMe);
+                } else {
+                    RemotePlayerRepo orpr = remoteRepos[handoverId];
+                    orpr.addAll(rpr, hanlder.handoverToOther);
+                }
             }
+            rpr.destoryAll();
             transferCreatorForCommObjects(sid, handoverId);
+            remoteRepos.Remove(sid);
+        }
+
+        private void onPlayerLeavedByIndex(string sidIndex) {
+            PlayerListChecker pc = new PlayerListChecker(new List<string>(remoteRepos.Keys));
+            string sid = pc.clac().reslutMap[sidIndex];
+            RemotePlayerRepo rpr = remoteRepos[sid];
+            rpr.destoryAll();
             remoteRepos.Remove(sid);
         }
 
@@ -116,6 +136,7 @@ namespace RFNEet {
             }
         }
 
+        /*New Player Joined*/
         private bool _localObjectSetuped = false;
         private void onNewPlayerJoined(RemoteBroadcastData rbd) {
             if (rbd.senderId.Equals(api.meId)) {
@@ -135,17 +156,24 @@ namespace RFNEet {
                 yield return new WaitForSeconds(0.5f);
                 Debug.Log("wait for onSelfInRoom _localObjectSetuped=" + _localObjectSetuped);
             }
-            Debug.Log("addRemoteRepoDependsSelfInRoom=" + rbd.senderId+" tellerids="+rbd.tellerIds);
+            Debug.Log("addRemoteRepoDependsSelfInRoom=" + rbd.senderId + " tellerids=" + rbd.tellerIds);
             RemotePlayerRepo rpr = addRemoteRepo(rbd.senderId);
             bool hasCommData = rbd.tellerIds != null && rbd.tellerIds.Contains(api.meId);
             tellNewPlayerMyInfo(rpr, hasCommData);
         }
 
-        private void tellNewPlayerMyInfo(RemotePlayerRepo rpr,bool hasCommData) {
+        private void tellNewPlayerMyInfo(RemotePlayerRepo rpr, bool hasCommData) {
             object co = hanlder.getCurrentInfoFunc(localRepo, hasCommData);
             rpr.sendToInbox(co);
         }
 
+        private void onRepairLostPlayer(string lostPis) {
+            RemotePlayerRepo rpr = addRemoteRepo(lostPis);
+            object co = hanlder.getCurrentInfoFunc(localRepo, false);
+            rpr.sendToInbox(co);
+        }
+
+        /* old player tell self it`s information */
         private void onRemoteFirstSync(string sid, AllSyncDataResp asdr) {
             RemotePlayerRepo rpr = remoteRepos[sid];
             CommRemoteRepo crr = getCommRemoteRepo();
@@ -160,6 +188,7 @@ namespace RFNEet {
             rpr.handshake();
         }
 
+        /*server broadcast*/
         private void onBroadcast(RemoteBroadcastData rbd) {
             if (rbd.senderId != api.meId) {
                 updateObjectByBroadcast(rbd);

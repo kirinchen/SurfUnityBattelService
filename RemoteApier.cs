@@ -11,6 +11,7 @@ namespace RFNEet {
         private static readonly string KEY_SESSION_ID = "sessionId";
         private static readonly string KEY_HANDOVER_ID = "handoverId";
         private static readonly string KEY_SENDER_ID = "senderId";
+        private static readonly string KEY_SYSTEM = "system";
         public static readonly string KEY_TYPE = "type";
         public static readonly string KEY_TYPE_NEW_PLAYER_JOINED = "NewPlayerJoined";
         public static readonly string KEY_TYPE_GENERAL = "General";
@@ -27,6 +28,8 @@ namespace RFNEet {
         internal Action<RemoteBroadcastData> onNewPlayerJoined;
         internal Action<string, AllSyncDataResp> onRemoteFirstSync;
         internal Action<string, string> onPlayerLeaved;
+        internal Action<string> onPlayerLeavedByIndex;
+        internal Action<string> onRepairLostPlayer;
         internal Action<ErrorBundle> onErrorCb;
         internal Action<RemoteBroadcastData> onBroadcast;
 
@@ -81,6 +84,24 @@ namespace RFNEet {
                 onRemoteFirstSync(sid, asdr);
             });
 
+            sc.Subscribe("/message/rooms/" + roomId + "/player/" + meId + "/sysinbox", (message) => {
+                Debug.Log("subscribeSysinbox=" + message);
+                SysInboxDto sdto = JsonConvert.DeserializeObject<SysInboxDto>(message);
+                Debug.Log("sdto type="+ sdto.type);
+                if (sdto.type == SysInboxDto.Type.SurplusPlayerList) {
+                    foreach (string lsid in sdto.surplusList) {
+                        onPlayerLeavedByIndex(lsid);
+                    }
+                } else if (sdto.type == SysInboxDto.Type.LostPlayerList) {
+                    onRepairLostPlayer(sdto.lostPlayerId);
+                }
+            });
+
+        }
+
+        internal void checkPlayerList(List<string> ps) {
+            string path = "/app/" + roomId + "/checklist/" ;
+            send(path,ps);
         }
 
         private void parseHandshake(string msg) {
