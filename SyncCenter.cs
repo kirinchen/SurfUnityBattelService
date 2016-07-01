@@ -207,6 +207,10 @@ namespace RFNEet {
 
         }
 
+        public void close() {
+            api.close();
+        }
+
         void OnDestroy() {
             api.close();
         }
