@@ -60,13 +60,8 @@ namespace RFNEet {
                 localRepo = new LocalPlayerRepo(meid, api);
                 createRemoteList(meid, list);
                 handshakeCb(localRepo);
-                InvokeRepeating("routineCheckPlayerList", 7, 7);
-            });
-        }
 
-        void routineCheckPlayerList() {
-            PlayerListChecker pc = new PlayerListChecker(new List<string>(remoteRepos.Keys));
-            api.checkPlayerList(pc.clac().reslut);
+            });
         }
 
         private void createRemoteList(string meId, List<string> ids) {
@@ -137,11 +132,12 @@ namespace RFNEet {
         }
 
         /*New Player Joined*/
-        private bool _localObjectSetuped = false;
+        private bool localObjectInjected = false;
         private void onNewPlayerJoined(RemoteBroadcastData rbd) {
             if (rbd.senderId.Equals(api.meId)) {
                 Action inRoomToken = () => {
-                    _localObjectSetuped = true;
+                    localObjectInjected = true;
+                    InvokeRepeating("routineCheckPlayerList", 7, 7);
                 };
                 hanlder.onSelfInRoom(localRepo, inRoomToken);
             } else {
@@ -151,10 +147,15 @@ namespace RFNEet {
             }
         }
 
+        void routineCheckPlayerList() {
+            PlayerListChecker pc = new PlayerListChecker(new List<string>(remoteRepos.Keys));
+            api.checkPlayerList(pc.clac().reslut);
+        }
+
         private IEnumerator addRemoteRepoDependsSelfInRoom(RemoteBroadcastData rbd) {
-            while (!_localObjectSetuped) {
+            while (!localObjectInjected) {
                 yield return new WaitForSeconds(0.5f);
-                Debug.Log("wait for onSelfInRoom _localObjectSetuped=" + _localObjectSetuped);
+                Debug.Log("wait for onSelfInRoom _localObjectSetuped=" + localObjectInjected);
             }
             Debug.Log("addRemoteRepoDependsSelfInRoom=" + rbd.senderId + " tellerids=" + rbd.tellerIds);
             RemotePlayerRepo rpr = addRemoteRepo(rbd.senderId);

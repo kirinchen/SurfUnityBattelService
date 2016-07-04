@@ -6,10 +6,14 @@ namespace RFNEet {
     public abstract class RemoteObject : SyncObject {
 
         internal void update(RemoteData s) {
-            if (s.getSysTag() == RemoteData.SysCmd.NONE) {
-                onRemoteUpdate(s);
-            } else if (s.getSysTag() == RemoteData.SysCmd.DELETED) {
-                destoryMe(true,s);
+            try {
+                if (s.getSysTag() == RemoteData.SysCmd.NONE) {
+                    onRemoteUpdate(s);
+                } else if (s.getSysTag() == RemoteData.SysCmd.DELETED) {
+                    destoryMe(true, s);
+                }
+            } catch (Exception e) {
+                Debug.LogWarning(e);
             }
         }
 
