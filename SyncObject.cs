@@ -40,7 +40,7 @@ namespace RFNEet {
 
         internal abstract void onRemoved(RemoteData rd);
 
-        internal void destoryMe(bool isCallRemoveMe = false,RemoteData rd = null) {
+        internal void destoryMe(bool isCallRemoveMe = false, RemoteData rd = null) {
             if (!_destoryedMe) {
                 _destoryedMe = true;
                 onRemoved(rd);
@@ -51,7 +51,11 @@ namespace RFNEet {
         }
 
         void OnDestroy() {
-            postRemoveSelf();
+            try {
+                postRemoveSelf();
+            } catch (Exception e) {
+                Debug.LogException(e);
+            }
         }
 
         public void postRemoveSelf(object target = null) {
