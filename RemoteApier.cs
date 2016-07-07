@@ -87,7 +87,7 @@ namespace RFNEet {
             sc.Subscribe("/message/rooms/" + roomId + "/player/" + meId + "/sysinbox", (message) => {
                 Debug.Log("subscribeSysinbox=" + message);
                 SysInboxDto sdto = JsonConvert.DeserializeObject<SysInboxDto>(message);
-                Debug.Log("sdto type="+ sdto.type);
+                Debug.Log("sdto type=" + sdto.type);
                 if (sdto.type == SysInboxDto.Type.SurplusPlayerList) {
                     foreach (string lsid in sdto.surplusList) {
                         onPlayerLeavedByIndex(lsid);
@@ -100,8 +100,8 @@ namespace RFNEet {
         }
 
         internal void checkPlayerList(List<string> ps) {
-            string path = "/app/" + roomId + "/checklist/" ;
-            send(path,ps);
+            string path = "/app/" + roomId + "/checklist/";
+            send(path, ps);
         }
 
         private void parseHandshake(string msg) {
@@ -136,6 +136,10 @@ namespace RFNEet {
             });
         }
 
+        internal void unSubscribeShooted(string pid) {
+            sc.unSubscribe("/message/rooms/" + roomId + "/player/" + pid + "/shooted");
+        }
+
         public void sendToInbox(string sendTo, object o) {
             string path = "/app/" + roomId + "/send/" + sendTo;
             send(path, o);
@@ -167,8 +171,8 @@ namespace RFNEet {
             send(path, o);
         }
 
-        internal void shootWithPid(object o,string pid) {
-            string path = "/app/" + roomId + "/shoot/"+ pid;
+        internal void shootWithPid(object o, string pid) {
+            string path = "/app/" + roomId + "/shoot/" + pid;
             send(path, o);
         }
 

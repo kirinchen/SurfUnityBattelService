@@ -156,6 +156,10 @@ namespace UnityStomp {
         public void setOnError(Action<string> errorCb) {
             onErrorCb = errorCb;
         }
+
+        public void unSubscribe(string destination) {
+            throw new NotImplementedException();
+        }
     }
 }
 

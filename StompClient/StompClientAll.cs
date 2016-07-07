@@ -81,23 +81,35 @@ namespace UnityStomp {
         }
 
 
-
+        private Dictionary<string, string> subscribeIdMap = new Dictionary<string, string>();
 
         //Subscribe...
-        public void Subscribe(string destination) {
+        private void Subscribe(string destination) {
+            string sid = "sub-" + subNo;
             var subscribeString = StompString("SUBSCRIBE", new Dictionary<string, string>()                     {
-                {"id", "sub-" + subNo},
+                {"id", sid},
                 {"destination", destination}
             });
-
+            subscribeIdMap.Add(destination,sid);
             websocket.Send(subscribeString);
             subNo++;
+        }
+
+        public void unSubscribe(string destination) {
+            string sid = subscribeIdMap[destination];
+            subscribeIdMap.Remove(destination);
+            var subscribeString = StompString("UNSUBSCRIBE", new Dictionary<string, string>()                     {
+                {"id", sid}
+            });
+            websocket.Send(subscribeString);
+            actionMap.Remove(destination);
         }
 
         public void Subscribe(string destination, OnMessageListener act) {
             actionMap.Add(destination, act);
             this.Subscribe(destination);
         }
+
 
 
         //Send Message

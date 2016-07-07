@@ -53,6 +53,7 @@ namespace RFNEet {
                 ro.destoryMe();
             }
             objectMap.Clear();
+            api.unSubscribeShooted(pid);
         }
 
         internal void addAll(RemotePlayerRepo rpr, Func<RemoteObject, bool> cf) {

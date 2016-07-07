@@ -112,6 +112,23 @@ namespace RFNEet {
             remoteRepos.Remove(sid);
         }
 
+        /*void Update() {
+            if (Input.GetKeyDown(KeyCode.D)) {
+                List<string> ids = new List<string>();
+                foreach (string sid in remoteRepos.Keys) {
+                    if (!CommRemoteRepo.COMM_PID.Equals(sid)) {
+                        RemotePlayerRepo rpr = remoteRepos[sid];
+                        rpr.destoryAll();
+                        ids.Add(sid);
+                    }
+                    foreach (string id in ids) {
+                        remoteRepos.Remove(id);
+                    }
+                }
+
+            }
+        }*/
+
         private void onPlayerLeavedByIndex(string sidIndex) {
             PlayerListChecker pc = new PlayerListChecker(new List<string>(remoteRepos.Keys));
             string sid = pc.clac().reslutMap[sidIndex];
@@ -137,7 +154,7 @@ namespace RFNEet {
             if (rbd.senderId.Equals(api.meId)) {
                 Action inRoomToken = () => {
                     localObjectInjected = true;
-                    InvokeRepeating("routineCheckPlayerList", 7, 7);
+                    InvokeRepeating("routineCheckPlayerList", 8, 8);
                 };
                 hanlder.onSelfInRoom(localRepo, inRoomToken);
             } else {
@@ -148,6 +165,7 @@ namespace RFNEet {
         }
 
         void routineCheckPlayerList() {
+
             PlayerListChecker pc = new PlayerListChecker(new List<string>(remoteRepos.Keys));
             api.checkPlayerList(pc.clac().reslut);
         }
@@ -169,14 +187,14 @@ namespace RFNEet {
         }
 
         private void onRepairLostPlayer(string lostPis) {
-            RemotePlayerRepo rpr = addRemoteRepo(lostPis);
+            RemotePlayerRepo rpr = remoteRepos.ContainsKey(lostPis) ? remoteRepos[lostPis] : addRemoteRepo(lostPis);
             object co = hanlder.getCurrentInfoFunc(localRepo, false);
             rpr.sendToInbox(co);
         }
 
         /* old player tell self it`s information */
         private void onRemoteFirstSync(string sid, AllSyncDataResp asdr) {
-            RemotePlayerRepo rpr = remoteRepos[sid];
+            RemotePlayerRepo rpr = remoteRepos.ContainsKey(sid) ? remoteRepos[sid] : addRemoteRepo(sid);
             CommRemoteRepo crr = getCommRemoteRepo();
             AllSyncData asd = asdr.toAllSyncData();
             foreach (RemoteData rd in asd.objectList) {

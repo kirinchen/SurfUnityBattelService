@@ -12,6 +12,8 @@ namespace UnityStomp {
 
         void Subscribe(string destination, OnMessageListener act);
 
+        void unSubscribe(string destination);
+
         void SendMessage(string destination, string message);
 
         void CloseWebSocket();
