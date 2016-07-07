@@ -67,7 +67,11 @@ namespace RFNEet {
                 if (KEY_TYPE_NEW_PLAYER_JOINED.Equals(d.type)) {
                     onNewPlayerJoined(d);
                 } else if (KEY_TYPE_GENERAL.Equals(d.type)) {
-                    onBroadcast(d);
+                    try {
+                        onBroadcast(d);
+                    } catch (Exception e) {
+                        Debug.LogException(e);
+                    }
                 }
             });
             sc.Subscribe("/message/rooms/" + roomId + "/player/leave", (message) => {
