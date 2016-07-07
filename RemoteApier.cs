@@ -25,15 +25,10 @@ namespace RFNEet {
         internal float lastSyncServerTime;
         internal float lastSyncLocalTime;
         private Action<string, List<string>> handshakeCb;
-        internal Action<RemoteBroadcastData> onNewPlayerJoined;
-        internal Action<string, AllSyncDataResp> onRemoteFirstSync;
-        internal Action<string, string> onPlayerLeaved;
-        internal Action<string> onPlayerLeavedByIndex;
-        internal Action<string> onRepairLostPlayer;
-        internal Action<ErrorBundle> onErrorCb;
-        internal Action<RemoteBroadcastData> onBroadcast;
+        private RemoteApierHandler handler;
 
-        public RemoteApier(string url, string roomId) {
+        public RemoteApier(string url, string roomId, RemoteApierHandler handler) {
+            this.handler = handler;
             sc = new StompClientAll(url);
             sc.setOnError((s) => {
                 throwErrorBundle(ErrorBundle.Type.SeverError, s);
@@ -50,7 +45,7 @@ namespace RFNEet {
         private void throwErrorBundle(ErrorBundle.Type t, string msg) {
             ErrorBundle eb = new ErrorBundle(t);
             eb.message = msg;
-            onErrorCb(eb);
+            handler.onErrorCb(eb);
         }
 
         private void onConnected(object o) {
@@ -65,10 +60,10 @@ namespace RFNEet {
                 RemoteBroadcastData d = JsonConvert.DeserializeObject<RemoteBroadcastData>(message);
                 d.setSource(message);
                 if (KEY_TYPE_NEW_PLAYER_JOINED.Equals(d.type)) {
-                    onNewPlayerJoined(d);
+                    handler.onNewPlayerJoined(d);
                 } else if (KEY_TYPE_GENERAL.Equals(d.type)) {
                     try {
-                        onBroadcast(d);
+                        handler.onBroadcast(d);
                     } catch (Exception e) {
                         Debug.LogException(e);
                     }
@@ -78,14 +73,20 @@ namespace RFNEet {
                 Dictionary<string, string> d = JsonConvert.DeserializeObject<Dictionary<string, string>>(message);
                 string sid = d[KEY_SESSION_ID];
                 string hid = d[KEY_HANDOVER_ID];
-                onPlayerLeaved(sid, hid);
+                handler.onPlayerLeaved(sid, hid);
             });
 
             sc.Subscribe("/message/rooms/" + roomId + "/player/" + meId + "/inbox", (message) => {
                 Debug.Log("subscribeInbox=" + message);
-                AllSyncDataResp asdr = JsonConvert.DeserializeObject<AllSyncDataResp>(message);
-                string sid = asdr.senderId;
-                onRemoteFirstSync(sid, asdr);
+                InboxData id = JsonConvert.DeserializeObject<InboxData>(message);
+                if (id.type == InboxData.Type.AllData) {
+                    AllSyncDataResp asdr = JsonConvert.DeserializeObject<AllSyncDataResp>(message);
+                    string sid = asdr.senderId;
+                    handler.onRemoteFirstSync(sid, asdr);
+                } else if (id.type == InboxData.Type.MissObject){
+                    InboxMissData imd = JsonConvert.DeserializeObject<InboxMissData>(message);
+                    handler.repairMissObject(imd.missWho,imd.moid);
+                }
             });
 
             sc.Subscribe("/message/rooms/" + roomId + "/player/" + meId + "/sysinbox", (message) => {
@@ -94,10 +95,10 @@ namespace RFNEet {
                 Debug.Log("sdto type=" + sdto.type);
                 if (sdto.type == SysInboxDto.Type.SurplusPlayerList) {
                     foreach (string lsid in sdto.surplusList) {
-                        onPlayerLeavedByIndex(lsid);
+                        handler.onPlayerLeavedByIndex(lsid);
                     }
                 } else if (sdto.type == SysInboxDto.Type.LostPlayerList) {
-                    onRepairLostPlayer(sdto.lostPlayerId);
+                    handler.onRepairLostPlayer(sdto.lostPlayerId);
                 }
             });
 
@@ -157,11 +158,7 @@ namespace RFNEet {
         internal void close() {
             sc.CloseWebSocket();
             handshakeCb = null;
-            onNewPlayerJoined = null;
-            onRemoteFirstSync = null;
-            onPlayerLeaved = null;
-            onErrorCb = null;
-            onBroadcast = null;
+            handler = null;
         }
 
         public static object parse(string msg, string key) {

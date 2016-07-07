@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System;
@@ -21,9 +22,17 @@ namespace RFNEet {
 
             if (objectMap.ContainsKey(s.oid)) {
                 objectMap[s.oid].update(s);
-            } else if(s.getSysTag() == RemoteData.SysCmd.NEW_OBJECT) {
+            } else if (s.getSysTag() == RemoteData.SysCmd.NEW_OBJECT) {
                 createNewObject(s);
+            } else {
+                handleMissObject(s);
             }
+        }
+
+        private void handleMissObject(RemoteData s) {
+            string missOid = s.oid;
+            InboxMissData imd = new InboxMissData(missOid, api.meId);
+            api.sendToInbox(s.pid, imd);
         }
 
         internal void createNewObject(RemoteData s) {
@@ -47,13 +56,15 @@ namespace RFNEet {
             api.sendToInbox(pid, o);
         }
 
-        internal void destoryAll() {
+        internal void destoryAll(bool unSubscribe = true) {
             foreach (string k in objectMap.Keys) {
                 RemoteObject ro = objectMap[k];
                 ro.destoryMe();
             }
             objectMap.Clear();
-            api.unSubscribeShooted(pid);
+            if (unSubscribe) {
+                api.unSubscribeShooted(pid);
+            }
         }
 
         internal void addAll(RemotePlayerRepo rpr, Func<RemoteObject, bool> cf) {

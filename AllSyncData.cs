@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace RFNEet {
-    public class AllSyncData {
+    public class AllSyncData : InboxData {
 
         public List<RemoteData> objectList = new List<RemoteData>();
         public List<RemoteData> commList = new List<RemoteData>();
@@ -12,7 +12,7 @@ namespace RFNEet {
 
     }
 
-    internal class AllSyncDataResp : InboxData {
+    public class AllSyncDataResp : InboxData {
         
         public List<object> objectList = new List<object>();
         public List<object> commList = new List<object>();
