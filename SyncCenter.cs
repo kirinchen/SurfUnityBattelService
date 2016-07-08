@@ -17,7 +17,6 @@ namespace RFNEet {
         public void init(string url, string roomId, SyncHandler sh) {
             hanlder = sh;
             api = new RemoteApier(url, roomId, this);
-
         }
 
         public Dictionary<string, RemotePlayerRepo> getRemoteRepos() {
@@ -61,16 +60,12 @@ namespace RFNEet {
         }
 
         private void createRemoteList(string meId, List<string> ids) {
-            bool hasRemoteRepo = false;
             foreach (string id in ids) {
                 if (!id.Equals(meId)) {
                     addRemoteRepo(id);
-                    hasRemoteRepo = true;
                 }
             }
-            if (hasRemoteRepo) {
-                StartCoroutine(waitSomeRemoteHandShakeThanSend());
-            }
+            StartCoroutine(waitSomeRemoteHandShakeThanSend());
         }
 
         private IEnumerator waitSomeRemoteHandShakeThanSend() {
@@ -109,7 +104,7 @@ namespace RFNEet {
         }
 
         /*void Update() {
-            if (Input.GetKeyDown(KeyCode.D)) {
+            if (Input.GetKeyDown(KeyCode.L)) {
                 List<string> ids = new List<string>();
                 foreach (string sid in remoteRepos.Keys) {
                     if (!CommRemoteRepo.COMM_PID.Equals(sid)) {
