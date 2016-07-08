@@ -34,7 +34,6 @@ namespace RFNEet {
         internal override void setupNewObject(RemoteData s, RemoteObject ro) {
             CommRemoteObject cro = (CommRemoteObject)ro;
             cro.creator = s.sid;
-            Debug.Log("setupNewObject  cro.creator : "+ cro.creator+" sid="+ s.sid);
         }
 
 
