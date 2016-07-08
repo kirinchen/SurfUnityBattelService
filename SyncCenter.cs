@@ -71,11 +71,12 @@ namespace RFNEet {
         private IEnumerator waitSomeRemoteHandShakeThanSend() {
             List<string> keys = new List<string>(remoteRepos.Keys);
             foreach (string key in keys) {
-                RemotePlayerRepo rpr = remoteRepos[key];
-                int waitTimes = 0;
-                while (!rpr.handshaked && waitTimes < 5) {
-                    yield return new WaitForSeconds(0.35f);
-                    waitTimes++;
+                if (!key.Equals(CommRemoteRepo.COMM_PID)) {
+                    RemotePlayerRepo rpr = remoteRepos[key];
+                    float wAt = Time.time;
+                    while (!rpr.handshaked && (Time.time - wAt) < 5f) {
+                        yield return new WaitForSeconds(0.35f);
+                    }
                 }
             }
             hanlder.onAllRemotePlayerReadyed(localRepo);
