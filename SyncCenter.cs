@@ -146,7 +146,8 @@ namespace RFNEet {
             if (rbd.senderId.Equals(api.meId)) {
                 Action inRoomToken = () => {
                     localObjectInjected = true;
-                    InvokeRepeating("routineCheckPlayerList", 8, 8);
+                    InvokeRepeating("routineCheckPlayerList", 9, 9);
+                    //InvokeRepeating("routineCheckServerTime", 11, 11);
                 };
                 hanlder.onSelfInRoom(localRepo, inRoomToken);
             } else {
@@ -156,8 +157,12 @@ namespace RFNEet {
             }
         }
 
-        void routineCheckPlayerList() {
+        //TODO
+        void routineCheckServerTime() {
+            api.syncTime();
+        }
 
+        void routineCheckPlayerList() {
             PlayerListChecker pc = new PlayerListChecker(new List<string>(remoteRepos.Keys));
             api.checkPlayerList(pc.clac().reslut);
         }

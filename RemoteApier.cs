@@ -120,6 +120,13 @@ namespace RFNEet {
             }
         }
 
+        public void syncTime() {
+            sc.Subscribe("/app/" + roomId + "/ntp/" + Time.time, (message) => {
+                SyncTimeDto std = JsonConvert.DeserializeObject<SyncTimeDto>(message);
+                setupSyncTime(std.playedTime, std.timeStamp);
+            });
+        }
+
         private void setupSyncTime(long playedTime, string stamp) {
             float beforeLT = float.Parse(stamp);
             lastSyncLocalTime = Time.time;
