@@ -146,8 +146,8 @@ namespace RFNEet {
             if (rbd.senderId.Equals(api.meId)) {
                 Action inRoomToken = () => {
                     localObjectInjected = true;
-                    InvokeRepeating("routineCheckPlayerList", 9, 9);
-                    //InvokeRepeating("routineCheckServerTime", 11, 11);
+                    InvokeRepeating("routineCheckPlayerList", 11, 11);
+                    InvokeRepeating("routineCheckServerTime", 17, 17);
                 };
                 hanlder.onSelfInRoom(localRepo, inRoomToken);
             } else {
