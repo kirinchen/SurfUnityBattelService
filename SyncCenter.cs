@@ -8,15 +8,21 @@ namespace RFNEet {
         internal LocalPlayerRepo localRepo {
             get; private set;
         }
-        private Dictionary<string, RemotePlayerRepo> remoteRepos = new Dictionary<string, RemotePlayerRepo>();
-        private RemoteApier api;
+        internal Dictionary<string, RemotePlayerRepo> remoteRepos = new Dictionary<string, RemotePlayerRepo>();
+        internal RemoteApier api {
+            get;private set;
+        }
         private SyncHandler hanlder;
         private bool connected = false;
         private Action<ErrorBundle> errorCb;
+        public QueryUtils queryUitls {
+            get;private set;
+        }
 
         public void init(string url, string roomId, SyncHandler sh) {
             hanlder = sh;
             api = new RemoteApier(url, roomId, this);
+            queryUitls = new QueryUtils(this);
         }
 
         public Dictionary<string, RemotePlayerRepo> getRemoteRepos() {
