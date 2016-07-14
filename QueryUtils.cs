@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 namespace RFNEet {
     public class QueryUtils {
@@ -27,5 +28,24 @@ namespace RFNEet {
             return firstSortPid().Equals(sc.api.meId);
         }
 
+        public SyncObject findObject(string pid,string oid) {
+            if (sc.api.meId.Equals(pid)) {
+                if (sc.localRepo.objectMap.ContainsKey(oid)) {
+                    return sc.localRepo.objectMap[oid];
+                } else {
+                    return null;
+                }
+            } else if (sc.remoteRepos.ContainsKey(pid)) {
+                RemotePlayerRepo rpr = sc.remoteRepos[pid];
+                Dictionary<string, RemoteObject> m = rpr.getMap();
+                if (m.ContainsKey(oid)) {
+                    return m[oid];
+                } else {
+                    return null;
+                }
+            } else {
+                return null;
+            }
+        }
     }
 }
