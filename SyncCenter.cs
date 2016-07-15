@@ -12,6 +12,7 @@ namespace RFNEet {
         internal RemoteApier api {
             get;private set;
         }
+        private int commDataTellerNum = 3;
         private SyncHandler hanlder;
         private bool connected = false;
         private Action<ErrorBundle> errorCb;
@@ -97,17 +98,20 @@ namespace RFNEet {
         /*some player leaved*/
         public void onPlayerLeaved(string sid, string handoverId) {
             RemotePlayerRepo rpr = remoteRepos[sid];
-            if (handoverId != null && handoverId.Length > 0) {
-                if (handoverId.Equals(api.meId)) {
-                    localRepo.addAll(rpr, hanlder.handoverToMe);
-                } else {
-                    RemotePlayerRepo orpr = remoteRepos[handoverId];
-                    orpr.addAll(rpr, hanlder.handoverToOther);
-                }
-            }
+            handleLeavedObjects(rpr);
             rpr.destoryAll();
             transferCreatorForCommObjects(sid, handoverId);
             remoteRepos.Remove(sid);
+        }
+
+        private void handleLeavedObjects(RemotePlayerRepo rpr) {
+            string firstIds = queryUitls.sortPids()[0];
+            if (firstIds.Equals(api.meId)) {
+                localRepo.addAll(rpr, hanlder.handoverToMe);
+            } else {
+                RemotePlayerRepo orpr = remoteRepos[firstIds];
+                orpr.addAll(rpr, hanlder.handoverToOther);
+            }
         }
 
         /*void Update() {
@@ -180,7 +184,7 @@ namespace RFNEet {
             }
             Debug.Log("addRemoteRepoDependsSelfInRoom=" + rbd.senderId + " tellerids=" + rbd.tellerIds);
             RemotePlayerRepo rpr = addRemoteRepo(rbd.senderId);
-            bool hasCommData = rbd.tellerIds != null && rbd.tellerIds.Contains(api.meId);
+            bool hasCommData = queryUitls.isCommDataTeller(commDataTellerNum);
             tellNewPlayerMyInfo(rpr, hasCommData);
         }
 

@@ -10,12 +10,23 @@ namespace RFNEet {
             this.sc = sc;
         }
 
-        public string firstSortPid() {
+        public List<string> sortPids() {
             List<string> l = new List<string>(sc.remoteRepos.Keys);
             l.Remove(CommRemoteRepo.COMM_PID);
             l.Add(sc.api.meId);
             l.Sort((a, b) => { return a.GetHashCode().CompareTo(b.GetHashCode()); });
-            return l[0];
+            return l;
+        }
+
+        public bool isCommDataTeller(int count) {
+            List<string> l = sortPids();
+            count = count > l.Count ? l.Count : count;
+            for (int i = 0; i < count; i++) {
+                if (l[i].Equals(sc.api.meId)) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public int getRealRemoteRepoCount() {
@@ -25,10 +36,10 @@ namespace RFNEet {
         }
 
         public bool isFirstBySelf() {
-            return firstSortPid().Equals(sc.api.meId);
+            return sortPids()[0].Equals(sc.api.meId);
         }
 
-        public SyncObject findObject(string pid,string oid) {
+        public SyncObject findObject(string pid, string oid) {
             if (sc.api.meId.Equals(pid)) {
                 if (sc.localRepo.objectMap.ContainsKey(oid)) {
                     return sc.localRepo.objectMap[oid];
