@@ -24,7 +24,7 @@ namespace RFNEet {
         }
 
         public CommRemoteObject create(CommRemoteObject cro) {
-            cro.creator = api.meId;
+            cro.setCreator(api.meId);
             string oid = UidUtils.getRandomString(7);
             inject(oid, cro);
             cro.postInitDto();
@@ -33,7 +33,7 @@ namespace RFNEet {
 
         internal override void setupNewObject(RemoteData s, RemoteObject ro) {
             CommRemoteObject cro = (CommRemoteObject)ro;
-            cro.creator = s.sid;
+            cro.setCreator(s.sid);
         }
 
 

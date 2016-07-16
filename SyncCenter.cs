@@ -10,14 +10,14 @@ namespace RFNEet {
         }
         internal Dictionary<string, RemotePlayerRepo> remoteRepos = new Dictionary<string, RemotePlayerRepo>();
         internal RemoteApier api {
-            get;private set;
+            get; private set;
         }
         private int commDataTellerNum = 3;
         private SyncHandler hanlder;
         private bool connected = false;
         private Action<ErrorBundle> errorCb;
         public QueryUtils queryUitls {
-            get;private set;
+            get; private set;
         }
 
         public void init(string url, string roomId, SyncHandler sh) {
@@ -97,14 +97,24 @@ namespace RFNEet {
 
         /*some player leaved*/
         public void onPlayerLeaved(string sid, string handoverId) {
+            removeRemotePlayerRepo(sid);
+        }
+
+        public void onPlayerLeavedByIndex(string sidIndex) {
+            PlayerListChecker pc = new PlayerListChecker(new List<string>(remoteRepos.Keys));
+            string sid = pc.clac().reslutMap[sidIndex];
+            removeRemotePlayerRepo(sid);
+        }
+
+        private void removeRemotePlayerRepo(string sid) {
             RemotePlayerRepo rpr = remoteRepos[sid];
-            handleLeavedObjects(rpr);
+            string firstId = handleLeavedObjects(rpr);
             rpr.destoryAll();
-            transferCreatorForCommObjects(sid, handoverId);
+            transferCreatorForCommObjects(sid, firstId);
             remoteRepos.Remove(sid);
         }
 
-        private void handleLeavedObjects(RemotePlayerRepo rpr) {
+        private string handleLeavedObjects(RemotePlayerRepo rpr) {
             string firstIds = queryUitls.sortPids()[0];
             if (firstIds.Equals(api.meId)) {
                 localRepo.addAll(rpr, hanlder.handoverToMe);
@@ -112,6 +122,7 @@ namespace RFNEet {
                 RemotePlayerRepo orpr = remoteRepos[firstIds];
                 orpr.addAll(rpr, hanlder.handoverToOther);
             }
+            return firstIds;
         }
 
         /*void Update() {
@@ -131,13 +142,7 @@ namespace RFNEet {
             }
         }*/
 
-        public void onPlayerLeavedByIndex(string sidIndex) {
-            PlayerListChecker pc = new PlayerListChecker(new List<string>(remoteRepos.Keys));
-            string sid = pc.clac().reslutMap[sidIndex];
-            RemotePlayerRepo rpr = remoteRepos[sid];
-            rpr.destoryAll();
-            remoteRepos.Remove(sid);
-        }
+
 
         private void transferCreatorForCommObjects(string sid, string handoverId) {
             Dictionary<string, RemoteObject> m = getCommRemoteRepo().objectMap;
@@ -145,7 +150,7 @@ namespace RFNEet {
             foreach (string k in keys) {
                 CommRemoteObject co = (CommRemoteObject)m[k];
                 if (co.creator.Equals(sid)) {
-                    co.creator = handoverId;
+                    co.setCreator(handoverId);
                 }
             }
         }

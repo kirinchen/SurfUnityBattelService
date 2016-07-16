@@ -4,7 +4,17 @@ using System;
 
 namespace RFNEet {
     public abstract class CommRemoteObject : RemoteObject {
-        internal string creator;
+        internal string creator {
+            get; private set;
+        }
+
+
+        public Action<string, string> onCreatorChnaged = (o, n) => { };
+        internal void setCreator(string nc) {
+            string orgC = creator;
+            creator = nc;
+            onCreatorChnaged(orgC, creator);
+        }
 
         internal void postInitDto() {
             RemoteData rbd = genInitDto();
@@ -15,7 +25,7 @@ namespace RFNEet {
         public void post(RemoteData rbd) {
             rbd.sid = api.meId;
             setup(rbd);
-            api.shootWithPid(rbd,pid);
+            api.shootWithPid(rbd, pid);
         }
 
         public override RemoteData setup(RemoteData rd) {
