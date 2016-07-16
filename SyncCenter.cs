@@ -4,6 +4,9 @@ using System;
 using System.Collections.Generic;
 
 namespace RFNEet {
+
+    public delegate void PlayerLeaved(string leavedId, string handoverId);
+
     public class SyncCenter : MonoBehaviour, RemoteApierHandler {
         internal LocalPlayerRepo localRepo {
             get; private set;
@@ -106,12 +109,14 @@ namespace RFNEet {
             removeRemotePlayerRepo(sid);
         }
 
+        public PlayerLeaved onPlayerLeavedCb = (lid, hid) => { };
         private void removeRemotePlayerRepo(string sid) {
             RemotePlayerRepo rpr = remoteRepos[sid];
             string firstId = handleLeavedObjects(rpr);
             rpr.destoryAll();
             transferCreatorForCommObjects(sid, firstId);
             remoteRepos.Remove(sid);
+            onPlayerLeavedCb(sid, firstId);
         }
 
         private string handleLeavedObjects(RemotePlayerRepo rpr) {
