@@ -120,7 +120,9 @@ namespace RFNEet {
         }
 
         private string handleLeavedObjects(RemotePlayerRepo rpr) {
-            string firstIds = queryUitls.sortPids()[0];
+            List<string> l = new List<string>();
+            l.Add(rpr.pid);
+            string firstIds = queryUitls.sortPids(l)[0];
             if (firstIds.Equals(api.meId)) {
                 localRepo.addAll(rpr, hanlder.handoverToMe);
             } else {
@@ -156,7 +158,7 @@ namespace RFNEet {
                 CommRemoteObject co = (CommRemoteObject)m[k];
                 if (co.creator.Equals(sid)) {
                     co.setCreator(handoverId);
-                }
+                } 
             }
         }
 

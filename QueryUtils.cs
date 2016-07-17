@@ -10,9 +10,14 @@ namespace RFNEet {
             this.sc = sc;
         }
 
-        public List<string> sortPids() {
+        public List<string> sortPids(List<string> skips = null) {
             List<string> l = new List<string>(sc.remoteRepos.Keys);
             l.Remove(CommRemoteRepo.COMM_PID);
+            if (skips != null) {
+                l.RemoveAll((p) => {
+                    return skips.Contains(p);
+                });
+            }
             l.Add(sc.api.meId);
             l.Sort((a, b) => { return a.GetHashCode().CompareTo(b.GetHashCode()); });
             return l;
