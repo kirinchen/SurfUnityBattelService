@@ -83,9 +83,9 @@ namespace RFNEet {
                     AllSyncDataResp asdr = JsonConvert.DeserializeObject<AllSyncDataResp>(message);
                     string sid = asdr.senderId;
                     handler.onRemoteFirstSync(sid, asdr);
-                } else if (id.type == InboxData.Type.MissObject){
+                } else if (id.type == InboxData.Type.MissObject) {
                     InboxMissData imd = JsonConvert.DeserializeObject<InboxMissData>(message);
-                    handler.repairMissObject(imd.missWho,imd.moid);
+                    handler.repairMissObject(imd.missWho, imd.moid);
                 }
             });
 
@@ -101,6 +101,16 @@ namespace RFNEet {
                     handler.onRepairLostPlayer(sdto.lostPlayerId);
                 }
             });
+
+            sc.Subscribe("/message/rooms/" + roomId + "/player/ready", (message) => {
+                Debug.Log("player/ready=" + message);
+                string sid = parse(message, KEY_SESSION_ID).ToString();
+                if (!sid.Equals(meId)) {
+                    handler.onNewPlayerReadyed(sid);
+                }
+            });
+
+            send("/app/" + roomId + "/ready", null);
 
         }
 
@@ -158,7 +168,10 @@ namespace RFNEet {
         }
 
         public void send(string path, object o) {
-            string json = JsonConvert.SerializeObject(o);
+            string json = "";
+            if (o != null) {
+                json = JsonConvert.SerializeObject(o);
+            }
             sc.SendMessage(path, json);
         }
 

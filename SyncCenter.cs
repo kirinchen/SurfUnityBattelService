@@ -158,7 +158,7 @@ namespace RFNEet {
                 CommRemoteObject co = (CommRemoteObject)m[k];
                 if (co.creator.Equals(sid)) {
                     co.setCreator(handoverId);
-                } 
+                }
             }
         }
 
@@ -196,6 +196,10 @@ namespace RFNEet {
             }
             Debug.Log("addRemoteRepoDependsSelfInRoom=" + rbd.senderId + " tellerids=" + rbd.tellerIds);
             RemotePlayerRepo rpr = addRemoteRepo(rbd.senderId);
+        }
+
+        public void onNewPlayerReadyed(string sid) {
+            RemotePlayerRepo rpr = remoteRepos.ContainsKey(sid) ? remoteRepos[sid] : addRemoteRepo(sid);
             bool hasCommData = queryUitls.isCommDataTeller(commDataTellerNum);
             tellNewPlayerMyInfo(rpr, hasCommData);
         }

@@ -11,5 +11,6 @@ namespace RFNEet {
         void  onErrorCb(ErrorBundle error);
         void  onBroadcast(RemoteBroadcastData data);
         void repairMissObject(string missWho, string moid);
+        void onNewPlayerReadyed(string sid);
     }
 }
