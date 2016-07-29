@@ -23,9 +23,9 @@ namespace RFNEet {
             get; private set;
         }
 
-        public void init(string url, string roomId, SyncHandler sh) {
+        public void init(string url, string roomId, SyncHandler sh,bool localDebug=false) {
             hanlder = sh;
-            api = new RemoteApier(url, roomId, this);
+            api = new RemoteApier(url, roomId, this, localDebug);
             queryUitls = new QueryUtils(this);
         }
 

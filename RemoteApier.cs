@@ -27,9 +27,9 @@ namespace RFNEet {
         private Action<string, List<string>> handshakeCb;
         private RemoteApierHandler handler;
 
-        public RemoteApier(string url, string roomId, RemoteApierHandler handler) {
+        public RemoteApier(string url, string roomId, RemoteApierHandler handler, bool localDebug) {
             this.handler = handler;
-            sc = new StompClientAll(url);
+            sc = localDebug ? (StompClient)new StompClientDebug(url) : (StompClient)new StompClientAll(url);
             sc.setOnError((s) => {
                 throwErrorBundle(ErrorBundle.Type.SeverError, s);
             });
@@ -54,6 +54,7 @@ namespace RFNEet {
                 throwErrorBundle(ErrorBundle.Type.Runtime, message);
             });
             sc.Subscribe("/app/" + roomId + "/joinBattle/" + Time.time, (message) => {
+                Debug.Log("joinBattle=" + message);
                 parseHandshake(message);
             });
             sc.Subscribe("/message/rooms/" + roomId + "/broadcast", (message) => {
