@@ -3,6 +3,8 @@ using System.Collections;
 using System;
 
 namespace UnityStomp {
+    public delegate void OnMessageListener(string msg);
+
     public interface StompClient {
         void SetCookie(string name, string value);
 

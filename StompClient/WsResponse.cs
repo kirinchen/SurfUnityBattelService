@@ -3,7 +3,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net;
-using WebSocketSharp;	//https://github.com/sta/websocket-sharp
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
 
