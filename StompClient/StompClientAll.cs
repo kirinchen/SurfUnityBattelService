@@ -56,8 +56,12 @@ namespace UnityStomp {
                 onErrorCb("");
             };
 
+            websocket.OnClosed += (a, b, c) => {
+                onErrorCb(c);
+            };
+
             websocket.Open();
-            
+
         }
 
         private string getKeyByDestination(string d) {
@@ -90,7 +94,7 @@ namespace UnityStomp {
                 {"id", sid},
                 {"destination", destination}
             });
-            subscribeIdMap.Add(destination,sid);
+            subscribeIdMap.Add(destination, sid);
             websocket.Send(subscribeString);
             subNo++;
         }

@@ -54,6 +54,7 @@ namespace RFNEet {
                 throwErrorBundle(ErrorBundle.Type.Runtime, message);
             });
             sc.Subscribe("/app/" + roomId + "/joinBattle/" + Time.time, (message) => {
+                Debug.Log("joinBattle=" + message);
                 parseHandshake(message);
             });
             sc.Subscribe("/message/rooms/" + roomId + "/broadcast", (message) => {
