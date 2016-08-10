@@ -5,7 +5,7 @@ namespace RFNEet {
     public class InboxData {
 
         public enum Type {
-            AllData,MissObject
+            AllData,MissObject,ObjectMsg
         }
 
         public string senderId;

@@ -25,7 +25,7 @@ namespace RFNEet {
 
         public CommRemoteObject create(CommRemoteObject cro) {
             cro.setCreator(api.meId);
-            string oid = UidUtils.getRandomString(7);
+            string oid = UidUtils.getRandomString(SyncCenter.OID_SIZE);
             inject(oid, cro);
             cro.postInitDto();
             return cro;

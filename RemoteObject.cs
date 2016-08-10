@@ -24,6 +24,11 @@ namespace RFNEet {
             api.broadcastUpdate(b);
         }
 
+        public void tellLocalObject(InboxTellObjectData iod) {
+            iod.oid = oid;
+            api.sendToInbox(pid,iod);
+        }
+
         internal override void postRemoveData(object t) {
             RemoteBroadcastData b = null;
             if (t != null && t is RemoteBroadcastData) {

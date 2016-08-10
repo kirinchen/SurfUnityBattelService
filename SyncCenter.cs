@@ -8,6 +8,7 @@ namespace RFNEet {
     public delegate void PlayerLeaved(string leavedId, string handoverId);
 
     public class SyncCenter : MonoBehaviour, RemoteApierHandler {
+        internal static readonly int OID_SIZE = 4;
         internal LocalPlayerRepo localRepo {
             get; private set;
         }
@@ -271,6 +272,8 @@ namespace RFNEet {
             api.close();
         }
 
-
+        public void onRemotePlayTellMyObject(InboxTellObjectData iaod) {
+            localRepo.objectMap[iaod.oid].onRemoteTellSelf(iaod);
+        }
     }
 }

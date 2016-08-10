@@ -87,6 +87,10 @@ namespace RFNEet {
                 } else if (id.type == InboxData.Type.MissObject) {
                     InboxMissData imd = JsonConvert.DeserializeObject<InboxMissData>(message);
                     handler.repairMissObject(imd.missWho, imd.moid);
+                } else if (id.type == InboxData.Type.ObjectMsg) {
+                    InboxTellObjectData iaod = JsonConvert.DeserializeObject<InboxTellObjectData>(message);
+                    iaod.setSource(message);
+                    handler.onRemotePlayTellMyObject(iaod);
                 }
             });
 

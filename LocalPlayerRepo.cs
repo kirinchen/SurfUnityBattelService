@@ -13,14 +13,14 @@ namespace RFNEet {
         }
 
         public LocalObject create(LocalObject cro) {
-            string oid = UidUtils.getRandomString(7);
+            string oid = UidUtils.getRandomString(SyncCenter.OID_SIZE);
             inject(oid, cro);
             cro.postInitDto();
             return cro;
         }
 
         public virtual LocalObject inject(LocalObject o) {
-            string oid = UidUtils.getRandomString(7);
+            string oid = UidUtils.getRandomString(SyncCenter.OID_SIZE);
             return inject(oid, o);
         }
 

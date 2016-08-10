@@ -12,5 +12,6 @@ namespace RFNEet {
         void  onBroadcast(RemoteBroadcastData data);
         void repairMissObject(string missWho, string moid);
         void onNewPlayerReadyed(string sid);
+        void onRemotePlayTellMyObject(InboxTellObjectData iaod);
     }
 }

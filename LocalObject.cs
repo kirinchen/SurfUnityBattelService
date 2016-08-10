@@ -29,5 +29,7 @@ namespace RFNEet {
             post(rd);
         }
 
+        public virtual void onRemoteTellSelf(InboxTellObjectData iaod) {
+        }
     }
 }
