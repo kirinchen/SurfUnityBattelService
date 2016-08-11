@@ -78,7 +78,6 @@ namespace RFNEet {
             });
 
             sc.Subscribe("/message/rooms/" + roomId + "/player/" + meId + "/inbox", (message) => {
-                Debug.Log("subscribeInbox=" + message);
                 InboxData id = JsonConvert.DeserializeObject<InboxData>(message);
                 if (id.type == InboxData.Type.AllData) {
                     AllSyncDataResp asdr = JsonConvert.DeserializeObject<AllSyncDataResp>(message);
