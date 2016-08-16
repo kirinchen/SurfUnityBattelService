@@ -25,6 +25,9 @@ namespace UnityStomp {
         public void SendMessage(string destination, string message) {
         }
 
+        public void SendMessage(string destination, string message, string subscribeDestination, OnMessageListener act) {
+        }
+
         public void SetCookie(string name, string value) {
         }
 

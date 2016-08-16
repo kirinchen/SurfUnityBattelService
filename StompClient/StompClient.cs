@@ -18,6 +18,8 @@ namespace UnityStomp {
 
         void SendMessage(string destination, string message);
 
+        void SendMessage(string destination, string message, string subscribeDestination, OnMessageListener act);
+
         void CloseWebSocket();
 
         string getSessionId();

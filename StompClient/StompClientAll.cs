@@ -89,14 +89,16 @@ namespace UnityStomp {
 
         //Subscribe...
         private void Subscribe(string destination) {
-            string sid = "sub-" + subNo;
-            var subscribeString = StompString("SUBSCRIBE", new Dictionary<string, string>()                     {
+            if (!subscribeIdMap.ContainsKey(destination)) {
+                string sid = "sub-" + subNo;
+                var subscribeString = StompString("SUBSCRIBE", new Dictionary<string, string>()                     {
                 {"id", sid},
                 {"destination", destination}
-            });
-            subscribeIdMap.Add(destination, sid);
-            websocket.Send(subscribeString);
-            subNo++;
+                });
+                subscribeIdMap.Add(destination, sid);
+                websocket.Send(subscribeString);
+                subNo++;
+            }
         }
 
         public void unSubscribe(string destination) {
@@ -110,6 +112,9 @@ namespace UnityStomp {
         }
 
         public void Subscribe(string destination, OnMessageListener act) {
+            if (actionMap.ContainsKey(destination)) {
+                actionMap.Remove(destination);
+            }
             actionMap.Add(destination, act);
             this.Subscribe(destination);
         }
@@ -132,6 +137,11 @@ namespace UnityStomp {
             } catch (Exception e) {
                 Debug.LogWarning(e);
             }
+        }
+
+        public void SendMessage(string destination, string message, string subscribeDestination, OnMessageListener act) {
+            SendMessage(destination, message);
+            Subscribe(subscribeDestination, act);
         }
 
         //Close 
