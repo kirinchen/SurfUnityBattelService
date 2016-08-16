@@ -29,8 +29,12 @@ namespace RFNEet {
         }
 
         public override RemoteData setup(RemoteData rd) {
-            rd.sid = api.meId;
-            return base.setup(rd);
+            try {
+                rd.sid = api.meId;
+                return base.setup(rd);
+            } catch (Exception e) {
+                return rd;
+            }
         }
 
         public abstract RemoteData genInitDto();

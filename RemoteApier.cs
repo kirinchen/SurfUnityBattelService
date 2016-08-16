@@ -31,7 +31,11 @@ namespace RFNEet {
             this.handler = handler;
             sc = localDebug ? (StompClient)new StompClientDebug(url) : (StompClient)new StompClientAll(url);
             sc.setOnError((s) => {
-                throwErrorBundle(ErrorBundle.Type.SeverError, s);
+                try {
+                    throwErrorBundle(ErrorBundle.Type.SeverError, s);
+                } catch (Exception e) {
+                    Debug.Log(e);
+                }
             });
             meId = sc.getSessionId();
             this.roomId = roomId;
@@ -66,7 +70,7 @@ namespace RFNEet {
                     try {
                         handler.onBroadcast(d);
                     } catch (Exception e) {
-                        Debug.LogException(e);
+                        Debug.Log(e);
                     }
                 }
             });
