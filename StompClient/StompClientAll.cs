@@ -146,7 +146,11 @@ namespace UnityStomp {
 
         //Close 
         public void CloseWebSocket() {
-            websocket.Close();
+            try {
+                websocket.Close();
+            } catch (Exception e) {
+                Debug.Log(e);
+            }
         }
 
         public static string StompString(string method, Dictionary<string, string> content) {
