@@ -57,7 +57,6 @@ namespace UnityStomp {
             };
 
             websocket.OnClosed += (a, b, c) => {
-                onErrorCb(c);
             };
 
             websocket.Open();
