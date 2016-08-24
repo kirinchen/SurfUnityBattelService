@@ -15,6 +15,7 @@ namespace UnityStomp {
         public static string acceptVersion = "1.1,1.0";
         public static string heartBeat = "10000,10000";
         private Action<string> onErrorCb = (s) => { };
+        private Action<string> onCloseCb = (s) => { };
         private Dictionary<string, OnMessageListener> actionMap = new Dictionary<string, OnMessageListener>();
         public int subNo;
 
@@ -57,6 +58,7 @@ namespace UnityStomp {
             };
 
             websocket.OnClosed += (a, b, c) => {
+                onCloseCb(c);
             };
 
             websocket.Open();
@@ -146,7 +148,9 @@ namespace UnityStomp {
         //Close 
         public void CloseWebSocket() {
             try {
-                websocket.Close();
+                if (websocket.IsOpen) {
+                    websocket.Close();
+                }
             } catch (Exception e) {
                 Debug.Log(e);
             }
@@ -171,8 +175,9 @@ namespace UnityStomp {
             return sessionId;
         }
 
-        public void setOnError(Action<string> errorCb) {
+        public void setOnErrorAndClose(Action<string> errorCb, Action<string> cCb) {
             onErrorCb = errorCb;
+            onCloseCb = cCb;
         }
     }
 }

@@ -30,13 +30,13 @@ namespace RFNEet {
         public RemoteApier(string url, string roomId, RemoteApierHandler handler, bool localDebug) {
             this.handler = handler;
             sc = localDebug ? (StompClient)new StompClientDebug(url) : (StompClient)new StompClientAll(url);
-            sc.setOnError((s) => {
+            sc.setOnErrorAndClose((s) => {
                 try {
                     throwErrorBundle(ErrorBundle.Type.SeverError, s);
                 } catch (Exception e) {
                     Debug.Log(e);
                 }
-            });
+            }, handler.onConnectClosedCb);
             meId = sc.getSessionId();
             this.roomId = roomId;
         }

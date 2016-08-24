@@ -24,7 +24,7 @@ namespace RFNEet {
             get; private set;
         }
 
-        public void init(string url, string roomId, SyncHandler sh,bool localDebug=false) {
+        public void init(string url, string roomId, SyncHandler sh, bool localDebug = false) {
             hanlder = sh;
             api = new RemoteApier(url, roomId, this, localDebug);
             queryUitls = new QueryUtils(this);
@@ -220,17 +220,21 @@ namespace RFNEet {
 
         /* old player tell self it`s information */
         public void onRemoteFirstSync(string sid, AllSyncDataResp asdr) {
-            RemotePlayerRepo rpr = remoteRepos.ContainsKey(sid) ? remoteRepos[sid] : addRemoteRepo(sid);
-            CommRemoteRepo crr = getCommRemoteRepo();
-            AllSyncData asd = asdr.toAllSyncData();
-            foreach (RemoteData rd in asd.objectList) {
-                rpr.createNewObject(rd);
+            try {
+                RemotePlayerRepo rpr = remoteRepos.ContainsKey(sid) ? remoteRepos[sid] : addRemoteRepo(sid);
+                CommRemoteRepo crr = getCommRemoteRepo();
+                AllSyncData asd = asdr.toAllSyncData();
+                foreach (RemoteData rd in asd.objectList) {
+                    rpr.createNewObject(rd);
+                }
+                foreach (RemoteData rd in asd.commList) {
+                    crr.createNewObject(rd);
+                }
+                hanlder.onRemoteFirstSync(rpr, asd);
+                rpr.handshake();
+            } catch (Exception e) {
+                Debug.Log(e);
             }
-            foreach (RemoteData rd in asd.commList) {
-                crr.createNewObject(rd);
-            }
-            hanlder.onRemoteFirstSync(rpr, asd);
-            rpr.handshake();
         }
 
         /*server broadcast*/
@@ -274,6 +278,10 @@ namespace RFNEet {
 
         public void onRemotePlayTellMyObject(InboxTellObjectData iaod) {
             localRepo.objectMap[iaod.oid].onRemoteTellSelf(iaod);
+        }
+
+        public void onConnectClosedCb(string msg) {
+            hanlder.onConnectedClose(msg);
         }
     }
 }

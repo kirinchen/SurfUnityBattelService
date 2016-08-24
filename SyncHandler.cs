@@ -17,5 +17,7 @@ namespace RFNEet {
         LocalObject handoverToMe(RemoteObject ro);
 
         bool handoverToOther(RemoteObject ro);
+
+        void onConnectedClose(string msg);
     }
 }

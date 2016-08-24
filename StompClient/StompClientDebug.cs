@@ -31,7 +31,7 @@ namespace UnityStomp {
         public void SetCookie(string name, string value) {
         }
 
-        public void setOnError(Action<string> errorCb) {
+        public void setOnErrorAndClose(Action<string> errorCb, Action<string> cCb) {
         }
 
         public void StompConnect(Action<object> openAction) {

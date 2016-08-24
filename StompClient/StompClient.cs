@@ -10,7 +10,7 @@ namespace UnityStomp {
 
         void StompConnect(Action<object> openAction);
 
-        void setOnError(Action<string> errorCb);
+        void setOnErrorAndClose(Action<string> errorCb, Action<string> closedCb);
 
         void Subscribe(string destination, OnMessageListener act);
 
