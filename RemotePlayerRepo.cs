@@ -36,10 +36,10 @@ namespace RFNEet {
         }
 
         internal void createNewObject(RemoteData s) {
-            if (!hasObjectById(s.oid)) {
+            if (!string.IsNullOrEmpty(s.pid) && !string.IsNullOrEmpty(s.oid) && !hasObjectById(s.oid)) {
                 RemoteObject ro = onNewRemoteObjectCreated(this, s);
-                setupNewObject(s, ro);
                 if (ro != null) {
+                    setupNewObject(s, ro);
                     inject(s.oid, ro);
                 }
             }
