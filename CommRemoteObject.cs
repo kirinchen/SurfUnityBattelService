@@ -38,5 +38,9 @@ namespace RFNEet {
         }
 
         public abstract RemoteData genInitDto();
+
+        public bool isSelfCreator() {
+            return api.meId.Equals(creator);
+        }
     }
 }
