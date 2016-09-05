@@ -50,13 +50,13 @@ namespace RFNEet {
             }
         }
 
-        void OnDestroy() {
+        /*void OnDestroy() {
             try {
                 postRemoveSelf();
             } catch (Exception e) {
                 Debug.LogException(e);
             }
-        }
+        }*/
 
         public void postRemoveSelf(object target = null) {
             if (!_destoryedMe) {
