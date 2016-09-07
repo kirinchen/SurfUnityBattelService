@@ -105,9 +105,7 @@ namespace RFNEet {
         }
 
         public void onPlayerLeavedByIndex(string sidIndex) {
-            PlayerListChecker pc = new PlayerListChecker(new List<string>(remoteRepos.Keys));
-            string sid = pc.clac().reslutMap[sidIndex];
-            removeRemotePlayerRepo(sid);
+            removeRemotePlayerRepo(sidIndex);
         }
 
         public PlayerLeaved onPlayerLeavedCb = (lid, hid) => { };
@@ -140,11 +138,11 @@ namespace RFNEet {
                     if (!CommRemoteRepo.COMM_PID.Equals(sid)) {
                         RemotePlayerRepo rpr = remoteRepos[sid];
                         rpr.destoryAll(false);
-                        //ids.Add(sid);
+                        ids.Add(sid);
                     }
-                    //foreach (string id in ids) {
-                    //    remoteRepos.Remove(id);
-                    //}
+                }
+                foreach (string id in ids) {
+                    remoteRepos.Remove(id);
                 }
 
             }
@@ -186,8 +184,9 @@ namespace RFNEet {
         }
 
         void routineCheckPlayerList() {
-            PlayerListChecker pc = new PlayerListChecker(new List<string>(remoteRepos.Keys));
-            api.checkPlayerList(pc.clac().reslut);
+            List<string> l = new List<string>(remoteRepos.Keys);
+            l.Remove(CommRemoteRepo.COMM_PID);
+            api.checkPlayerList(l);
         }
 
         private IEnumerator addRemoteRepoDependsSelfInRoom(RemoteBroadcastData rbd) {

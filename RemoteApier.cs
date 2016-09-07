@@ -123,7 +123,7 @@ namespace RFNEet {
         }
 
         internal void checkPlayerList(List<string> ps) {
-            string path = "/app/" + roomId + "/checklist/";
+            string path = "/app/" + roomId + "/v2/checklist/";
             send(path, ps);
         }
 
