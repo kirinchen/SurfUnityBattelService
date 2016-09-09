@@ -75,10 +75,14 @@ namespace RFNEet {
                 }
             });
             sc.Subscribe("/message/rooms/" + roomId + "/player/leave", (message) => {
-                Dictionary<string, string> d = JsonConvert.DeserializeObject<Dictionary<string, string>>(message);
-                string sid = d[KEY_SESSION_ID];
-                string hid = d[KEY_HANDOVER_ID];
-                handler.onPlayerLeaved(sid, hid);
+                try {
+                    Dictionary<string, string> d = JsonConvert.DeserializeObject<Dictionary<string, string>>(message);
+                    string sid = d[KEY_SESSION_ID];
+                    string hid = d[KEY_HANDOVER_ID];
+                    handler.onPlayerLeaved(sid, hid);
+                } catch (Exception e) {
+                    Debug.Log(e);
+                }
             });
 
             sc.Subscribe("/message/rooms/" + roomId + "/player/" + meId + "/inbox", (message) => {
