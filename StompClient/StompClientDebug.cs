@@ -9,10 +9,11 @@ using System.Text.RegularExpressions;
 namespace UnityStomp {
     public class StompClientDebug : StompClient {
         private static readonly string JOINED_MSG = "{\"information\":{\"gameId\":\"TankIO\",\"playList\":[\"4A9CTaZO\"],\"initCount\":3},\"meId\":\"4A9CTaZO\",\"stamp\":\"1.200768\",\"index\":0,\"playedTime\":112908817,\"success\":true,\"exceptionName\":null}";
+        private static readonly string INTO_ROOM_MSG = "{\"senderId\":\"4A9CTaZO\",\"tellerIds\":[],\"sessionId\":\"4A9CTaZO\",\"type\":\"NewPlayerJoined\"}";
         private string sessionId;
 
         public StompClientDebug(string connectString) {
-            sessionId = UidUtils.getRandomString(8);
+            sessionId = "4A9CTaZO";
         }
 
         public void CloseWebSocket() {
@@ -41,6 +42,8 @@ namespace UnityStomp {
         public void Subscribe(string destination, OnMessageListener act) {
             if (match(destination, "/app/.+/joinBattle/.+")) {
                 act(JOINED_MSG);
+            } else if (match(destination, "/message/rooms/.+/broadcast")) {
+                act(INTO_ROOM_MSG);
             }
         }
 
