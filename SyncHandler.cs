@@ -19,5 +19,7 @@ namespace RFNEet {
         bool handoverToOther(RemoteObject ro);
 
         void onConnectedClose(string msg);
+
+        void onServerShutdown(float cutTime);
     }
 }

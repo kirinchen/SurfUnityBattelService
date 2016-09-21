@@ -15,6 +15,7 @@ namespace RFNEet {
         public static readonly string KEY_TYPE = "type";
         public static readonly string KEY_TYPE_NEW_PLAYER_JOINED = "NewPlayerJoined";
         public static readonly string KEY_TYPE_GENERAL = "General";
+        public static readonly string KEY_TYPE_SHOTDOWN = "ShutDown";
         private StompClient sc;
         internal string roomId {
             get; private set;
@@ -72,6 +73,8 @@ namespace RFNEet {
                     } catch (Exception e) {
                         Debug.Log(e);
                     }
+                } else if (KEY_TYPE_SHOTDOWN.Equals(d.type)) {
+                    handler.onServerShutdown(d.cutTime);
                 }
             });
             sc.Subscribe("/message/rooms/" + roomId + "/player/leave", (message) => {

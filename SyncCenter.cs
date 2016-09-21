@@ -282,5 +282,9 @@ namespace RFNEet {
         public void onConnectClosedCb(string msg) {
             hanlder.onConnectedClose(msg);
         }
+
+        public void onServerShutdown(float cutTime) {
+            hanlder.onServerShutdown(cutTime);
+        }
     }
 }

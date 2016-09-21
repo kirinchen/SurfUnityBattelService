@@ -7,6 +7,7 @@ namespace RFNEet {
         public string type;
         public string senderId;
         public string btag;
+        public float cutTime;
         //Just for new player joined
         public List<string> tellerIds;
 
