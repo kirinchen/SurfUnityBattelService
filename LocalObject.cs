@@ -15,7 +15,9 @@ namespace RFNEet {
 
         public void post(RemoteData o) {
             setup(o);
-            api.shoot(o);
+            if (api != null) {
+                api.shoot(o);
+            }
         }
 
         internal override void postRemoveData(object t) {
