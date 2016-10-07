@@ -8,19 +8,23 @@ namespace RFNEet {
     public delegate void PlayerLeaved(string leavedId, string handoverId);
 
     public class SyncCenter : MonoBehaviour, RemoteApierHandler {
+        private static SyncCenter instance = null;
         internal static readonly int OID_SIZE = 4;
-        internal LocalPlayerRepo localRepo {
+        internal LocalPlayerRepo localRepo
+        {
             get; private set;
         }
         internal Dictionary<string, RemotePlayerRepo> remoteRepos = new Dictionary<string, RemotePlayerRepo>();
-        internal RemoteApier api {
+        internal RemoteApier api
+        {
             get; private set;
         }
         private int commDataTellerNum = 3;
         private SyncHandler hanlder;
         private bool connected = false;
         private Action<ErrorBundle> errorCb;
-        public QueryUtils queryUitls {
+        public QueryUtils queryUitls
+        {
             get; private set;
         }
 
@@ -59,6 +63,8 @@ namespace RFNEet {
             }
         }
 
+        public void addOnConnectedCb(Action<CommRemoteRepo> cb) { if (connected) cb(getCommRemoteRepo()); else onConnectedCbs.Add(cb); }
+        private List<Action<CommRemoteRepo>> onConnectedCbs = new List<Action<CommRemoteRepo>>();
         public void connect(Action<LocalPlayerRepo> handshakeCb) {
             api.connect((meid, list) => {
                 connected = true;
@@ -66,7 +72,8 @@ namespace RFNEet {
                 localRepo = new LocalPlayerRepo(meid, api);
                 createRemoteList(meid, list);
                 handshakeCb(localRepo);
-
+                CommRemoteRepo crr = getCommRemoteRepo();
+                onConnectedCbs.ForEach(cb => cb(crr));
             });
         }
 
@@ -148,8 +155,6 @@ namespace RFNEet {
             }
         }*/
 
-
-
         private void transferCreatorForCommObjects(string sid, string handoverId) {
             Dictionary<string, RemoteObject> m = getCommRemoteRepo().objectMap;
             List<string> keys = new List<string>(m.Keys);
@@ -167,8 +172,7 @@ namespace RFNEet {
             if (rbd.senderId.Equals(api.meId)) {
                 Action inRoomToken = () => {
                     localObjectInjected = true;
-                    InvokeRepeating("routineCheckPlayerList", 11, 11);
-                    InvokeRepeating("routineCheckServerTime", 17, 17);
+                    BackgroubdChecker.start(this);
                 };
                 hanlder.onSelfInRoom(localRepo, inRoomToken);
             } else {
@@ -176,17 +180,6 @@ namespace RFNEet {
                     StartCoroutine(addRemoteRepoDependsSelfInRoom(rbd));
                 }
             }
-        }
-
-        //TODO
-        void routineCheckServerTime() {
-            api.syncTime();
-        }
-
-        void routineCheckPlayerList() {
-            List<string> l = new List<string>(remoteRepos.Keys);
-            l.Remove(CommRemoteRepo.COMM_PID);
-            api.checkPlayerList(l);
         }
 
         private IEnumerator addRemoteRepoDependsSelfInRoom(RemoteBroadcastData rbd) {
@@ -236,6 +229,8 @@ namespace RFNEet {
             }
         }
 
+
+
         /*server broadcast*/
         public void onBroadcast(RemoteBroadcastData rbd) {
             if (rbd.senderId != api.meId) {
@@ -252,7 +247,6 @@ namespace RFNEet {
                     rpr.objectMap[rbd.oid].updateByBroadcast(rbd);
                 }
             }
-
         }
 
         public void onErrorCb(ErrorBundle error) {
@@ -272,7 +266,7 @@ namespace RFNEet {
         }
 
         void OnDestroy() {
-            api.close();
+            close();
         }
 
         public void onRemotePlayTellMyObject(InboxTellObjectData iaod) {
@@ -286,5 +280,13 @@ namespace RFNEet {
         public void onServerShutdown(float cutTime) {
             hanlder.onServerShutdown(cutTime);
         }
+
+        public static SyncCenter getInstance() {
+            if (instance == null) {
+                instance = FindObjectOfType<SyncCenter>();
+            }
+            return instance;
+        }
+
     }
 }

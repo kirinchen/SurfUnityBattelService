@@ -18,16 +18,20 @@ namespace RFNEet {
                     base.onShooted(s);
                 } catch (Exception e) {
                     Debug.LogException(e);
-                    base.onShooted(s);
                 }
             }
         }
 
-        public CommRemoteObject create(CommRemoteObject cro) {
+        public CommRemoteObject create(CommRemoteObject cro, string specifyOid = null) {
             cro.setCreator(api.meId);
-            string oid = UidUtils.getRandomString(SyncCenter.OID_SIZE);
-            inject(oid, cro);
-            cro.postInitDto();
+            bool noneSpecify = string.IsNullOrEmpty(specifyOid);
+            if (noneSpecify) {
+                specifyOid = UidUtils.getRandomString(SyncCenter.OID_SIZE);
+            }
+            inject(specifyOid, cro);
+            if (noneSpecify) {
+                cro.postInitDto();
+            }
             return cro;
         }
 

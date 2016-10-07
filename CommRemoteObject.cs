@@ -7,7 +7,21 @@ namespace RFNEet {
         internal string creator {
             get; private set;
         }
+        public bool autoInjectToRepo = false;
+        public string specifyOid;
 
+        public void Start() {
+            if (autoInjectToRepo) {
+                SyncCenter.getInstance().addOnConnectedCb(injectToRepo);
+            }
+        }
+
+        private void injectToRepo(CommRemoteRepo repo) {
+            if (string.IsNullOrEmpty(specifyOid)) {
+                throw new NullReferenceException("specifyOid is null");
+            }
+            repo.create(this, specifyOid);
+        }
 
         public Action<string, string> onCreatorChnaged = (o, n) => { };
         internal void setCreator(string nc) {

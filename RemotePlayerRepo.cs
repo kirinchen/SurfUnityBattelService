@@ -9,7 +9,8 @@ namespace RFNEet {
 
 
         private Func<RemotePlayerRepo, RemoteData, RemoteObject> onNewRemoteObjectCreated;
-        public bool handshaked {
+        public bool handshaked
+        {
             get; private set;
         }
 
@@ -36,7 +37,9 @@ namespace RFNEet {
         }
 
         internal void createNewObject(RemoteData s) {
-            if (!string.IsNullOrEmpty(s.pid) && !string.IsNullOrEmpty(s.oid) && !hasObjectById(s.oid)) {
+            if (hasObjectById(s.oid)) {
+                objectMap[s.oid].update(s);
+            } else if (!string.IsNullOrEmpty(s.pid) && !string.IsNullOrEmpty(s.oid)) {
                 RemoteObject ro = onNewRemoteObjectCreated(this, s);
                 if (ro != null) {
                     setupNewObject(s, ro);
