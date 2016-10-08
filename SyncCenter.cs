@@ -282,7 +282,7 @@ namespace RFNEet {
         }
 
         public static SyncCenter getInstance() {
-            if (instance == null) {
+            if (instance == null || !instance.isActiveAndEnabled) {
                 instance = FindObjectOfType<SyncCenter>();
             }
             return instance;
