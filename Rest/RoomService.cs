@@ -10,8 +10,11 @@ namespace RFNEet {
         public delegate void OnFail(SurfMErrorDto sd, HTTPRequestStates s, HTTPResponse r, Exception e = null);
 
         public static readonly string SUFFIX_CREATE_ROON = "/api/v1/room/";
-        public URestApi api;
+        private URestApi api;
 
+        public RoomService(URestApi a) {
+            api = a;
+        }
 
         public void createRoom(CreateRoomData data, Action<string> onOK, OnFail eCb) {
             api.postJson(SUFFIX_CREATE_ROON, data, onOK, (m, s, r) => {
