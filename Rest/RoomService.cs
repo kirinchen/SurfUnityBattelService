@@ -5,12 +5,12 @@ using Newtonsoft.Json;
 using BestHTTP;
 
 namespace RFNEet {
-    public class RoomService  {
-        
+    public class RoomService {
+
         public delegate void OnFail(SurfMErrorDto sd, HTTPRequestStates s, HTTPResponse r, Exception e = null);
 
         public static readonly string SUFFIX_CREATE_ROON = "/api/v1/room/";
-        private URestApi api;
+        internal URestApi api { get; private set; }
 
         public RoomService(URestApi a) {
             api = a;
