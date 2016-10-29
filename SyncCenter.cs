@@ -65,13 +65,13 @@ namespace RFNEet {
 
         public void addOnConnectedCb(Action<CommRemoteRepo> cb) { if (connected) cb(getCommRemoteRepo()); else onConnectedCbs.Add(cb); }
         private List<Action<CommRemoteRepo>> onConnectedCbs = new List<Action<CommRemoteRepo>>();
-        public void connect(Action<LocalPlayerRepo> handshakeCb) {
-            api.connect((meid, list) => {
+        public void connect(Action<HandshakeDto, LocalPlayerRepo> handshakeCb) {
+            api.connect((hd, list) => {
                 connected = true;
                 initCommRepo();
-                localRepo = new LocalPlayerRepo(meid, api);
-                createRemoteList(meid, list);
-                handshakeCb(localRepo);
+                localRepo = new LocalPlayerRepo(hd.meId, api);
+                createRemoteList(hd.meId, list);
+                handshakeCb(hd, localRepo);
                 CommRemoteRepo crr = getCommRemoteRepo();
                 onConnectedCbs.ForEach(cb => cb(crr));
             });

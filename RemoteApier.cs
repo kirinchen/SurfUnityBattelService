@@ -25,7 +25,7 @@ namespace RFNEet {
         }
         internal float lastSyncServerTime;
         internal float lastSyncLocalTime;
-        private Action<string, List<string>> handshakeCb;
+        private Action<HandshakeDto, List<string>> handshakeCb;
         private RemoteApierHandler handler;
 
         public RemoteApier(string url, string roomId, RemoteApierHandler handler, bool localDebug) {
@@ -42,7 +42,7 @@ namespace RFNEet {
             this.roomId = roomId;
         }
 
-        public void connect(Action<string, List<string>> handshakeCb) {
+        public void connect(Action<HandshakeDto, List<string>> handshakeCb) {
             this.handshakeCb = handshakeCb;
             sc.StompConnect(onConnected);
         }
@@ -138,8 +138,7 @@ namespace RFNEet {
             HandshakeDto d = JsonConvert.DeserializeObject<HandshakeDto>(msg);
             if (d.success) {
                 setupSyncTime(d.playedTime, d.stamp);
-                meId = d.meId;
-                handshakeCb(meId, d.information.playList);
+                handshakeCb(d, d.information.playList);
             } else {
                 throwErrorBundle(ErrorBundle.Type.HandShake, d.exceptionName);
             }
@@ -229,6 +228,8 @@ namespace RFNEet {
         public string stamp;
         public long playedTime;
         public string exceptionName;
+        public int currentCount;
+        public int maxPlayerCount;
 
         public class Information {
             public List<string> playList;
