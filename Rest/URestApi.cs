@@ -8,7 +8,7 @@ using BestHTTP;
 
 public class URestApi : MonoBehaviour {
 
-    public delegate void OnError(string error, HTTPRequestStates s , HTTPResponse resp);
+    public delegate void OnError(string error, HTTPRequestStates s, HTTPResponse resp);
 
     public string host;
     public string port;
@@ -35,9 +35,9 @@ public class URestApi : MonoBehaviour {
 
     private int runWWWW(HTTPRequest hr, Action<HTTPResponse> onOk, OnError oe) {
         setupHeaders(hr);
-        OnFinishedHandler oh = new OnFinishedHandler(onOk,oe);
+        OnFinishedHandler oh = new OnFinishedHandler(onOk, oe);
         hr.Callback = oh.onFinished;
-        hr.ConnectTimeout = new TimeSpan((long)(10000000*timeOut));
+        hr.ConnectTimeout = new TimeSpan((long)(10000000 * timeOut));
         int id = getId();
         RequestBundle rb = new RequestBundle(hr);
         map.Add(id, rb);
@@ -45,7 +45,7 @@ public class URestApi : MonoBehaviour {
         return id;
     }
 
-    class OnFinishedHandler  {
+    class OnFinishedHandler {
         private Action<HTTPResponse> onOk;
         private OnError oe;
         public OnFinishedHandler(Action<HTTPResponse> k, OnError e) { onOk = k; oe = e; }
@@ -59,23 +59,23 @@ public class URestApi : MonoBehaviour {
                     if (resp.IsSuccess) {
                         onOk(resp);
                     } else {
-                         msg = 
-                        (string.Format("Request finished Successfully, but the server sent an error. Status Code: {0}-{1} Message: {2}",
-                                                        resp.StatusCode,
-                                                        resp.Message,
-                                                        resp.DataAsText));
-                        oe(msg,req.State,resp);
+                        msg =
+                       (string.Format("Request finished Successfully, but the server sent an error. Status Code: {0}-{1} Message: {2}",
+                                                       resp.StatusCode,
+                                                       resp.Message,
+                                                       resp.DataAsText));
+                        oe(msg, req.State, resp);
                     }
                     break;
                 // The request finished with an unexpected error. The request's Exception property may contain more info about the error.
                 case HTTPRequestStates.Error:
-                     msg=("Request Finished with Error! " + (req.Exception != null ? (req.Exception.Message + "\n" + req.Exception.StackTrace) : "No Exception"));
+                    msg = ("Request Finished with Error! " + (req.Exception != null ? (req.Exception.Message + "\n" + req.Exception.StackTrace) : "No Exception"));
                     oe(msg, req.State, resp);
                     break;
 
                 // The request aborted, initiated by the user.
                 case HTTPRequestStates.Aborted:
-                     msg = ("Request Aborted!");
+                    msg = ("Request Aborted!");
                     oe(msg, req.State, resp);
                     break;
 
@@ -95,7 +95,7 @@ public class URestApi : MonoBehaviour {
 
     }
 
-    
+
 
     public void abort(int id) {
         if (map.ContainsKey(id)) {
@@ -118,14 +118,19 @@ public class URestApi : MonoBehaviour {
         }
     }
 
-    public int postJson(string url, object data, Action<string> onOk, OnError onError) {
+    public int postJsonForHttpResp(string url, object data, Action<HTTPResponse> onOk, OnError onError) {
         Uri u = new Uri(getUrl(url));
         HTTPRequest hr = new HTTPRequest(u, HTTPMethods.Post);
         data = data == null ? "{}" : data;
         string ourPostData = JsonConvert.SerializeObject(data);
         byte[] pData = Encoding.ASCII.GetBytes(ourPostData.ToCharArray());
         hr.RawData = pData;
-        return runWWWW(hr, (w) => { onOk(w.DataAsText); }, onError);
+        return runWWWW(hr, (w) => { onOk(w); }, onError);
+    }
+
+    public int postJson(string url, object data, Action<string> onOk, OnError onError) {
+        Action<HTTPResponse> onWOk = (r) => { onOk(r.DataAsText); };
+        return postJsonForHttpResp(url, data, onWOk, onError);
     }
 
     private void setupHeaders(HTTPRequest hr) {
