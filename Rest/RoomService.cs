@@ -7,6 +7,9 @@ using System.Collections.Generic;
 
 namespace RFNEet {
     public class RoomService {
+
+        private static readonly string KEY_CPU = "p";
+
         public delegate void QueryResult<T>(List<RoomInfo<T>> r);
         public delegate void OnFail(SurfMErrorDto sd, HTTPRequestStates s, HTTPResponse r, Exception e = null);
 
@@ -25,9 +28,16 @@ namespace RFNEet {
         }
 
         public int query<T>(string gameKindUid, int pageIndex, int pageSize, object filter, QueryResult<T> qr, OnFail eCb) {
+            float queryAt = Time.time;
             string path = string.Format(SUFFIX_QUERY_ROON, gameKindUid, pageIndex, pageSize);
-            return api.postJson(path, filter, (msg) => {
+            return api.postJsonForHttpResp(path, filter, (resp) => {
+                string msg = resp.DataAsText;
                 List<RoomInfo<T>> list = JsonConvert.DeserializeObject<List<RoomInfo<T>>>(msg);
+                float cpu = float.Parse(resp.GetHeaderValues(KEY_CPU)[0]);
+                list.ForEach(r => {
+                    r.ping = Time.time - queryAt;
+                    r.cpu = cpu;
+                });
                 qr(list);
             }, (m, s, r) => {
                 handleError(m, s, r, eCb);

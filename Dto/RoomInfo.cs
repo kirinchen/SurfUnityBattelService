@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Newtonsoft.Json;
+
 namespace RFNEet {
     public class RoomInfo<T>  {
         public string roomId;
@@ -7,5 +9,11 @@ namespace RFNEet {
         public int currentCount;
         public int maxPlayerCount;
         public T data;
+
+        [JsonIgnore]
+        public float ping;
+        [JsonIgnore]
+        public float cpu;
+
     }
 }
