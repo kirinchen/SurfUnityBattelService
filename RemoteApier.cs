@@ -233,6 +233,7 @@ namespace RFNEet {
         public string exceptionName;
         public int currentCount;
         public int maxPlayerCount;
+        public Dictionary<string, object> data = new Dictionary<string, object>();
 
         public class Information {
             public List<string> playList;
