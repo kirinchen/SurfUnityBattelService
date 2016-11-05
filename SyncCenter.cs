@@ -92,7 +92,7 @@ namespace RFNEet {
                 if (!key.Equals(CommRemoteRepo.COMM_PID)) {
                     RemotePlayerRepo rpr = remoteRepos[key];
                     float wAt = Time.time;
-                    while (!rpr.handshaked && (Time.time - wAt) < 5f) {
+                    while ((!rpr.handshaked && (Time.time - wAt) < 5f) || !localObjectInjected) {
                         yield return new WaitForSeconds(0.35f);
                     }
                 }

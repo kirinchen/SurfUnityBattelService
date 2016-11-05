@@ -17,10 +17,12 @@ namespace RFNEet {
         public static readonly string KEY_TYPE_GENERAL = "General";
         public static readonly string KEY_TYPE_SHOTDOWN = "ShutDown";
         private StompClient sc;
-        internal string roomId {
+        internal string roomId
+        {
             get; private set;
         }
-        internal string meId {
+        internal string meId
+        {
             get; private set;
         }
         internal float lastSyncServerTime;
@@ -95,6 +97,7 @@ namespace RFNEet {
                     string sid = asdr.senderId;
                     handler.onRemoteFirstSync(sid, asdr);
                 } else if (id.type == InboxData.Type.MissObject) {
+                    Debug.Log("Miss obj t=" + Time.time);
                     InboxMissData imd = JsonConvert.DeserializeObject<InboxMissData>(message);
                     handler.repairMissObject(imd.missWho, imd.moid);
                 } else if (id.type == InboxData.Type.ObjectMsg) {
