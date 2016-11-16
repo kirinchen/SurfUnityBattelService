@@ -117,12 +117,14 @@ namespace RFNEet {
 
         public PlayerLeaved onPlayerLeavedCb = (lid, hid) => { };
         private void removeRemotePlayerRepo(string sid) {
-            RemotePlayerRepo rpr = remoteRepos[sid];
-            string firstId = handleLeavedObjects(rpr);
-            rpr.destoryAll();
-            transferCreatorForCommObjects(sid, firstId);
-            remoteRepos.Remove(sid);
-            onPlayerLeavedCb(sid, firstId);
+            if (remoteRepos.ContainsKey(sid)) {
+                RemotePlayerRepo rpr = remoteRepos[sid];
+                string firstId = handleLeavedObjects(rpr);
+                rpr.destoryAll();
+                transferCreatorForCommObjects(sid, firstId);
+                remoteRepos.Remove(sid);
+                onPlayerLeavedCb(sid, firstId);
+            }
         }
 
         private string handleLeavedObjects(RemotePlayerRepo rpr) {
