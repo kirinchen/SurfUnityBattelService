@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace UnityStomp {
     public class StompClientDebug : StompClient {
-        private static readonly string JOINED_MSG = "{\"roomId\":\"QRU6F\",\"gameUid\":\"TankIO2\",\"currentCount\":1,\"maxPlayerCount\":35,\"data\":null,\"information\":{\"gameId\":\"TankIO2\",\"playList\":[\"2aBdTRed\"],\"initCount\":3},\"meId\":\"2aBdTRed\",\"stamp\":\"2.824699\",\"index\":0,\"playedTime\":124024,\"success\":true,\"exceptionName\":null}";
+        private static readonly string JOINED_MSG = "{\"roomId\":\"QRU6F\",\"gameUid\":\"TankIO2\",\"currentCount\":1,\"maxPlayerCount\":35,\"data\":null,\"information\":{\"gameId\":\"TankIO2\",\"playList\":[\"2aBdTRed\"],\"initCount\":3},\"meId\":\"2aBdTRed\",\"stamp\":\"99999999999\",\"index\":0,\"playedTime\":124024,\"success\":true,\"exceptionName\":null}";
         private static readonly string INTO_ROOM_MSG = "{\"senderId\":\"4A9CTaZO\",\"tellerIds\":[],\"sessionId\":\"4A9CTaZO\",\"type\":\"NewPlayerJoined\"}";
         private string sessionId;
 
