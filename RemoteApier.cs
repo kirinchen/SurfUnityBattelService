@@ -27,6 +27,7 @@ namespace RFNEet {
         }
         internal float lastSyncServerTime;
         internal float lastSyncLocalTime;
+        public float ping { get; private set; }
         private Action<HandshakeDto, List<string>> handshakeCb;
         private RemoteApierHandler handler;
 
@@ -161,8 +162,8 @@ namespace RFNEet {
             float beforeLT = float.Parse(stamp);
             lastSyncLocalTime = Time.time;
             lastSyncServerTime = playedTime * 0.001f;
-            float lDT_half = (lastSyncLocalTime - beforeLT) * 0.5f;
-            lastSyncServerTime += lDT_half;
+            ping = (lastSyncLocalTime - beforeLT) * 0.5f;
+            lastSyncServerTime += ping;
         }
 
         public float getCurrentServerTime() {
