@@ -33,7 +33,8 @@ namespace RFNEet {
             return api.postJsonForHttpResp(path, filter, (resp) => {
                 string msg = resp.DataAsText;
                 List<RoomInfo<T>> list = JsonConvert.DeserializeObject<List<RoomInfo<T>>>(msg);
-                float cpu = float.Parse(resp.GetHeaderValues(KEY_CPU)[0]);
+                float cpu = .5f;
+                try { cpu = float.Parse(resp.GetHeaderValues(KEY_CPU)[0]); } catch (Exception e) { Debug.Log(e); }
                 list.ForEach(r => {
                     r.ping = Time.time - queryAt;
                     r.cpu = cpu;
