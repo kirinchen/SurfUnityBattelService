@@ -21,12 +21,12 @@ namespace RFNEet {
             sc = GetComponent<SyncCenter>();
         }
 
-        public void connect(PingBundle r) {
+        public void connect(PingBundle r, bool localDebug = false) {
             state = Status.Connecting;
             try {
                 if (r.ok) {
                     Debug.Log(r.bestRoom.wsUrl + " connected");
-                    sc.init(r.bestRoom.wsUrl, r.bestRoom.roomId, this);
+                    sc.init(r.bestRoom.wsUrl, r.bestRoom.roomId, this, localDebug);
                     sc.connect(onConnected);
                 } else {
                     onPingError(r);
@@ -45,6 +45,7 @@ namespace RFNEet {
             try {
                 handshakeDto = hd;
                 onConnectCbs.ForEach(a => { a(); });
+                onConnectCbs = null;
             } catch (Exception e) {
                 Debug.Log(e);
             }
@@ -64,10 +65,11 @@ namespace RFNEet {
             Debug.Log("onSelfInRoom inject ");
         }
 
-        internal void addOnAllInRoomCb(Action a) { if (onAllInRoomCbs == null) a(); else onAllInRoomCbs.Add(a); }
+        public void addOnAllInRoomCb(Action a) { if (onAllInRoomCbs == null) a(); else onAllInRoomCbs.Add(a); }
         private List<Action> onAllInRoomCbs = new List<Action>();
         public virtual void onAllRemotePlayerReadyed(LocalPlayerRepo localRepo) {
             onAllInRoomCbs.ForEach(a => { a(); });
+            onSelfInRoomCbs = null;
         }
 
         public bool isAllInRoomed() {
@@ -80,14 +82,14 @@ namespace RFNEet {
             return null;
         }
 
-        public bool handoverToOther(RemoteObject ro) {
+        public virtual bool handoverToOther(RemoteObject ro) {
             return false;
         }
 
-        public void onConnectedClose(string msg) {
+        public virtual void onConnectedClose(string msg) {
         }
 
-        public void onServerShutdown(float cutTime) {
+        public virtual void onServerShutdown(float cutTime) {
         }
 
 
