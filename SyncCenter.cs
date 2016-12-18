@@ -83,16 +83,19 @@ namespace RFNEet {
                     addRemoteRepo(id);
                 }
             }
-            StartCoroutine(waitSomeRemoteHandShakeThanSend());
+            StartCoroutine(waitAllHandShakeReadyed());
         }
 
-        private IEnumerator waitSomeRemoteHandShakeThanSend() {
+        private IEnumerator waitAllHandShakeReadyed() {
             List<string> keys = new List<string>(remoteRepos.Keys);
+            while (!localObjectInjected) {
+                yield return new WaitForSeconds(0.35f);
+            }
             foreach (string key in keys) {
                 if (!key.Equals(CommRemoteRepo.COMM_PID)) {
                     RemotePlayerRepo rpr = remoteRepos[key];
                     float wAt = Time.time;
-                    while ((!rpr.handshaked && (Time.time - wAt) < 5f) || !localObjectInjected) {
+                    while ((!rpr.handshaked && (Time.time - wAt) < 5f)) {
                         yield return new WaitForSeconds(0.35f);
                     }
                 }
