@@ -238,7 +238,7 @@ namespace RFNEet {
 
         /*server broadcast*/
         public void onBroadcast(RemoteBroadcastData rbd) {
-            if (rbd.senderId != api.meId) {
+            if ( !string.Equals( rbd.senderId ,api.meId)) {
                 updateObjectByBroadcast(rbd);
             }
         }
