@@ -14,25 +14,26 @@ namespace RFNEet {
         {
             get; private set;
         }
-        internal Action<PingBundle> onPingError = (p) => { };
+        public delegate void OnPingError(string wsUrl, string roomId);
+        internal OnPingError onPingError = (w,r) => { };
 
         public void Awake() {
             state = Status.Idle;
             sc = GetComponent<SyncCenter>();
         }
 
-        public void connect(PingBundle r, bool localDebug = false) {
+        public void connect(bool ok,string wsUrl,string roomId, bool localDebug = false) {
             state = Status.Connecting;
             try {
-                if (r.ok) {
-                    Debug.Log(r.bestRoom.wsUrl + " connected");
-                    sc.init(r.bestRoom.wsUrl, r.bestRoom.roomId, this, localDebug);
+                if (ok) {
+                    Debug.Log(wsUrl + " connected");
+                    sc.init(wsUrl, roomId, this, localDebug);
                     sc.connect(onConnected);
                 } else {
-                    onPingError(r);
+                    onPingError(wsUrl,roomId);
                 }
             } catch (Exception e) {
-                onPingError(r);
+                onPingError(wsUrl, roomId);
             }
         }
 

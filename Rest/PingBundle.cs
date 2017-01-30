@@ -66,6 +66,10 @@ namespace RFNEet {
             return "ws://" + ua.host + ":" + ua.port + "/rfws";
         }
 
+        public static string genWsUrl(URestApi ua) {
+            return "ws://" + ua.host + ":" + ua.port + "/rfws";
+        }
+
         public void calcScore() {
             if (ok) {
                 float st = (endTime - float.Parse(result.timestamp)) * 1000;

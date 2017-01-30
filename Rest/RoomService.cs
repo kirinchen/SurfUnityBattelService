@@ -14,7 +14,7 @@ namespace RFNEet {
         public delegate void OnFail(SurfMErrorDto sd, HTTPRequestStates s, HTTPResponse r, Exception e = null);
 
         public static readonly string SUFFIX_CREATE_ROON = "/api/v1/room/";
-        public static readonly string SUFFIX_QUERY_ROON = "/api/v1/room/{0}/query?pageIndex={1}&pageSize={2}";
+        public static readonly string SUFFIX_QUERY_ROON = "/api/v1/room/{0}/querymultiple";
         internal URestApi api { get; private set; }
 
         public RoomService(URestApi a) {
@@ -27,9 +27,9 @@ namespace RFNEet {
             });
         }
 
-        public int query<T>(string gameKindUid, int pageIndex, int pageSize, object filter, QueryResult<T> qr, OnFail eCb) {
+        public int query<T>(List<string> gameKindUids, object filter, QueryResult<T> qr, OnFail eCb) {
             float queryAt = Time.time;
-            string path = string.Format(SUFFIX_QUERY_ROON, gameKindUid, pageIndex, pageSize);
+            string path = string.Format(SUFFIX_QUERY_ROON, JsonConvert.SerializeObject(gameKindUids));
             return api.postJsonForHttpResp(path, filter, (resp) => {
                 string msg = resp.DataAsText;
                 List<RoomInfo<T>> list = JsonConvert.DeserializeObject<List<RoomInfo<T>>>(msg);
