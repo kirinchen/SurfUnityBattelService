@@ -26,7 +26,7 @@ namespace RFNEet {
             state = Status.Connecting;
             try {
                 if (ok) {
-                    Debug.Log(wsUrl + " connected");
+                    Debug.Log(wsUrl + " connected ");
                     sc.init(wsUrl, roomId, this, localDebug);
                     sc.connect(onConnected);
                 } else {
