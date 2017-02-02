@@ -1,14 +1,20 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using System.Collections.Generic;
 
 namespace RFNEet {
     public abstract class RemoteObject : SyncObject {
+
+        private List<Action<RemoteData>> onRemoteUpdateCbs = new List<Action<RemoteData>>();
+        public void addOnRemoteUpdateCbs(Action<RemoteData> cb) { onRemoteUpdateCbs.Add(cb); }
+        public void removeOnRemoteUpdateCbs(Action<RemoteData> cb) { onRemoteUpdateCbs.Remove(cb); }
 
         internal void update(RemoteData s) {
             try {
                 if (s.getSysTag() == RemoteData.SysCmd.NONE) {
                     onRemoteUpdate(s);
+                    onRemoteUpdateCbs.ForEach(cb => { cb(s); });
                 } else if (s.getSysTag() == RemoteData.SysCmd.DELETED) {
                     destoryMe(true, s);
                 }
@@ -26,7 +32,7 @@ namespace RFNEet {
 
         public void tellLocalObject(InboxTellObjectData iod) {
             iod.oid = oid;
-            api.sendToInbox(pid,iod);
+            api.sendToInbox(pid, iod);
         }
 
         internal override void postRemoveData(object t) {
