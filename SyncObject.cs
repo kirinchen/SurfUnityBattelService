@@ -11,7 +11,7 @@ namespace RFNEet {
         internal SyncObjectListener listener;
         private bool _destoryedMe = false;
 
-        internal void init(string pid, string oid, RemoteApier api, SyncObjectListener listener) {
+        internal virtual void init(string pid, string oid, RemoteApier api, SyncObjectListener listener) {
             this.api = api;
             this.pid = pid;
             this.oid = oid;
