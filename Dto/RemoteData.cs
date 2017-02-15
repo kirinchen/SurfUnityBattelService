@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace RFNEet {
-    public class RemoteData  {
+    public class RemoteData {
 
         public enum SysCmd {
-            NONE,NEW_OBJECT,DELETED
-            
+            NONE, NEW_OBJECT, DELETED
+
         }
 
         public string pid;
@@ -35,8 +35,10 @@ namespace RFNEet {
             return _source;
         }
 
-        public T to<T>() {
-            return JsonConvert.DeserializeObject<T>(_source);
+        public T to<T>() where T : RemoteData {
+            T ans = JsonConvert.DeserializeObject<T>(_source);
+            ans.setSource(_source);
+            return ans;
         }
 
     }
