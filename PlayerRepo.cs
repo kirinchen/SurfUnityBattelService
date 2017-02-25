@@ -17,7 +17,7 @@ namespace RFNEet {
 
         public virtual T inject(string oid,T o) {
             //string oid = UidUtils.getRandomString(7);
-            o.init(pid, oid, api,this);
+            o.initInject(pid, oid, api,this);
             objectMap.Add(oid, o);
             return o;
         }
