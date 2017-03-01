@@ -12,7 +12,7 @@ namespace RFNEet {
         void onConnectClosedCb(string msg);
         void onBroadcast(RemoteBroadcastData data);
         void repairMissObject(string missWho, string moid);
-        void onNewPlayerReadyed(string sid);
+        void onNewPlayerReadyed(PlayerDto pDto);
         void onRemotePlayTellMyObject(InboxTellObjectData iaod);
         void onServerShutdown(float cutTime);
     }

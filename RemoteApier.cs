@@ -123,9 +123,9 @@ namespace RFNEet {
 
             sc.Subscribe("/message/rooms/" + roomId + "/player/ready", (message) => {
                 Debug.Log("player/ready=" + message);
-                string sid = parse(message, KEY_SESSION_ID).ToString();
-                if (!sid.Equals(meId)) {
-                    handler.onNewPlayerReadyed(sid);
+                PlayerDto pdto = JsonConvert.DeserializeObject<PlayerDto>(message);
+                if (!pdto.sessionId.Equals(meId)) {
+                    handler.onNewPlayerReadyed(pdto);
                 }
             });
 
@@ -227,6 +227,7 @@ namespace RFNEet {
 
     public class HandshakeDto {
         public string meId;
+        public long meStartAt;
         public Information information;
         public bool success;
         public string stamp;

@@ -6,6 +6,7 @@ using System;
 
 namespace RFNEet {
     public abstract class PlayerRepo<T> : SyncObjectListener where T : SyncObject  {
+        private long startAt;
         internal RemoteApier api;
         internal string pid;
         internal Dictionary<string, T> objectMap = new Dictionary<string, T>();
@@ -33,6 +34,15 @@ namespace RFNEet {
         public Dictionary<string, T> getMap() {
             return new Dictionary<string, T>(objectMap) ;
         }
+
+        public long getStartAt() {
+            return startAt;
+        }
+
+        public void setStartAt(long startAt) {
+            this.startAt = startAt;
+        }
+
     }
 
 }

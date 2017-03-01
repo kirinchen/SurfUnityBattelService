@@ -70,6 +70,7 @@ namespace RFNEet {
                 connected = true;
                 initCommRepo();
                 localRepo = new LocalPlayerRepo(hd.meId, api);
+                localRepo.setStartAt(hd.meStartAt);
                 createRemoteList(hd.meId, list);
                 handshakeCb(hd, localRepo);
                 CommRemoteRepo crr = getCommRemoteRepo();
@@ -196,8 +197,9 @@ namespace RFNEet {
             RemotePlayerRepo rpr = addRemoteRepo(rbd.senderId);
         }
 
-        public void onNewPlayerReadyed(string sid) {
-            RemotePlayerRepo rpr = remoteRepos.ContainsKey(sid) ? remoteRepos[sid] : addRemoteRepo(sid);
+        public void onNewPlayerReadyed(PlayerDto pdto) {
+            RemotePlayerRepo rpr = remoteRepos.ContainsKey(pdto.sessionId) ? remoteRepos[pdto.sessionId] : addRemoteRepo(pdto.sessionId);
+            rpr.setStartAt(pdto.startAt);
             bool hasCommData = queryUitls.isCommDataTeller(commDataTellerNum);
             tellNewPlayerMyInfo(rpr, hasCommData);
         }
@@ -238,7 +240,7 @@ namespace RFNEet {
 
         /*server broadcast*/
         public void onBroadcast(RemoteBroadcastData rbd) {
-            if ( !string.Equals( rbd.senderId ,api.meId)) {
+            if (!string.Equals(rbd.senderId, api.meId)) {
                 updateObjectByBroadcast(rbd);
             }
         }
