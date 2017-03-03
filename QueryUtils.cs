@@ -23,6 +23,8 @@ namespace RFNEet {
             return l;
         }
 
+
+
         public bool isCommDataTeller(int count) {
             List<string> l = sortPids();
             count = count > l.Count ? l.Count : count;
@@ -40,8 +42,20 @@ namespace RFNEet {
             return l.Count;
         }
 
-        public bool isFirstBySelf() {
+        public bool isIdFirstSelf() {
             return sortPids()[0].Equals(sc.api.meId);
+        }
+
+        public bool isEnterFirstSelf() {
+            float meStartAt = sc.localRepo.getStartAt();
+            foreach (RemotePlayerRepo rpr in sc.remoteRepos.Values) {
+                if (!string.Equals(rpr.pid, CommRemoteRepo.COMM_PID)) {
+                    if (rpr.getStartAt() < meStartAt) {
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
 
         public SyncObject findObject(string pid, string oid) {
