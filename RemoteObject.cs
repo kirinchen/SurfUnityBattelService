@@ -36,15 +36,19 @@ namespace RFNEet {
         }
 
         internal override void postRemoveData(object t) {
-            RemoteBroadcastData b = null;
-            if (t != null && t is RemoteBroadcastData) {
-                b = (RemoteBroadcastData)t;
-            } else {
-                b = new RemoteBroadcastData();
+            try {
+                RemoteBroadcastData b = null;
+                if (t != null && t is RemoteBroadcastData) {
+                    b = (RemoteBroadcastData)t;
+                } else {
+                    b = new RemoteBroadcastData();
+                }
+                setup(b);
+                b.setSysTag(RemoteData.SysCmd.DELETED);
+                api.broadcastUpdate(b);
+            } catch (Exception e) {
+                Debug.Log(e);
             }
-            setup(b);
-            b.setSysTag(RemoteData.SysCmd.DELETED);
-            api.broadcastUpdate(b);
         }
 
     }
