@@ -10,11 +10,17 @@ namespace RFNEet {
         public void addOnRemoteUpdateCbs(Action<RemoteData> cb) { onRemoteUpdateCbs.Add(cb); }
         public void removeOnRemoteUpdateCbs(Action<RemoteData> cb) { onRemoteUpdateCbs.Remove(cb); }
 
+        private List<Func<RemoteData, bool>> onUpdateOnceCalls = new List<Func<RemoteData, bool>>();
+        public void addOnUpdateOnceCall(Func<RemoteData, bool> f) {
+            onUpdateOnceCalls.Add(f);
+        }
+
         internal void update(RemoteData s) {
             try {
                 if (s.getSysTag() == RemoteData.SysCmd.NONE) {
                     onRemoteUpdate(s);
                     onRemoteUpdateCbs.ForEach(cb => { cb(s); });
+                    onUpdateOnceCalls.RemoveAll(f => { return f(s); });
                 } else if (s.getSysTag() == RemoteData.SysCmd.DELETED) {
                     destoryMe(true, s);
                 }
