@@ -77,5 +77,17 @@ namespace RFNEet {
                 return null;
             }
         }
+
+        public bool isEnterFirst(string pid) {
+            float meStartAt = sc.remoteRepos[pid].getStartAt();
+            foreach (RemotePlayerRepo rpr in sc.remoteRepos.Values) {
+                if (!string.Equals(rpr.pid, CommRemoteRepo.COMM_PID) && ! string.Equals(rpr.pid,pid)) {
+                    if (rpr.getStartAt() < meStartAt) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
     }
 }
