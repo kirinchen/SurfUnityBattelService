@@ -264,7 +264,8 @@ namespace RFNEet {
             Dictionary<string, LocalObject> map = localRepo.getMap();
             if (map.ContainsKey(moid)) {
                 LocalObject lo = map[moid];
-                lo.postInitDto();
+                bool b = lo.postInitDtoSafe();
+                Debug.Log("repairMissObject=" + b);
             }
         }
 

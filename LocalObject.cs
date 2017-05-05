@@ -5,10 +5,26 @@ using System;
 namespace RFNEet {
     public abstract class LocalObject : SyncObject {
 
+        private float _lastPostInitDtoAt = -9999;
+
         internal void postInitDto() {
+            _lastPostInitDtoAt = Time.time;
             RemoteData rbd = genInitDto();
             rbd.setSysTag(RemoteData.SysCmd.NEW_OBJECT);
             post(rbd);
+        }
+
+        internal bool postInitDtoSafe() {
+            if ((Time.time - _lastPostInitDtoAt) > 1) {
+                postInitDto();
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        public float getLastPostInitDtoAt() {
+            return _lastPostInitDtoAt;
         }
 
         internal abstract RemoteData genInitDto();
