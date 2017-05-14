@@ -173,7 +173,7 @@ namespace RFNEet {
         }
 
         /*New Player Joined*/
-        private bool localObjectInjected = false;
+        public bool localObjectInjected { get; private set; }
         public void onNewPlayerJoined(RemoteBroadcastData rbd) {
             if (rbd.senderId.Equals(api.meId)) {
                 Action inRoomToken = () => {
