@@ -7,7 +7,7 @@ using System;
 namespace RFNEet {
     public class RemotePlayerRepo : PlayerRepo<RemoteObject> {
 
-
+        private List<string> suspendFindMissObjs = new List<string>();
         private Func<RemotePlayerRepo, RemoteData, RemoteObject> onNewRemoteObjectCreated;
         public bool handshaked
         {
@@ -19,8 +19,11 @@ namespace RFNEet {
             api.subscribeShooted(pid, onShooted);
         }
 
-        internal virtual void onShooted(RemoteData s) {
+        internal void addSuspendFindMissObjs(string s) {
+            suspendFindMissObjs.Add(s);
+        }
 
+        internal virtual void onShooted(RemoteData s) {
             if (objectMap.ContainsKey(s.oid)) {
                 objectMap[s.oid].update(s);
             } else if (s.getSysTag() == RemoteData.SysCmd.NEW_OBJECT) {
@@ -31,19 +34,26 @@ namespace RFNEet {
         }
 
         private void handleMissObject(RemoteData s) {
+            bool b = suspendFindMissObjs.Exists(mobj => { return string.Equals(s.oid, mobj); });
+            if (b) return;
             string missOid = s.oid;
             InboxMissData imd = new InboxMissData(missOid, api.meId);
             api.sendToInbox(s.pid, imd);
         }
 
+        public class NotRefindObjException : Exception { }
         internal void createNewObject(RemoteData s) {
             if (hasObjectById(s.oid)) {
                 objectMap[s.oid].update(s);
             } else if (!string.IsNullOrEmpty(s.pid) && !string.IsNullOrEmpty(s.oid)) {
-                RemoteObject ro = onNewRemoteObjectCreated(this, s);
-                if (ro != null) {
-                    setupNewObject(s, ro);
-                    inject(s.oid, ro);
+                try {
+                    RemoteObject ro = onNewRemoteObjectCreated(this, s);
+                    if (ro != null) {
+                        setupNewObject(s, ro);
+                        inject(s.oid, ro);
+                    }
+                } catch (NotRefindObjException re) {
+                    addSuspendFindMissObjs(s.oid);
                 }
             }
         }
