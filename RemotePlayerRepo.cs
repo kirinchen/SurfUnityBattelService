@@ -41,7 +41,10 @@ namespace RFNEet {
             api.sendToInbox(s.pid, imd);
         }
 
-        public class NotRefindObjException : Exception { }
+        public class NotRefindObjException : Exception {
+            Exception e;
+            public NotRefindObjException(string msg, Exception e) : base(msg, e) { }
+        }
         internal void createNewObject(RemoteData s) {
             if (hasObjectById(s.oid)) {
                 objectMap[s.oid].update(s);
