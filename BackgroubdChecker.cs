@@ -12,7 +12,7 @@ namespace RFNEet {
             center = cc;
             api = cc.api;
             InvokeRepeating("routineCheckPlayerList", 11, 11);
-            InvokeRepeating("routineCheckServerTime", 5, 2f);
+            InvokeRepeating("routineCheckServerTime", 5, 5f);
         }
 
         void routineCheckServerTime() {
