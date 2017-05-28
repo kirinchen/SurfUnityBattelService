@@ -148,11 +148,14 @@ namespace RFNEet {
             }
         }
 
+        internal float debugLocalMonitorPing;
         public void syncTime() {
             NtpDto n = new NtpDto();
-            n.stamp = Time.time + "";
+            float t = Time.time;
+            n.stamp = t + "";
             n.playedTime = (long)(getCurrentServerTime() * 1000);
             sc.SendMessage("/app/" + roomId + "/ntp", JsonConvert.SerializeObject(n), "/user/message/ntp", (message) => {
+                debugLocalMonitorPing = (Time.time - t) * 0.5f;
                 SyncTimeDto std = JsonConvert.DeserializeObject<SyncTimeDto>(message);
                 setupSyncTime(std.playedTime, std.timeStamp);
             });

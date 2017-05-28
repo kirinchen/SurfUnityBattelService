@@ -8,6 +8,7 @@ namespace RFNEet {
     public class RemotePlayerRepo : PlayerRepo<RemoteObject> {
 
         private List<string> suspendFindMissObjs = new List<string>();
+        private List<string> _buffMissObjs = new List<string>();
         private Func<RemotePlayerRepo, RemoteData, RemoteObject> onNewRemoteObjectCreated;
         public bool handshaked
         {
@@ -34,11 +35,28 @@ namespace RFNEet {
         }
 
         private void handleMissObject(RemoteData s) {
-            bool b = suspendFindMissObjs.Exists(mobj => { return string.Equals(s.oid, mobj); });
-            if (b) return;
+            if (!handshaked || suspendFindMissObjs.Contains(s.oid) || checkBuffMissObj(s.oid)) return;
             string missOid = s.oid;
             InboxMissData imd = new InboxMissData(missOid, api.meId);
             api.sendToInbox(s.pid, imd);
+        }
+
+        private bool checkBuffMissObj(string oid) {
+            if (_buffMissObjs.Contains(oid)) return true;
+            bool cb = _buffMissObjs.Count == 0;
+            _buffMissObjs.Add(oid);
+            if (cb) {
+                SyncCenter.getInstance().StartCoroutine(clearBuffMissObjList());
+            }
+            return false;
+        }
+
+        private IEnumerator clearBuffMissObjList() {
+            while (_buffMissObjs.Count > 0) {
+                yield return new WaitForSeconds(1.25f);
+                _buffMissObjs.Clear();
+            }
+            Debug.Log("clearBuffMissObjList");
         }
 
         public class NotRefindObjException : Exception {
