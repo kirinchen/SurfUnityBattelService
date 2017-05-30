@@ -4,7 +4,8 @@ using System;
 
 namespace RFNEet {
     public abstract class CommRemoteObject : RemoteObject {
-        internal string creator {
+        internal string creator
+        {
             get; private set;
         }
         public bool autoInjectToRepo = false;
@@ -53,8 +54,9 @@ namespace RFNEet {
 
         public abstract RemoteData genInitDto();
 
-        public bool isSelfCreator() {
-            return api.meId.Equals(creator);
+        public bool isOwner() {
+            return api != null && api.meId.Equals(creator);
         }
+
     }
 }
