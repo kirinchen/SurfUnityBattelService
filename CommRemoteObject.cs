@@ -27,7 +27,11 @@ namespace RFNEet {
         public Action<string, string> onCreatorChnaged = (o, n) => { };
         internal void setCreator(string nc) {
             string orgC = creator;
-            creator = nc;
+            if (autoInjectToRepo) {
+                creator = SyncCenter.getInstance().queryUitls.getEnterFirst();
+            } else {
+                creator = nc;
+            }
             onCreatorChnaged(orgC, creator);
         }
 

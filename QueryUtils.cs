@@ -46,16 +46,10 @@ namespace RFNEet {
             return sortPids()[0].Equals(sc.api.meId);
         }
 
+
+
         public bool isEnterFirstSelf() {
-            float meStartAt = sc.localRepo.getStartAt();
-            foreach (RemotePlayerRepo rpr in sc.remoteRepos.Values) {
-                if (!string.Equals(rpr.pid, CommRemoteRepo.COMM_PID)) {
-                    if (rpr.getStartAt() < meStartAt) {
-                        return false;
-                    }
-                }
-            }
-            return true;
+            return isEnterFirst(sc.localRepo.pid);
         }
 
         public SyncObject findObject(string pid, string oid) {
@@ -78,14 +72,32 @@ namespace RFNEet {
             }
         }
 
-        public bool isEnterFirst(string pid) {
-            float meStartAt = sc.remoteRepos[pid].getStartAt();
+        public string getEnterFirst() {
+            if (isEnterFirst(sc.localRepo.pid)) return sc.localRepo.pid;
             foreach (RemotePlayerRepo rpr in sc.remoteRepos.Values) {
-                if (!string.Equals(rpr.pid, CommRemoteRepo.COMM_PID) && ! string.Equals(rpr.pid,pid)) {
+                if (isEnterFirst(rpr.pid)) return rpr.pid;
+            }
+            throw new NullReferenceException("not find getEnterFirst");
+        }
+
+        public bool isEnterFirst(string pid) {
+            float meStartAt = -1;
+            bool self = false;
+            if (string.Equals(sc.localRepo.pid, pid)) {
+                meStartAt = sc.localRepo.getStartAt();
+                self = true;
+            } else {
+                meStartAt = sc.remoteRepos[pid].getStartAt();
+            }
+            foreach (RemotePlayerRepo rpr in sc.remoteRepos.Values) {
+                if (!string.Equals(rpr.pid, CommRemoteRepo.COMM_PID) && !string.Equals(rpr.pid, pid)) {
                     if (rpr.getStartAt() < meStartAt) {
                         return false;
                     }
                 }
+            }
+            if (!self && sc.localRepo.getStartAt() < meStartAt) {
+                return false;
             }
             return true;
         }
