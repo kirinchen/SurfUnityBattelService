@@ -75,7 +75,7 @@ namespace RFNEet {
         public string getEnterFirst() {
             if (isEnterFirst(sc.localRepo.pid)) return sc.localRepo.pid;
             foreach (RemotePlayerRepo rpr in sc.remoteRepos.Values) {
-                if (isEnterFirst(rpr.pid)) return rpr.pid;
+                if (!string.Equals(rpr.pid, CommRemoteRepo.COMM_PID) && isEnterFirst(rpr.pid)) return rpr.pid;
             }
             throw new NullReferenceException("not find getEnterFirst");
         }

@@ -29,6 +29,7 @@ namespace RFNEet {
             string orgC = creator;
             if (autoInjectToRepo) {
                 creator = SyncCenter.getInstance().queryUitls.getEnterFirst();
+                Debug.Log(creator + " my=" + SyncCenter.getInstance().api.meId);
             } else {
                 creator = nc;
             }
