@@ -30,9 +30,11 @@ namespace RFNEet {
         public float ping { get; private set; }
         private Action<HandshakeDto, List<string>> handshakeCb;
         private RemoteApierHandler handler;
+        private bool localDebug = false;
 
-        public RemoteApier(string url, string roomId, RemoteApierHandler handler, bool localDebug) {
+        public RemoteApier(string url, string roomId, RemoteApierHandler handler, bool ld) {
             this.handler = handler;
+            localDebug = ld;
             sc = localDebug ? (StompClient)new StompClientDebug(url) : (StompClient)new StompClientAll(url);
             sc.setOnErrorAndClose((s) => {
                 try {
@@ -150,6 +152,12 @@ namespace RFNEet {
 
         internal float debugLocalMonitorPing;
         public void syncTime() {
+            if (localDebug) {
+                lastSyncLocalTime = Time.time;
+                lastSyncServerTime = Time.time;
+                ping = 0;
+                return;
+            }
             NtpDto n = new NtpDto();
             float t = Time.time;
             n.stamp = t + "";

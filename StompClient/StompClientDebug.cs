@@ -9,11 +9,11 @@ using System.Text.RegularExpressions;
 namespace UnityStomp {
     public class StompClientDebug : StompClient {
         private static readonly string JOINED_MSG = "{\"roomId\":\"QRU6F\",\"gameUid\":\"TankIO2\",\"currentCount\":1,\"maxPlayerCount\":35,\"data\":null,\"information\":{\"gameId\":\"TankIO2\",\"playList\":[\"2aBdTRed\"],\"initCount\":3},\"meId\":\"2aBdTRed\",\"stamp\":\"99999999999\",\"index\":0,\"playedTime\":124024,\"success\":true,\"exceptionName\":null}";
-        private static readonly string INTO_ROOM_MSG = "{\"senderId\":\"4A9CTaZO\",\"tellerIds\":[],\"sessionId\":\"4A9CTaZO\",\"type\":\"NewPlayerJoined\"}";
+        private static readonly string INTO_ROOM_MSG = "{\"senderId\":\"2aBdTRed\",\"tellerIds\":[],\"sessionId\":\"2aBdTRed\",\"type\":\"NewPlayerJoined\"}";
         private string sessionId;
 
         public StompClientDebug(string connectString) {
-            sessionId = "4A9CTaZO";
+            sessionId = "2aBdTRed";
         }
 
         public void CloseWebSocket() {
