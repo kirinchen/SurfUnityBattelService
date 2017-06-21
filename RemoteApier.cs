@@ -191,6 +191,8 @@ namespace RFNEet {
             send(path, o);
         }
 
+
+
         public void send(string path, object o) {
             string json = "";
             if (o != null) {
@@ -209,6 +211,12 @@ namespace RFNEet {
             Dictionary<string, object> d = JsonConvert.DeserializeObject<Dictionary<string, object>>(msg);
             return d[key];
 
+        }
+
+        public void command(CommandDto.Command cmd) {
+            string path = "/app/" + roomId + "/command";
+            CommandDto cdt = new CommandDto(cmd);
+            send(path, cdt);
         }
 
         internal void shoot(object o) {
