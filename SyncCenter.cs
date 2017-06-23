@@ -134,7 +134,7 @@ namespace RFNEet {
         private string handleLeavedObjects(RemotePlayerRepo rpr) {
             List<string> l = new List<string>();
             l.Add(rpr.pid);
-            string firstIds = queryUitls.sortPids(l)[0];
+            string firstIds = queryUitls.getEnterFirst();
             if (firstIds.Equals(api.meId)) {
                 localRepo.addAll(rpr, hanlder.handoverToMe);
             } else {
