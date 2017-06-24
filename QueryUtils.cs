@@ -81,23 +81,23 @@ namespace RFNEet {
         }
 
         public bool isEnterFirst(string pid) {
-            float meStartAt = -1;
-            bool self = false;
-            if (string.Equals(sc.localRepo.pid, pid)) {
-                meStartAt = sc.localRepo.getStartAt();
-                self = true;
-            } else {
-                meStartAt = sc.remoteRepos[pid].getStartAt();
-            }
+            Dictionary<string, float> map = new Dictionary<string, float>();
+            map.Add(sc.localRepo.pid, sc.localRepo.getStartAt());
             foreach (RemotePlayerRepo rpr in sc.remoteRepos.Values) {
-                if (!string.Equals(rpr.pid, CommRemoteRepo.COMM_PID) && !string.Equals(rpr.pid, pid)) {
-                    if (rpr.getStartAt() < meStartAt) {
-                        return false;
-                    }
+                if (!string.Equals(rpr.pid, CommRemoteRepo.COMM_PID)) {
+                    map.Add(rpr.pid, rpr.getStartAt());
                 }
             }
-            if (!self && sc.localRepo.getStartAt() < meStartAt) {
-                return false;
+            float meStartAt = map[pid];
+            foreach (string k in map.Keys) {
+                if (!string.Equals(k, pid)) {
+                    float oAt = map[k];
+                    if (oAt < meStartAt) {
+                        return false;
+                    } else if (oAt == meStartAt) {
+                        throw new Exception(string.Format("same time meID={0} meAt={1} oID={2} oAt={3}", pid, meStartAt, k, oAt));
+                    }
+                }
             }
             return true;
         }

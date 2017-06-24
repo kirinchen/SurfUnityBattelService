@@ -59,7 +59,11 @@ namespace RFNEet {
         public abstract RemoteData genInitDto();
 
         public bool isOwner() {
-            return api != null && api.meId.Equals(creator);
+            if (autoInjectToRepo) {
+                return SyncCenter.getInstance().queryUitls.isEnterFirstSelf();
+            } else {
+                return api != null && api.meId.Equals(creator);
+            }
         }
 
     }
