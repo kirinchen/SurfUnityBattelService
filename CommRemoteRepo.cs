@@ -23,7 +23,6 @@ namespace RFNEet {
         }
 
         public CommRemoteObject create(CommRemoteObject cro, string specifyOid = null) {
-            cro.setCreator(api.meId);
             bool noneSpecify = string.IsNullOrEmpty(specifyOid);
             if (noneSpecify) {
                 specifyOid = UidUtils.getRandomString(SyncCenter.OID_SIZE);
@@ -34,12 +33,6 @@ namespace RFNEet {
             }
             return cro;
         }
-
-        internal override void setupNewObject(RemoteData s, RemoteObject ro) {
-            CommRemoteObject cro = (CommRemoteObject)ro;
-            cro.setCreator(s.sid);
-        }
-
 
     }
 }

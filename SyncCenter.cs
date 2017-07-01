@@ -125,7 +125,6 @@ namespace RFNEet {
                 RemotePlayerRepo rpr = remoteRepos[sid];
                 string firstId = handleLeavedObjects(rpr);
                 rpr.destoryAll();
-                transferCreatorForCommObjects(sid, firstId);
                 remoteRepos.Remove(sid);
                 onPlayerLeavedCb(sid, firstId);
             }
@@ -160,17 +159,6 @@ namespace RFNEet {
 
             }
         }*/
-
-        private void transferCreatorForCommObjects(string sid, string handoverId) {
-            Dictionary<string, RemoteObject> m = getCommRemoteRepo().objectMap;
-            List<string> keys = new List<string>(m.Keys);
-            foreach (string k in keys) {
-                CommRemoteObject co = (CommRemoteObject)m[k];
-                if (co.creator.Equals(sid)) {
-                    co.setCreator(handoverId);
-                }
-            }
-        }
 
         /*New Player Joined*/
         public bool localObjectInjected { get; private set; }

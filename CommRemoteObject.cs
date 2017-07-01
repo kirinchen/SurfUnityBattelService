@@ -4,10 +4,7 @@ using System;
 
 namespace RFNEet {
     public abstract class CommRemoteObject : RemoteObject {
-        internal string creator
-        {
-            get; private set;
-        }
+
         public bool autoInjectToRepo = false;
         public string specifyOid;
 
@@ -22,17 +19,6 @@ namespace RFNEet {
                 throw new NullReferenceException("specifyOid is null");
             }
             repo.create(this, specifyOid);
-        }
-
-        public Action<string, string> onCreatorChnaged = (o, n) => { };
-        internal void setCreator(string nc) {
-            string orgC = creator;
-            if (autoInjectToRepo) {
-                creator = SyncCenter.getInstance().queryUitls.getEnterFirst();
-            } else {
-                creator = nc;
-            }
-            onCreatorChnaged(orgC, creator);
         }
 
         internal void postInitDto() {
@@ -59,11 +45,7 @@ namespace RFNEet {
         public abstract RemoteData genInitDto();
 
         public bool isOwner() {
-            if (autoInjectToRepo) {
-                return SyncCenter.getInstance().queryUitls.isEnterFirstSelf();
-            } else {
-                return api != null && api.meId.Equals(creator);
-            }
+            return SyncCenter.getInstance().queryUitls.isEnterFirstSelf();
         }
 
     }
