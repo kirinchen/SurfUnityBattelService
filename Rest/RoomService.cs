@@ -22,7 +22,7 @@ namespace RFNEet {
         }
 
         public void create(CreateRoomData data, Action<string> onOK, OnFail eCb) {
-            api.postJson(SUFFIX_CREATE_ROON, data, onOK, (m, s, r) => {
+            api.postJson(SUFFIX_CREATE_ROON, data, onOK, (m, s, r,e) => {
                 handleError(m, s, r, eCb);
             });
         }
@@ -40,7 +40,7 @@ namespace RFNEet {
                     r.cpu = cpu;
                 });
                 qr(list);
-            }, (m, s, r) => {
+            }, (m, s, r,e) => {
                 handleError(m, s, r, eCb);
             });
         }

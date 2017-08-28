@@ -8,7 +8,7 @@ using BestHTTP;
 
 public class URestApi : MonoBehaviour {
 
-    public delegate void OnError(string error, HTTPRequestStates s, HTTPResponse resp);
+    public delegate void OnError(string error, HTTPRequestStates s, HTTPResponse resp , Exception e );
 
     public string host;
     public string port;
@@ -57,38 +57,42 @@ public class URestApi : MonoBehaviour {
                 // The request finished without any problem.
                 case HTTPRequestStates.Finished:
                     if (resp.IsSuccess) {
-                        onOk(resp);
+                        try {
+                            onOk(resp);
+                        } catch (Exception e) {
+                            oe(msg, req.State, resp,e);
+                        }
                     } else {
                         msg =
                        (string.Format("Request finished Successfully, but the server sent an error. Status Code: {0}-{1} Message: {2}",
                                                        resp.StatusCode,
                                                        resp.Message,
                                                        resp.DataAsText));
-                        oe(msg, req.State, resp);
+                        oe(msg, req.State, resp,null);
                     }
                     break;
                 // The request finished with an unexpected error. The request's Exception property may contain more info about the error.
                 case HTTPRequestStates.Error:
                     msg = ("Request Finished with Error! " + (req.Exception != null ? (req.Exception.Message + "\n" + req.Exception.StackTrace) : "No Exception"));
-                    oe(msg, req.State, resp);
+                    oe(msg, req.State, resp,null);
                     break;
 
                 // The request aborted, initiated by the user.
                 case HTTPRequestStates.Aborted:
                     msg = ("Request Aborted!");
-                    oe(msg, req.State, resp);
+                    oe(msg, req.State, resp,null);
                     break;
 
                 // Ceonnecting to the server is timed out.
                 case HTTPRequestStates.ConnectionTimedOut:
                     msg = ("Connection Timed Out!");
-                    oe(msg, req.State, resp);
+                    oe(msg, req.State, resp, null);
                     break;
 
                 // The request didn't finished in the given time.
                 case HTTPRequestStates.TimedOut:
                     msg = ("Processing the request Timed Out!");
-                    oe(msg, req.State, resp);
+                    oe(msg, req.State, resp, null);
                     break;
             }
         }
