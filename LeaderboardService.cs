@@ -48,7 +48,7 @@ namespace RFNEet {
 
         public void listCountOfKind(List<KindInfoQueryDto> dto, Action<List<KindResultQueryDto>> cb, URestApi.OnError one) {
             string url = "/query/leaderkind/count";
-            rest.postJson(url, null, s => {
+            rest.postJson(url, dto, s => {
                 List<KindResultQueryDto> ans = JsonConvert.DeserializeObject<List<KindResultQueryDto>>(s);
                 cb(ans);
             }, one);

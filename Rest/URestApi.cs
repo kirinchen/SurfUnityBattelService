@@ -114,7 +114,7 @@ public class URestApi : MonoBehaviour {
         return genId++;
     }
 
-    private string getUrl(string urlorPath) {
+    public string getUrl(string urlorPath) {
         if (host != null && host.Length > 0) {
             return "http://" + host + ":" + port + "/" + urlorPath;
         } else {
