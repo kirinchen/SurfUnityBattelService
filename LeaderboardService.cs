@@ -13,13 +13,13 @@ namespace RFNEet {
         }
 
         public void register(DeviceDto dto, Action cb, URestApi.OnError one) {
-            rest.postJson("/play/record", dto, (s) => {
+            rest.postJson("/play/register", dto, (s) => {
                 cb();
             }, one);
         }
 
         public void isRegistered(string id, Action<bool> cb, URestApi.OnError one) {
-            rest.get("/play/register", (s) => {
+            rest.get("/play/registered/"+ id, (s) => {
                 cb(bool.Parse(s));
             }, one);
         }
@@ -82,6 +82,15 @@ namespace RFNEet {
             public string deviceUid;
             public string leaderKindUid;
             public double score;
+            public LeaderKindDto createData;
+        }
+
+        public class LeaderKindDto {
+
+            public string uid;
+            public string name;
+            public string game;
+            public bool scoreAsc;
         }
 
     }
