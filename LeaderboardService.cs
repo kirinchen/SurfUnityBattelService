@@ -19,7 +19,7 @@ namespace RFNEet {
         }
 
         public void isRegistered(string id, Action<bool> cb, URestApi.OnError one) {
-            rest.get("/play/registered/"+ id, (s) => {
+            rest.get("/play/registered/" + id, (s) => {
                 cb(bool.Parse(s));
             }, one);
         }
@@ -43,7 +43,6 @@ namespace RFNEet {
             rest.get(url, (s) => {
                 cb(long.Parse(s));
             }, one);
-
         }
 
         public void listCountOfKind(List<KindInfoQueryDto> dto, Action<List<KindResultQueryDto>> cb, URestApi.OnError one) {
