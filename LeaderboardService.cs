@@ -12,9 +12,10 @@ namespace RFNEet {
             rest = GetComponent<URestApi>();
         }
 
-        public void register(DeviceDto dto, Action cb, URestApi.OnError one) {
+        public void register(DeviceDto dto, Action<List<RankDto>> cb, URestApi.OnError one) {
             rest.postJson("/play/register", dto, (s) => {
-                cb();
+                List<RankDto> ans = JsonConvert.DeserializeObject<List<RankDto>>(s);
+                cb(ans);
             }, one);
         }
 
@@ -69,9 +70,11 @@ namespace RFNEet {
             public string type;
             public string model;
             public string name;
+            public bool useBase64;
         }
 
         public class RankDto {
+            public string leaderKindUid;
             public string deviceUid;
             public double score;
             public string name;

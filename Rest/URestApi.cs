@@ -138,10 +138,10 @@ public class URestApi : MonoBehaviour {
     }
 
     private void setupHeaders(HTTPRequest hr) {
+        hr.AddHeader("charset", "utf-8");
         hr.AddHeader("Content-Type", "application/json");
         if (!string.IsNullOrEmpty(authorization)) {
             hr.AddHeader("Authorization", authorization);
-
         }
     }
 
