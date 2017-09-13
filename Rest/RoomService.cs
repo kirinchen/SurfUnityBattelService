@@ -57,9 +57,18 @@ namespace RFNEet {
         public class CreateRoomData {
             public string gameKindUid;
             public int maxPlayerCount;
+            public GameKindDto gameKind;
+            public object data;
         }
 
-        public class SurfMErrorDto {
+        public class GameKindDto {
+            public string uid;
+            public string name;
+            public Dictionary<string, object> information;
+            public int readyCount;
+        }
+
+            public class SurfMErrorDto {
             public long timestamp;
             public int status;
             public string error;
