@@ -21,8 +21,11 @@ namespace RFNEet {
             api = a;
         }
 
-        public void create(CreateRoomData data, Action<string> onOK, OnFail eCb) {
-            api.postJson(SUFFIX_CREATE_ROON, data, onOK, (m, s, r,e) => {
+        public void create<T>(CreateRoomData data, Action<RoomInfo<T>> onOK, OnFail eCb) {
+            api.postJson(SUFFIX_CREATE_ROON, data, (s) => {
+                RoomInfo<T> r = JsonConvert.DeserializeObject<RoomInfo<T>>(s);
+                onOK(r);
+            }, (m, s, r, e) => {
                 handleError(m, s, r, eCb);
             });
         }
@@ -40,7 +43,7 @@ namespace RFNEet {
                     r.cpu = cpu;
                 });
                 qr(list);
-            }, (m, s, r,e) => {
+            }, (m, s, r, e) => {
                 handleError(m, s, r, eCb);
             });
         }
@@ -68,7 +71,7 @@ namespace RFNEet {
             public int readyCount;
         }
 
-            public class SurfMErrorDto {
+        public class SurfMErrorDto {
             public long timestamp;
             public int status;
             public string error;
