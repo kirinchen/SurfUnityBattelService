@@ -8,6 +8,7 @@ namespace RFNEet {
         public string gameUid;
         public int currentCount;
         public int maxPlayerCount;
+        public string ownerToken;
         public T data;
 
         [JsonIgnore]

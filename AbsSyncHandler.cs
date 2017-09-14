@@ -15,14 +15,15 @@ namespace RFNEet {
             get; private set;
         }
         public delegate void OnPingError(string wsUrl, string roomId);
-        internal OnPingError onPingError = (w,r) => { };
+        internal OnPingError onPingError = (w, r) => { };
 
         public void Awake() {
             state = Status.Idle;
             sc = GetComponent<SyncCenter>();
+            sc.setErrorCb(onError);
         }
 
-        public void connect(bool ok,string wsUrl,string roomId, bool localDebug = false) {
+        public void connect(bool ok, string wsUrl, string roomId, bool localDebug = false) {
             state = Status.Connecting;
             try {
                 if (ok) {
@@ -30,7 +31,7 @@ namespace RFNEet {
                     sc.init(wsUrl, roomId, this, localDebug);
                     sc.connect(onConnected);
                 } else {
-                    onPingError(wsUrl,roomId);
+                    onPingError(wsUrl, roomId);
                 }
             } catch (Exception e) {
                 onPingError(wsUrl, roomId);
@@ -92,6 +93,11 @@ namespace RFNEet {
         }
 
         public virtual void onServerShutdown(float cutTime) {
+        }
+
+        internal virtual void onError(ErrorBundle str) {
+            Debug.LogError("onError=" + str.ToString());
+            Destroy(gameObject);
         }
 
 

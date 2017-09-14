@@ -17,7 +17,10 @@ namespace  RFNEet  {
             type = t;
         }
 
-
+        public override string ToString() {
+            string s = "ErrorBundle : [ type={0} message={1} ]";
+            return string.Format(s,type,message);
+        }
 
 
     }

@@ -9,22 +9,19 @@ namespace RFNEet {
         internal bool done;
         internal string serverName;
         internal URestApi ua { get; private set; }
-        internal PingResult result;
+        internal PingDto result;
         internal float score;
-        internal PingResult.RoomInfo bestRoom = new PingResult.RoomInfo();
+        internal PingDto.MyRoomInfo bestRoom = null;
         internal Action doneAction = () => { };
         private bool calcRoomScore = true;
         private string gameKindUid;
-
-        public PingBundle() {
-        }
 
         public void reset() {
             ok = false;
             done = false;
             serverName = string.Empty;
             result = null;
-            bestRoom = new PingResult.RoomInfo();
+            bestRoom = null;
         }
 
         public PingBundle(string gameKindUid, URestApi ua, bool calcRoomScore = true) {
@@ -41,7 +38,7 @@ namespace RFNEet {
              (s) => {
                  correct(Time.time, s);
              },
-            (m, s, r,e) => {
+            (m, s, r, e) => {
                 Debug.Log(ua.host + " No");
                 error(m);
             }
@@ -51,11 +48,9 @@ namespace RFNEet {
         internal void correct(float time, string s) {
             ok = true;
             endTime = time;
-            result = JsonConvert.DeserializeObject<PingResult>(s);
-            if (calcRoomScore) {
-                foreach (PingResult.RoomInfo r in result.list) {
-                    r.wsUrl = "ws://" + ua.host + ":" + ua.port + "/rfws";
-                }
+            result = JsonConvert.DeserializeObject<PingDto>(s);
+            foreach (PingDto.MyRoomInfo r in result.list) {
+                r.wsUrl = "ws://" + ua.host + ":" + ua.port + "/rfws";
             }
             setDone();
             float ping = (endTime - float.Parse(result.timestamp));
@@ -86,7 +81,7 @@ namespace RFNEet {
 
         private float getBestRoomScore() {
             float s = 999999;
-            foreach (PingResult.RoomInfo r in result.list) {
+            foreach (PingDto.MyRoomInfo r in result.list) {
                 float _s = getRoomScore(r);
                 if (_s < s) {
                     s = _s;
@@ -96,7 +91,7 @@ namespace RFNEet {
             return s;
         }
 
-        private float getRoomScore(PingResult.RoomInfo r) {
+        private float getRoomScore(PingDto.MyRoomInfo r) {
             int alertMax = (int)(r.maxPlayerCount * 0.8f);
             if (r.currentCount > alertMax) {
                 return r.currentCount * 150;
