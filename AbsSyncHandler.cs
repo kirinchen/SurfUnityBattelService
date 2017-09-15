@@ -16,10 +16,12 @@ namespace RFNEet {
         }
         public delegate void OnPingError(string wsUrl, string roomId);
         internal OnPingError onPingError = (w, r) => { };
+        private RemoteObjectCreaterAbs remoteObjectCreater;
 
         public void Awake() {
             state = Status.Idle;
             sc = GetComponent<SyncCenter>();
+            remoteObjectCreater = GetComponent<RemoteObjectCreaterAbs>();
             sc.setErrorCb(onError);
         }
 
@@ -79,7 +81,10 @@ namespace RFNEet {
             return onAllInRoomCbs == null;
         }
 
-        public abstract RemoteObject onNewRemoteObjectCreated(RemotePlayerRepo rpr, RemoteData rd);
+        public virtual RemoteObject onNewRemoteObjectCreated(RemotePlayerRepo rpr, RemoteData rd) {
+            if (remoteObjectCreater == null) throw new NotImplementedException();
+            return remoteObjectCreater.onNewRemoteObjectCreated( rpr,  rd);
+        }
 
         public LocalObject handoverToMe(RemoteObject ro) {
             return null;

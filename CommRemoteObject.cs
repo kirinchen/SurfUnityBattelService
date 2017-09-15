@@ -15,9 +15,7 @@ namespace RFNEet {
         }
 
         private void injectToRepo(CommRemoteRepo repo) {
-            if (string.IsNullOrEmpty(specifyOid)) {
-                throw new NullReferenceException("specifyOid is null");
-            }
+            string soid = string.IsNullOrEmpty(specifyOid) ? null : specifyOid;
             repo.create(this, specifyOid);
         }
 
