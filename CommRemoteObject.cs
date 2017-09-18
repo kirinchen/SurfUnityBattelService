@@ -7,14 +7,24 @@ namespace RFNEet {
 
         public bool autoInjectToRepo = false;
         public string specifyOid;
+        private bool _injected = false;
 
         public void Start() {
-            if (autoInjectToRepo) {
-                SyncCenter.getInstance().addOnConnectedCb(injectToRepo);
+         
+            if (autoInjectToRepo && string.IsNullOrEmpty(oid)) {
+                StartCoroutine(delayInject(() => {
+                    SyncCenter.getInstance().addOnConnectedCb(injectToRepo);
+                }));
             }
         }
 
+        private IEnumerator delayInject(Action a) {
+            yield return new WaitForSeconds(.1f);
+            a();
+        }
+
         private void injectToRepo(CommRemoteRepo repo) {
+            if (!string.IsNullOrEmpty(oid)) return;
             string soid = string.IsNullOrEmpty(specifyOid) ? null : specifyOid;
             repo.create(this, specifyOid);
         }

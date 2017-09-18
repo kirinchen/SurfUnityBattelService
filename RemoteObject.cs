@@ -15,6 +15,9 @@ namespace RFNEet {
             onUpdateOnceCalls.Add(f);
         }
 
+        //RemoteObjectCreaterSimple call 
+        internal virtual void initAtCreated(RemoteData rd) {        }
+
         internal void update(RemoteData s) {
             try {
                 if (s.getSysTag() == RemoteData.SysCmd.NONE) {

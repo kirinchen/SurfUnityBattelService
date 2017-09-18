@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 namespace RFNEet {
@@ -43,6 +44,14 @@ namespace RFNEet {
 
         public override string ToString() {
             return "x=" + x + " y=" + y;
+        }
+
+        internal static List<Pos2D> convert(Vector2[] vector2) {
+            List<Pos2D> ans = new List<Pos2D>();
+            foreach (Vector2 v in vector2) {
+                ans.Add(new Pos2D(v));
+            }
+            return ans;
         }
     }
 }
