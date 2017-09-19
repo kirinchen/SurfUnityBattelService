@@ -23,10 +23,8 @@ namespace RFNEet {
         private SyncHandler hanlder;
         private bool connected = false;
         private Action<ErrorBundle> errorCb;
-        public QueryUtils queryUitls
-        {
-            get; private set;
-        }
+        public QueryUtils queryUitls { get; private set; }
+        public readonly List<int> _lockThreadId = new List<int>();
 
         public void init(string url, string roomId, SyncHandler sh, bool localDebug = false) {
             hanlder = sh;

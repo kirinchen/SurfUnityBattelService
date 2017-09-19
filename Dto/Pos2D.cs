@@ -30,10 +30,10 @@ namespace RFNEet {
             if ((obj is Pos2D)) {
                 Pos2D _p = obj as Pos2D;
                 return _p.x == x && _p.y == y;
-            } else if (obj is Vector3) {
-                Vector3 _p = (Vector3)obj;
-                return _p.x == x && _p.z == y;
-            }
+            } else if (obj is Vector2) {
+                Vector2 _p = (Vector2)obj;
+                return _p.x == x && _p.y == y;
+            }   
             return false;
         }
 
@@ -46,12 +46,21 @@ namespace RFNEet {
             return "x=" + x + " y=" + y;
         }
 
-        internal static List<Pos2D> convert(Vector2[] vector2) {
+        public static List<Pos2D> convert(Vector2[] vector2) {
             List<Pos2D> ans = new List<Pos2D>();
             foreach (Vector2 v in vector2) {
                 ans.Add(new Pos2D(v));
             }
             return ans;
         }
+
+        public static Vector2[] conver2Array(List<Pos2D> l) {
+            Vector2[] vs = new Vector2[l.Count];
+            for (int i = 0; i < vs.Length; i++) {
+                vs[i] = l[i].toVector2();
+            }
+            return vs;
+        }
+
     }
 }

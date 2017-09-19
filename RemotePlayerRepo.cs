@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using System.Threading;
 
 namespace RFNEet {
     public class RemotePlayerRepo : PlayerRepo<RemoteObject> {
@@ -63,10 +64,15 @@ namespace RFNEet {
             Exception e;
             public NotRefindObjException(string msg, Exception e) : base(msg, e) { }
         }
+
+        
+
         internal void createNewObject(RemoteData s) {
             if (hasObjectById(s.oid)) {
                 objectMap[s.oid].update(s);
             } else if (!string.IsNullOrEmpty(s.pid) && !string.IsNullOrEmpty(s.oid)) {
+                int threadId = Thread.CurrentThread.ManagedThreadId;
+                SyncCenter.getInstance()._lockThreadId.Add(threadId);
                 try {
                     RemoteObject ro = onNewRemoteObjectCreated(this, s);
                     if (ro != null) {
@@ -76,6 +82,7 @@ namespace RFNEet {
                 } catch (NotRefindObjException re) {
                     addSuspendFindMissObjs(s.oid);
                 }
+                SyncCenter.getInstance()._lockThreadId.Remove(threadId);
             }
         }
 
