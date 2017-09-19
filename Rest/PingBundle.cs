@@ -24,6 +24,8 @@ namespace RFNEet {
             bestRoom = null;
         }
 
+
+        public PingBundle() { }
         public PingBundle(string gameKindUid, URestApi ua, bool calcRoomScore = true) {
             this.gameKindUid = gameKindUid;
             this.calcRoomScore = calcRoomScore;
