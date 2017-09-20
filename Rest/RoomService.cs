@@ -58,6 +58,7 @@ namespace RFNEet {
         }
 
         public class CreateRoomData {
+            public string roomId;
             public string gameKindUid;
             public int maxPlayerCount;
             public GameKindDto gameKind;

@@ -5,9 +5,10 @@ using UnityEngine;
 namespace RFNEet {
     public class RFUtility  {
 
-        public static void findAndCreateRoom<T>(bool existJoin,RoomService.CreateRoomData ans, Action<PingBundle, RoomInfo<T>> okcb, RoomService.OnFail onFail = null) {
+        public static void findAndCreateRoom<T>(bool existJoin,RoomService.CreateRoomData ans, Action<PingBundle, RoomInfo<T>> okcb, RoomService.OnFail onFail = null , Func<PingDto.MyRoomInfo,bool> filter = null) {
             RFServerStorer.getInstance().findPingBetter(ans.gameKindUid, (pb) => {
-                if (existJoin && pb.bestRoom != null) {
+                filter = filter == null ? (b) => { return true; } : filter;
+                if (existJoin && pb.bestRoom != null && filter(pb.bestRoom)) {
                     okcb(pb, pb.bestRoom.to<T>());
                     return;
                 }
