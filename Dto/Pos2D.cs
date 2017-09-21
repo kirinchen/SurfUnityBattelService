@@ -20,6 +20,11 @@ namespace RFNEet {
             this.y = v.z;
         }
 
+        public Pos2D(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+
         public Vector2 toVector2() {
             Vector2 ans = new Vector2(x, y);
             return ans;
@@ -43,7 +48,15 @@ namespace RFNEet {
         }
 
         public override string ToString() {
-            return "x=" + x + " y=" + y;
+            return x + "-" + y;
+        }
+
+        public override int GetHashCode() {
+            int prime = 31;
+            int result = 1;
+            result = prime * result + x.GetHashCode();
+            result = prime * result + y.GetHashCode();
+            return result;
         }
 
         public static List<Pos2D> convert(Vector2[] vector2) {
