@@ -10,8 +10,6 @@ namespace RFNEet {
         private List<Action<string>> tokenPlayerChangeListeners = new List<Action<string>>();
         private List<Action<string>> playerIntoListeners = new List<Action<string>>();
 
-
-
         void Awake() {
             isntance = this;
         }
@@ -21,7 +19,7 @@ namespace RFNEet {
             playerIntoListeners.ForEach(a=> { a(id); });
         }
 
-        public void addPlayerIntoListeners(Action<string> a) {
+        public void addPlayerIntoListener(Action<string> a) {
             playerIntoListeners.Add(a);
         }
 
@@ -35,7 +33,22 @@ namespace RFNEet {
             tokenPlayerChangeListeners.ForEach(a => { a(id); });
         }
 
+        public Data getCurrentData() {
+            Data d = new Data();
+            d.playerIds = playerIds;
+            d.tokenPlayer = tokenPlayer;
+            return d;
+        }
 
+        public void setByData(Data d) {
+            playerIds = d.playerIds;
+            tokenPlayer = d.tokenPlayer;
+        }
+
+        public class Data : RemoteData {
+            public List<string> playerIds = new List<string>();
+            public string tokenPlayer;
+        }
 
 
     }
