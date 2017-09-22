@@ -22,5 +22,9 @@ namespace RFNEet {
             Quaternion ans = new Quaternion(x, y, z, w);
             return ans;
         }
+
+        public override string ToString() {
+            return string.Format("x={0} y={1} z={2} w={3}", x, y, z, w);
+        }
     }
 }
