@@ -3,24 +3,47 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 namespace RFNEet {
-    public class PlayerCenter : MonoBehaviour {
-        public static PlayerCenter isntance { get; private set; }
+    public class PlayerQueuer : MonoBehaviour {
+        public static PlayerQueuer instance { get; private set; }
         private List<string> playerIds = new List<string>();
         public string tokenPlayer { get; private set; }
         private List<Action<string>> tokenPlayerChangeListeners = new List<Action<string>>();
         private List<Action<string>> playerIntoListeners = new List<Action<string>>();
 
         void Awake() {
-            isntance = this;
+            instance = this;
+        }
+
+        public int getSize() {
+            return playerIds.Count;
         }
 
         public void addPlayer(string id) {
+            if (playerIds.Contains(id)) return;
             playerIds.Add(id);
-            playerIntoListeners.ForEach(a=> { a(id); });
+            playerIntoListeners.ForEach(a => { a(id); });
+            if (playerIds.Count == 1) {
+                setTokenPlayer(playerIds[0]);
+            }
         }
 
         public void addPlayerIntoListener(Action<string> a) {
             playerIntoListeners.Add(a);
+        }
+
+        internal void nextToke() {
+            if (playerIds.Count <= 1) return;
+            int ci = getTokenIdx();
+            ci = (ci + 1) % getSize();
+            setTokenPlayer(getTokenByIdx(ci));
+        }
+
+        public string getTokenByIdx(int idx) {
+            return playerIds[idx];
+        }
+
+        public int getTokenIdx() {
+            return playerIds.FindIndex(p => { return string.Equals(p, tokenPlayer); });
         }
 
         public void addTokenPlayerChangeListener(Action<string> a) {
@@ -44,6 +67,7 @@ namespace RFNEet {
             playerIds = d.playerIds;
             tokenPlayer = d.tokenPlayer;
         }
+
 
         public class Data : RemoteData {
             public List<string> playerIds = new List<string>();
