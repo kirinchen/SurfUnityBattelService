@@ -18,8 +18,14 @@ namespace RFNEet {
 
         internal RemotePlayerRepo(string pid, RemoteApier api, Func<RemotePlayerRepo, RemoteData, RemoteObject> oca) : base(pid, api) {
             onNewRemoteObjectCreated = oca;
+            if (api != null) api.subscribeShooted(pid, onShooted);
+        }
+
+        internal void setRemoteApier(RemoteApier ra) {
+            api = ra;
             api.subscribeShooted(pid, onShooted);
         }
+
 
         internal void addSuspendFindMissObjs(string s) {
             suspendFindMissObjs.Add(s);
@@ -65,7 +71,7 @@ namespace RFNEet {
             public NotRefindObjException(string msg, Exception e) : base(msg, e) { }
         }
 
-        
+
 
         internal void createNewObject(RemoteData s) {
             if (hasObjectById(s.oid)) {

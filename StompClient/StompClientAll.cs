@@ -20,8 +20,8 @@ namespace UnityStomp {
         public int subNo;
 
 
-        public StompClientAll(string connectString) {
-            sessionId = UidUtils.getRandomString(8);
+        public StompClientAll(string connectString, string sid = null) {
+            sessionId = string.IsNullOrEmpty(sid) ? UidUtils.getRandomString(8) : sid;
             connectString += "/" + UidUtils.getRandomNumber(3) + "/" + sessionId + "/websocket";
             websocket = new WebSocket(new Uri(connectString));
             subNo = 0;

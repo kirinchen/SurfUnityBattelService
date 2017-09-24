@@ -25,6 +25,7 @@ namespace RFNEet {
         {
             get; private set;
         }
+        internal string url { get; private set; }
         internal float lastSyncServerTime;
         internal float lastSyncLocalTime;
         public float ping { get; private set; }
@@ -34,8 +35,9 @@ namespace RFNEet {
 
         public RemoteApier(string url, string roomId, RemoteApierHandler handler, bool ld) {
             this.handler = handler;
+            this.url = url;
             localDebug = ld;
-            sc = localDebug ? (StompClient)new StompClientDebug(url) : (StompClient)new StompClientAll(url);
+            sc = localDebug ? (StompClient)new StompClientDebug(url) : (StompClient)new StompClientAll(url,PidGeter.getPid());
             sc.setOnErrorAndClose((s) => {
                 try {
                     throwErrorBundle(ErrorBundle.Type.SeverError, s);

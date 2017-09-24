@@ -21,36 +21,27 @@ namespace RFNEet {
         }
         private int commDataTellerNum = 3;
         private SyncHandler hanlder;
-        private bool connected = false;
+        public bool connected { get; private set; }
         private Action<ErrorBundle> errorCb;
         public QueryUtils queryUitls { get; private set; }
         public readonly List<int> _lockThreadId = new List<int>();
 
-        public void init(string url, string roomId, SyncHandler sh, bool localDebug = false) {
+        public void initHandler(SyncHandler sh, Action<ErrorBundle> ecb) {
             hanlder = sh;
+            errorCb = ecb;
+        }
+
+        public void init(string url, string roomId, bool localDebug = false) {
             api = new RemoteApier(url, roomId, this, localDebug);
             queryUitls = new QueryUtils(this);
         }
 
-        public Dictionary<string, RemotePlayerRepo> getRemoteRepos() {
-            return new Dictionary<string, RemotePlayerRepo>(remoteRepos);
-        }
-
-        private void initCommRepo() {
-            CommRemoteRepo crr = new CommRemoteRepo(api, hanlder.onNewRemoteObjectCreated);
-            remoteRepos.Add(crr.pid, crr);
-        }
-
-        public bool isConnected() {
-            return connected;
-        }
-
         public CommRemoteRepo getCommRemoteRepo() {
+            if (!remoteRepos.ContainsKey(CommRemoteRepo.COMM_PID)) {
+                CommRemoteRepo crr = new CommRemoteRepo(api, hanlder.onNewRemoteObjectCreated);
+                remoteRepos.Add(crr.pid, crr);
+            }
             return (CommRemoteRepo)remoteRepos[CommRemoteRepo.COMM_PID];
-        }
-
-        public void setErrorCb(Action<ErrorBundle> ecb) {
-            errorCb = ecb;
         }
 
         public SyncObject findSyncObject(string pid, string oid) {
@@ -66,13 +57,15 @@ namespace RFNEet {
         public void connect(Action<HandshakeDto, LocalPlayerRepo> handshakeCb) {
             api.connect((hd, list) => {
                 connected = true;
-                initCommRepo();
                 localRepo = new LocalPlayerRepo(hd.meId, api);
                 localRepo.setStartAt(hd.meStartAt);
                 createRemoteList(hd.meId, list);
                 handshakeCb(hd, localRepo);
                 CommRemoteRepo crr = getCommRemoteRepo();
                 onConnectedCbs.ForEach(cb => cb(crr));
+                foreach (RemotePlayerRepo rpr in remoteRepos.Values) {
+                    rpr.setRemoteApier(api);
+                }
             });
         }
 
@@ -102,7 +95,7 @@ namespace RFNEet {
             hanlder.onAllRemotePlayerReadyed(localRepo);
         }
 
-        private RemotePlayerRepo addRemoteRepo(string sid) {
+        internal RemotePlayerRepo addRemoteRepo(string sid) {
             RemotePlayerRepo rpr = new RemotePlayerRepo(sid, api, hanlder.onNewRemoteObjectCreated);
             remoteRepos.Add(sid, rpr);
             return rpr;

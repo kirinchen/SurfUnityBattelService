@@ -22,7 +22,7 @@ namespace RFNEet {
             state = Status.Idle;
             sc = GetComponent<SyncCenter>();
             remoteObjectCreater = GetComponent<RemoteObjectCreaterAbs>();
-            sc.setErrorCb(onError);
+            sc.initHandler(this, onError);
         }
 
         public void connect(bool ok, string wsUrl, string roomId, bool localDebug = false) {
@@ -30,7 +30,7 @@ namespace RFNEet {
             try {
                 if (ok) {
                     Debug.Log(wsUrl + " connected ");
-                    sc.init(wsUrl, roomId, this, localDebug);
+                    sc.init(wsUrl, roomId, localDebug);
                     sc.connect(onConnected);
                 } else {
                     onPingError(wsUrl, roomId);
@@ -83,7 +83,7 @@ namespace RFNEet {
 
         public virtual RemoteObject onNewRemoteObjectCreated(RemotePlayerRepo rpr, RemoteData rd) {
             if (remoteObjectCreater == null) throw new NotImplementedException();
-            return remoteObjectCreater.onNewRemoteObjectCreated( rpr,  rd);
+            return remoteObjectCreater.onNewRemoteObjectCreated(rpr, rd);
         }
 
         public LocalObject handoverToMe(RemoteObject ro) {
