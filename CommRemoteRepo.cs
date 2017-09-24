@@ -26,7 +26,10 @@ namespace RFNEet {
             bool noneSpecify = string.IsNullOrEmpty(specifyOid);
             if (noneSpecify) {
                 specifyOid = UidUtils.getRandomString(SyncCenter.OID_SIZE);
+            } else {
+                if (hasObjectById(specifyOid)) return (CommRemoteObject)get(specifyOid);
             }
+
             inject(specifyOid, cro);
             if (noneSpecify) {
                 cro.postInitDto();

@@ -5,7 +5,7 @@ using UnityStomp;
 using System;
 
 namespace RFNEet {
-    public abstract class PlayerRepo<T> : SyncObjectListener where T : SyncObject  {
+    public abstract class PlayerRepo<T> : SyncObjectListener where T : SyncObject {
         private long startAt;
         internal RemoteApier api;
         internal string pid;
@@ -16,9 +16,9 @@ namespace RFNEet {
             this.api = api;
         }
 
-        public virtual T inject(string oid,T o) {
+        public virtual T inject(string oid, T o) {
             //string oid = UidUtils.getRandomString(7);
-            o.initInject(pid, oid, api,this);
+            o.initInject(pid, oid, api, this);
             objectMap.Add(oid, o);
             return o;
         }
@@ -32,7 +32,7 @@ namespace RFNEet {
         }
 
         public Dictionary<string, T> getMap() {
-            return new Dictionary<string, T>(objectMap) ;
+            return new Dictionary<string, T>(objectMap);
         }
 
         public long getStartAt() {
@@ -41,6 +41,10 @@ namespace RFNEet {
 
         public void setStartAt(long startAt) {
             this.startAt = startAt;
+        }
+
+        public T get(string s) {
+            return objectMap[s];
         }
 
     }
