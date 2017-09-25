@@ -23,6 +23,19 @@ namespace RFNEet {
             return ans;
         }
 
+        public override bool Equals(object obj) {
+            if (obj == null) return false;
+            if (obj == this) return true;
+            if ((obj is RFQuaternion)) {
+                RFQuaternion q = obj as RFQuaternion;
+                return q.w == w && q.x == x && q.y == y && q.z == z;
+            } else if (obj is Quaternion) {
+                Quaternion q = (Quaternion)obj;
+                return q.w == w && q.x == x && q.y == y && q.z == z;
+            }
+            return false;
+        }
+
         public override string ToString() {
             return string.Format("x={0} y={1} z={2} w={3}", x, y, z, w);
         }

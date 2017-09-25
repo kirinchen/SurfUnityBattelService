@@ -69,7 +69,7 @@ namespace RFNEet {
             onSelfInRoomCbs = null;
         }
 
-        public void addOnAllInRoomCb(Action a) { if (onAllInRoomCbs == null) a(); else onAllInRoomCbs.Add(a); }
+        public void addOnAllInRoomCb(Action a) { if (isAllInRoomed()) a(); else onAllInRoomCbs.Add(a); }
         private List<Action> onAllInRoomCbs = new List<Action>();
         public virtual void onAllRemotePlayerReadyed(LocalPlayerRepo localRepo) {
             onAllInRoomCbs.ForEach(a => { a(); });

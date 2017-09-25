@@ -9,6 +9,8 @@ namespace RFNEet {
         public string tokenPlayer { get; private set; }
         private List<Action<string>> tokenPlayerChangeListeners = new List<Action<string>>();
         private List<Action<string>> playerIntoListeners = new List<Action<string>>();
+        private string meId;
+
 
         void Awake() {
             instance = this;
@@ -19,6 +21,7 @@ namespace RFNEet {
         }
 
         public void addPlayer(string id) {
+            meId = id;
             if (playerIds.Contains(id)) return;
             playerIds.Add(id);
             playerIntoListeners.ForEach(a => { a(id); });
@@ -27,11 +30,18 @@ namespace RFNEet {
             }
         }
 
+        public bool isToken() {
+            if (playerIds.Count <= 0) return false;
+            if (string.IsNullOrEmpty(meId)) return false;
+            return string.Equals(tokenPlayer, meId);
+        }
+
         public void addPlayerIntoListener(Action<string> a) {
             playerIntoListeners.Add(a);
         }
 
         internal void nextToke() {
+            if (!isToken()) return;
             if (playerIds.Count <= 1) return;
             int ci = getTokenIdx();
             ci = (ci + 1) % getSize();
