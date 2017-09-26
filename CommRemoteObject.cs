@@ -17,11 +17,15 @@ namespace RFNEet {
         }
 
         private void injectToRepo(CommRemoteRepo repo) {
+            createMe();
+        }
+
+        public void createMe() {
             if (!string.IsNullOrEmpty(oid)) return;
             int threadId = Thread.CurrentThread.ManagedThreadId;
             if (SyncCenter.getInstance()._lockThreadId.Contains(threadId)) return;
             string soid = string.IsNullOrEmpty(specifyOid) ? null : specifyOid;
-            repo.create(this, specifyOid);
+            SyncCenter.getInstance().getCommRemoteRepo().create(this, specifyOid);
         }
 
         internal void postInitDto() {

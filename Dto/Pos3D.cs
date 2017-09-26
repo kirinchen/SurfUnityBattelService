@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 namespace RFNEet {
-    public class Pos3D {
+    public class Pos3D  {
 
         public float x, y, z;
 

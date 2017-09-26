@@ -1,10 +1,13 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 
 namespace RFNEet {
-    public class RemoteData {
+    public class RemoteData : ValueCheck {
+
 
         public enum SysCmd {
             NONE, NEW_OBJECT, DELETED
@@ -39,6 +42,64 @@ namespace RFNEet {
             T ans = JsonConvert.DeserializeObject<T>(_source);
             ans.setSource(_source);
             return ans;
+        }
+
+        public FieldInfo[] listFields() {
+            Type myType = GetType();
+            return myType.GetFields();
+        }
+
+        public static bool isValueSame(ValueCheck m, ValueCheck o) {
+            if (!m.GetType().Equals(o.GetType())) return false;
+            FieldInfo[] fis = m.GetType().GetFields();
+            foreach (FieldInfo fi in fis) {
+                if ("_source".Equals(fi.Name)) continue;
+                if ("cmd".Equals(fi.Name)) continue;
+                if ("tag".Equals(fi.Name)) continue;
+                object myO = fi.GetValue(m);
+                object oO = fi.GetValue(o);
+                if (myO == oO) continue;
+                if ((myO == null) != (oO == null)) return false;
+                if (myO is ValueCheck) {
+                    if (!isValueSame((ValueCheck)myO, (ValueCheck)oO)) {
+                        return false;
+                    }
+                } else if (myO is IList) {
+                    if (!eqaulList((IList)myO, (IList)oO)) return false;
+                } else if (myO is IDictionary) {
+                    if (!eqaulList((IList)myO, (IList)oO)) return false;
+                } else {
+                    if (!object.Equals(myO, oO)) {
+                        return false;
+                    }
+                }
+
+            }
+            return true;
+        }
+
+
+        private static bool eqaulMap(IDictionary a, IDictionary b) {
+            if (a == b) return true;
+            if ((a == null) != (b == null)) return false;
+            if (a.Count != b.Count) return false;
+            foreach (object k in a.Keys) {
+                if (!b.Contains(k)) return false;
+                object ao = a[k];
+                object bo = b[k];
+                if (!object.Equals(ao, bo)) return false;
+            }
+            return true;
+        }
+
+        private static bool eqaulList(IList a, IList b) {
+            if (a == b) return true;
+            if ((a == null) != (b == null)) return false;
+            if (a.Count != b.Count) return false;
+            for (int i = 0; i < a.Count; i++) {
+                if (!object.Equals(a[i], b[i])) return false;
+            }
+            return true;
         }
 
     }

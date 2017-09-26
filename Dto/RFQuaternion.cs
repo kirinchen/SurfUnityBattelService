@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 namespace RFNEet {
-    public class RFQuaternion {
+    public class RFQuaternion  {
         public float w;
 
         public float x;
