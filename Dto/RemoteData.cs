@@ -49,7 +49,11 @@ namespace RFNEet {
             return myType.GetFields();
         }
 
+
+
         public static bool isValueSame(ValueCheck m, ValueCheck o) {
+            if (m == o) return true;
+            if ((m == null) != (o == null)) return false;
             if (!m.GetType().Equals(o.GetType())) return false;
             FieldInfo[] fis = m.GetType().GetFields();
             foreach (FieldInfo fi in fis) {
@@ -60,16 +64,12 @@ namespace RFNEet {
                 object oO = fi.GetValue(o);
                 if (myO == oO) continue;
                 if ((myO == null) != (oO == null)) return false;
-                if (myO is ValueCheck) {
-                    if (!isValueSame((ValueCheck)myO, (ValueCheck)oO)) {
-                        return false;
-                    }
-                } else if (myO is IList) {
+                if (myO is IList) {
                     if (!eqaulList((IList)myO, (IList)oO)) return false;
                 } else if (myO is IDictionary) {
-                    if (!eqaulList((IList)myO, (IList)oO)) return false;
+                    if (!eqaulMap((IDictionary)myO, (IDictionary)oO)) return false;
                 } else {
-                    if (!object.Equals(myO, oO)) {
+                    if (!_isValueSame(myO, oO)) {
                         return false;
                     }
                 }
@@ -79,6 +79,18 @@ namespace RFNEet {
         }
 
 
+        private static bool _isValueSame(object a, object b) {
+            if (a == b) return true;
+            if ((a == null) != (b == null)) return false;
+            if (!a.GetType().Equals(b.GetType())) return false;
+            if (a is ValueCheck) {
+                return isValueSame((ValueCheck)a, (ValueCheck)b);
+            } else {
+                return object.Equals(a, b);
+            }
+
+        }
+
         private static bool eqaulMap(IDictionary a, IDictionary b) {
             if (a == b) return true;
             if ((a == null) != (b == null)) return false;
@@ -87,7 +99,7 @@ namespace RFNEet {
                 if (!b.Contains(k)) return false;
                 object ao = a[k];
                 object bo = b[k];
-                if (!object.Equals(ao, bo)) return false;
+                if (!_isValueSame(ao, bo)) return false;
             }
             return true;
         }
@@ -97,7 +109,7 @@ namespace RFNEet {
             if ((a == null) != (b == null)) return false;
             if (a.Count != b.Count) return false;
             for (int i = 0; i < a.Count; i++) {
-                if (!object.Equals(a[i], b[i])) return false;
+                if (!_isValueSame(a[i], b[i])) return false;
             }
             return true;
         }
