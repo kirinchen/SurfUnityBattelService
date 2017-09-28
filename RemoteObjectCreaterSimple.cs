@@ -15,7 +15,8 @@ namespace RFNEet {
         public List<Bundle> list = new List<Bundle>();
 
         internal override RemoteObject create(string tag, RemoteData rd) {
-            Bundle bundle = list.Find(b=> { return string.Equals(tag, b.id); });
+            //Debug.Log("create tag=" + tag + " rd=" + rd);
+            Bundle bundle = list.Find(b => { return string.Equals(tag, b.id); });
             RemoteObject ans = Instantiate(bundle.prefab);
             ans.initAtCreated(rd);
             return ans;
