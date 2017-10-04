@@ -9,7 +9,7 @@ namespace RFNEet {
         public string tokenPlayer { get; private set; }
         private List<Action<string>> tokenPlayerChangeListeners = new List<Action<string>>();
         private List<Action<string>> playerIntoListeners = new List<Action<string>>();
-        private string meId;
+        public string meId { get; private set; }
 
 
         void Awake() {
