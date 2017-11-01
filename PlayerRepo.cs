@@ -35,6 +35,10 @@ namespace RFNEet {
             return new Dictionary<string, T>(objectMap);
         }
 
+        public List<T> listObjs() {
+            return new List<T>(objectMap.Values);
+        }
+
         public long getStartAt() {
             return startAt;
         }

@@ -55,7 +55,16 @@ namespace RFNEet {
             }
         }
 
-        public abstract AllSyncData getCurrentInfoFunc(LocalPlayerRepo localRepo, bool hasCommData);
+
+        public virtual AllSyncData getCurrentInfoFunc(LocalPlayerRepo localRepo, bool hasCommData) {
+            AllSyncData ad = new AllSyncData();
+            if (hasCommData) {
+                foreach (CommRemoteObject lo in sc.getCommRemoteRepo().objectMap.Values) {
+                    ad.commList.Add(lo.genInitDto());
+                }
+            }
+            return ad;
+        }
 
         public virtual void onRemoteFirstSync(RemotePlayerRepo rpr, AllSyncData msg) {
         }
