@@ -30,7 +30,9 @@ namespace RFNEet {
         }
 
         public virtual void removeMe() {
-            listener.onRemoveMe(this);
+            if (listener != null) {
+                listener.onRemoveMe(this);
+            }
         }
 
         public void updateByBroadcast(RemoteBroadcastData rbd) {
