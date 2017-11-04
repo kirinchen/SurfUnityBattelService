@@ -75,9 +75,10 @@ namespace RFNEet {
 
         public void setByData(Data d) {
             playerIds = d.playerIds;
-            tokenPlayer = d.tokenPlayer;
+            if (!string.Equals(tokenPlayer, d.tokenPlayer)) {
+                setTokenPlayer( d.tokenPlayer);
+            }
         }
-
 
         public class Data : RemoteData {
             public List<string> playerIds = new List<string>();
