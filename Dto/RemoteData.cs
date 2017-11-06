@@ -6,6 +6,7 @@ using System.Reflection;
 using UnityEngine;
 
 namespace RFNEet {
+    [System.Serializable]
     public class RemoteData : ValueCheck {
 
 
@@ -44,6 +45,12 @@ namespace RFNEet {
             return ans;
         }
 
+        public RemoteData to(Type dataType) {
+            RemoteData ans =(RemoteData) JsonConvert.DeserializeObject(_source, dataType);
+            ans.setSource(_source);
+            return ans;
+        }
+
         public FieldInfo[] listFields() {
             Type myType = GetType();
             return myType.GetFields();
@@ -77,6 +84,7 @@ namespace RFNEet {
             }
             return true;
         }
+
 
 
         private static bool _isValueSame(object a, object b) {

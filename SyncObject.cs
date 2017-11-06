@@ -15,7 +15,7 @@ namespace RFNEet {
             }
         }
         internal SyncObjectListener listener;
-        private bool _destoryedMe = false;
+        public bool _destoryedMe { get; private set; }
 
         internal virtual void initInject(string pid, string oid, SyncObjectListener listener) {
             this.pid = pid;
@@ -57,13 +57,13 @@ namespace RFNEet {
             }
         }
 
-        /*void OnDestroy() {
+        public void OnDestroy() {
             try {
                 postRemoveSelf();
             } catch (Exception e) {
                 Debug.LogException(e);
             }
-        }*/
+        }
 
         public void postRemoveSelf(object target = null) {
             if (!_destoryedMe) {
