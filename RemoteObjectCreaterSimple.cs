@@ -14,6 +14,10 @@ namespace RFNEet {
 
         public List<Bundle> list = new List<Bundle>();
 
+        public Bundle findById(string id) {
+            return list.Find(b=> { return string.Equals(id, b.id); });
+        }
+
         internal override RemoteObject create(string tag, RemoteData rd) {
             //Debug.Log("create tag=" + tag + " rd=" + rd);
             Bundle bundle = list.Find(b => { return string.Equals(tag, b.id); });
