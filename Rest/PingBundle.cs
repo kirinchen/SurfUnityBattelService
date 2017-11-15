@@ -85,7 +85,7 @@ namespace RFNEet {
             float s = 999999;
             foreach (PingDto.MyRoomInfo r in result.list) {
                 float _s = getRoomScore(r);
-                if (_s < s) {
+                if (_s < s || bestRoom==null) {
                     s = _s;
                     bestRoom = r;
                 }
