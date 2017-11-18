@@ -5,35 +5,37 @@ using UnityEngine;
 namespace RFNEet {
     public class PlayerQueuer : MonoBehaviour {
         public static PlayerQueuer instance { get; private set; }
-        private List<string> playerIds = new List<string>();
-        public string tokenPlayer { get; private set; }
+
+        //private List<string> playerIds = new List<string>();
+        //public string tokenPlayer { get; private set; }
         private List<Action<string>> tokenPlayerChangeListeners = new List<Action<string>>();
         private List<Action<string>> playerIntoListeners = new List<Action<string>>();
         public string meId { get; private set; }
 
+        public Data data = new Data();
 
         void Awake() {
             instance = this;
         }
 
         public int getSize() {
-            return playerIds.Count;
+            return data.playerIds.Count;
         }
 
         public void addPlayer(string id) {
             meId = id;
-            if (playerIds.Contains(id)) return;
-            playerIds.Add(id);
+            if (data.playerIds.Contains(id)) return;
+            data.playerIds.Add(id);
             playerIntoListeners.ForEach(a => { a(id); });
-            if (playerIds.Count == 1) {
-                setTokenPlayer(playerIds[0]);
+            if (data.playerIds.Count == 1) {
+                setTokenPlayer(data.playerIds[0]);
             }
         }
 
         public bool isToken() {
-            if (playerIds.Count <= 0) return false;
+            if (data.playerIds.Count <= 0) return false;
             if (string.IsNullOrEmpty(meId)) return false;
-            return string.Equals(tokenPlayer, meId);
+            return string.Equals(data.tokenPlayer, meId);
         }
 
         public void addPlayerIntoListener(Action<string> a) {
@@ -42,18 +44,18 @@ namespace RFNEet {
 
         internal void nextToke() {
             if (!isToken()) return;
-            if (playerIds.Count <= 1) return;
+            if (data.playerIds.Count <= 1) return;
             int ci = getTokenIdx();
             ci = (ci + 1) % getSize();
             setTokenPlayer(getTokenByIdx(ci));
         }
 
         public string getTokenByIdx(int idx) {
-            return playerIds[idx];
+            return data.playerIds[idx];
         }
 
         public int getTokenIdx() {
-            return playerIds.FindIndex(p => { return string.Equals(p, tokenPlayer); });
+            return data.playerIds.FindIndex(p => { return string.Equals(p, data.tokenPlayer); });
         }
 
         public void addTokenPlayerChangeListener(Action<string> a) {
@@ -61,25 +63,32 @@ namespace RFNEet {
         }
 
         public void setTokenPlayer(string id) {
-            if (!playerIds.Contains(id)) throw new NullReferenceException("not find this id=" + id);
-            tokenPlayer = id;
+            if (!data.playerIds.Contains(id)) throw new NullReferenceException("not find this id=" + id);
+            data.tokenPlayer = id;
             tokenPlayerChangeListeners.ForEach(a => { a(id); });
         }
 
-        public Data getCurrentData() {
-            Data d = new Data();
-            d.playerIds = playerIds;
-            d.tokenPlayer = tokenPlayer;
-            return d;
+        public int getMyIndex() {
+            return data.playerIds.FindIndex(p => { return string.Equals(p, meId); });
         }
 
+        public Data getCurrentData() {
+            return data;
+        }
+        internal string getTokenPlayer() {
+            return data.tokenPlayer;
+        }
+
+
         public void setByData(Data d) {
-            playerIds = d.playerIds;
-            if (!string.Equals(tokenPlayer, d.tokenPlayer)) {
-                setTokenPlayer( d.tokenPlayer);
+            string oldT = data.tokenPlayer;
+            data = d;
+            if (!string.Equals(oldT, d.tokenPlayer)) {
+                setTokenPlayer(d.tokenPlayer);
             }
         }
 
+        [System.Serializable]
         public class Data : RemoteData {
             public List<string> playerIds = new List<string>();
             public string tokenPlayer;
