@@ -20,30 +20,30 @@ namespace RFNEet {
             }
         }
 
-        public Data data = new Data();
+        public DataProvider data;
 
         void Awake() {
             instance = this;
         }
 
         public int getSize() {
-            return data.playerIds.Count;
+            return data.playerIds().Count;
         }
 
         public void addPlayer(string id) {
             meId = id;
-            if (data.playerIds.Contains(id)) return;
-            data.playerIds.Add(id);
+            if (data.playerIds().Contains(id)) return;
+            data.addPlayer(id);
             playerIntoListeners.ForEach(a => { a(id); });
-            if (data.playerIds.Count == 1) {
-                setTokenPlayer(data.playerIds[0]);
+            if (data.playerIds().Count == 1) {
+                setTokenChange(data.playerIds()[0], TokePost.FIELD);
             }
         }
 
         public bool isToken() {
-            if (data.playerIds.Count <= 0) return false;
+            if (data.playerIds().Count <= 0) return false;
             if (string.IsNullOrEmpty(meId)) return false;
-            return string.Equals(data.tokenPlayer, meId);
+            return string.Equals(data.tokenPlayer(), meId);
         }
 
         public void addPlayerIntoListener(Action<string> a) {
@@ -52,54 +52,62 @@ namespace RFNEet {
 
         internal void nextToke() {
             if (!isToken()) return;
-            if (data.playerIds.Count <= 1) return;
+            if (data.playerIds().Count <= 1) return;
             int ci = getTokenIdx();
             ci = (ci + 1) % getSize();
-            setTokenPlayer(getTokenByIdx(ci));
+            setTokenChange(getTokenByIdx(ci), TokePost.ALL);
         }
 
         public string getTokenByIdx(int idx) {
-            return data.playerIds[idx];
+            return data.playerIds()[idx];
         }
 
         public int getTokenIdx() {
-            return data.playerIds.FindIndex(p => { return string.Equals(p, data.tokenPlayer); });
+            return data.playerIds().FindIndex(p => { return string.Equals(p, data.tokenPlayer()); });
         }
 
         public void addTokenPlayerChangeListener(Action<string> a) {
             tokenPlayerChangeListeners.Add(a);
         }
 
-        public void setTokenPlayer(string id) {
-            if (!data.playerIds.Contains(id)) throw new NullReferenceException("not find this id=" + id);
-            data.tokenPlayer = id;
+        public void triggerTokenChange(string id) {
+            setTokenChange(id, TokePost.NONE);
+        }
+
+        public void setTokenChange(string id, TokePost p) {
+            if (string.IsNullOrEmpty(id)) return;
+            if (string.Equals(id, data.tokenPlayer())) return;
+            if (!data.playerIds().Contains(id)) throw new NullReferenceException("not find this id=" + id);
+            data.setTokenPlayer(id, p);
             tokenPlayerChangeListeners.ForEach(a => { a(id); });
         }
 
         public int getMyIndex() {
-            return data.playerIds.FindIndex(p => { return string.Equals(p, meId); });
+            return data.playerIds().FindIndex(p => { return string.Equals(p, meId); });
         }
 
-        public Data getCurrentData() {
+        public DataProvider getCurrentData() {
             return data;
         }
         internal string getTokenPlayer() {
-            return data.tokenPlayer;
+            return data.tokenPlayer();
         }
 
 
-        public void setByData(Data d) {
-            string oldT = data.tokenPlayer;
+        public void setDataProvider(DataProvider d) {
             data = d;
-            if (!string.Equals(oldT, d.tokenPlayer)) {
-                setTokenPlayer(d.tokenPlayer);
-            }
         }
 
-        [System.Serializable]
-        public class Data : RemoteData {
-            public List<string> playerIds = new List<string>();
-            public string tokenPlayer;
+
+        public enum TokePost {
+            NONE, ALL, FIELD
+        }
+
+        public interface DataProvider {
+            void addPlayer(string id);
+            List<string> playerIds();
+            void setTokenPlayer(string v, TokePost post);
+            string tokenPlayer();
         }
 
 
