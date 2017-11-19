@@ -10,7 +10,15 @@ namespace RFNEet {
         //public string tokenPlayer { get; private set; }
         private List<Action<string>> tokenPlayerChangeListeners = new List<Action<string>>();
         private List<Action<string>> playerIntoListeners = new List<Action<string>>();
-        public string meId { get; private set; }
+        public string _meId;
+        public string meId
+        {
+            get { return _meId; }
+            set
+            {
+                _meId = value;
+            }
+        }
 
         public Data data = new Data();
 
