@@ -15,6 +15,8 @@ namespace RFNEet {
         internal Action doneAction = () => { };
         private bool calcRoomScore = true;
         private string gameKindUid;
+        private string assignRoomId;
+
 
         public void reset() {
             ok = false;
@@ -26,7 +28,7 @@ namespace RFNEet {
 
 
         public PingBundle() { }
-        public PingBundle(string gameKindUid, URestApi ua, bool calcRoomScore = true) {
+        public PingBundle(string gameKindUid, URestApi ua, bool calcRoomScore = true, string assignRoomId = null) {
             this.gameKindUid = gameKindUid;
             this.calcRoomScore = calcRoomScore;
             this.ua = ua;
@@ -59,6 +61,11 @@ namespace RFNEet {
             Debug.Log("p=" + ping + " " + ua.name + "/" + ua.host + ":" + ua.port + " score=" + score + " OK  s=" + s);
         }
 
+        internal bool isMathAssignRoomId(string arid) {
+            if (string.IsNullOrEmpty(arid) || string.IsNullOrEmpty(assignRoomId)) return false;
+            return string.Equals(arid, assignRoomId);
+        }
+
         public string genWsUrl() {
             return "ws://" + ua.host + ":" + ua.port + "/rfws";
         }
@@ -85,7 +92,7 @@ namespace RFNEet {
             float s = 999999;
             foreach (PingDto.MyRoomInfo r in result.list) {
                 float _s = getRoomScore(r);
-                if (_s < s || bestRoom==null) {
+                if (_s < s || bestRoom == null) {
                     s = _s;
                     bestRoom = r;
                 }

@@ -23,21 +23,21 @@ namespace RFNEet {
             }
         }
 
-        public void findPingBetter(string gameKindUid, Action<PingBundle> onDone, bool calcRoomScore = false) {
+        public void findPingBetter(string gameKindUid, Action<PingBundle> onDone, bool calcRoomScore = false, string assignRoomId = null) {
             List<PingBundle> pbs = new List<PingBundle>();
             foreach (URestApi a in uApis) {
-                PingBundle pb = new PingBundle(gameKindUid, a, calcRoomScore);
+                PingBundle pb = new PingBundle(gameKindUid, a, calcRoomScore, assignRoomId);
                 pb.pingOne();
                 pbs.Add(pb);
             }
-            StartCoroutine(waitPings(onDone, pbs));
+            StartCoroutine(waitPings(onDone, pbs, assignRoomId));
         }
 
         public List<URestApi> listAll() {
             return uApis;
         }
 
-        private IEnumerator waitPings(Action<PingBundle> onDone, List<PingBundle> pbs) {
+        private IEnumerator waitPings(Action<PingBundle> onDone, List<PingBundle> pbs, string assignRoomId) {
             int doneCount = 0;
             float startAt = Time.time;
             while (doneCount < uApis.Count && (Time.time - startAt) < 10) {
@@ -49,15 +49,20 @@ namespace RFNEet {
                     }
                 }
             }
+            onDone(getBest(pbs, assignRoomId));
+        }
+
+        private PingBundle getBest(List<PingBundle> pbs, string assignRoomId) {
             PingBundle best = null;
             float score = 999999999;
             foreach (PingBundle pb in pbs) {
+                if (pb.isMathAssignRoomId(assignRoomId)) return pb;
                 if (pb.score < score) {
                     score = pb.score;
                     best = pb;
                 }
             }
-            onDone(best);
+            return best;
         }
 
         public static RFServerStorer getInstance() {
