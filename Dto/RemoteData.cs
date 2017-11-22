@@ -40,13 +40,14 @@ namespace RFNEet {
         }
 
         public T to<T>() where T : RemoteData {
+            if (this is T) return (T)this;
             T ans = JsonConvert.DeserializeObject<T>(_source);
             ans.setSource(_source);
             return ans;
         }
 
         public RemoteData to(Type dataType) {
-            RemoteData ans =(RemoteData) JsonConvert.DeserializeObject(_source, dataType);
+            RemoteData ans = (RemoteData)JsonConvert.DeserializeObject(_source, dataType);
             ans.setSource(_source);
             return ans;
         }
@@ -85,7 +86,10 @@ namespace RFNEet {
             return true;
         }
 
-
+        internal static RemoteData injectTag(string tag, RemoteData d) {
+            d.tag = tag;
+            return d;
+        }
 
         private static bool _isValueSame(object a, object b) {
             if (a == b) return true;
