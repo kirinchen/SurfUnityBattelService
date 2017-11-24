@@ -6,9 +6,8 @@ namespace RFNEet {
     public class PlayerQueuer : MonoBehaviour {
         public static PlayerQueuer instance { get; private set; }
 
-        //private List<string> playerIds = new List<string>();
-        //public string tokenPlayer { get; private set; }
-        private List<Action<string>> tokenPlayerChangeListeners = new List<Action<string>>();
+        public delegate void OnTokenChange(string orgT, string newT);
+        private List<OnTokenChange> tokenPlayerChangeListeners = new List<OnTokenChange>();
         private List<Action<string>> playerIntoListeners = new List<Action<string>>();
         public string _meId;
         public string meId
@@ -66,7 +65,7 @@ namespace RFNEet {
             return data.playerIds().FindIndex(p => { return string.Equals(p, data.tokenPlayer()); });
         }
 
-        public void addTokenPlayerChangeListener(Action<string> a) {
+        public void addTokenPlayerChangeListener(OnTokenChange a) {
             tokenPlayerChangeListeners.Add(a);
         }
 
@@ -76,10 +75,11 @@ namespace RFNEet {
 
         public void setTokenChange(string id, TokePost p) {
             if (string.IsNullOrEmpty(id)) return;
-            if (string.Equals(id, data.tokenPlayer())) return;
+            string orgT = data.tokenPlayer();
+            if (string.Equals(id, orgT)) return;
             if (!data.playerIds().Contains(id)) throw new NullReferenceException("not find this id=" + id);
             data.setTokenPlayer(id, p);
-            tokenPlayerChangeListeners.ForEach(a => { a(id); });
+            tokenPlayerChangeListeners.ForEach(a => { a(orgT, id); });
         }
 
         public int getMyIndex() {
