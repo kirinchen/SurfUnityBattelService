@@ -116,7 +116,7 @@ namespace RFNEet {
             return true;
         }
 
-        private static bool eqaulList(IList a, IList b) {
+        public static bool eqaulList(IList a, IList b) {
             if (a == b) return true;
             if ((a == null) != (b == null)) return false;
             if (a.Count != b.Count) return false;
