@@ -19,7 +19,7 @@ namespace RFNEet {
             }
         }
 
-        public DataProvider data;
+        public DataProvider data { get; private set; }
 
         void Awake() {
             instance = this;
