@@ -10,9 +10,10 @@ namespace RFNEet {
 
         private List<PingBundle> bundles = new List<PingBundle>();
         private Action<PingBundle> onConnted;
+        public string loadName = "RFServerStorer";
 
         void Awake() {
-            RFServerStorer.createInstance(transform);
+            RFServerStorer.createInstance(transform, loadName);
         }
 
         public void connect(Action<PingBundle> a) {

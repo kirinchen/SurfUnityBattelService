@@ -69,8 +69,8 @@ namespace RFNEet {
             return instance;
         }
 
-        public static void createInstance(Transform p) {
-            RFServerStorer temp = Resources.Load<RFServerStorer>("RFServerStorer");
+        public static void createInstance(Transform p,string loadName= "RFServerStorer") {
+            RFServerStorer temp = Resources.Load<RFServerStorer>(loadName);
             Instantiate(temp, p);
         }
     }
