@@ -8,6 +8,13 @@ using BestHTTP;
 
 public class URestApi : MonoBehaviour {
 
+    public struct ErrorBundle {
+        public string error;
+        public HTTPRequestStates s;
+        public HTTPResponse resp;
+        public Exception e;
+    }
+
     public delegate void OnError(string error, HTTPRequestStates s, HTTPResponse resp , Exception e );
 
     public string host;

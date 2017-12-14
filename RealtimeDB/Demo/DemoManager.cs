@@ -14,7 +14,7 @@ namespace RFNEet.realtimeDB {
             RoomService.CreateRoomData cd = genCreateRoomData();
             RFUtility.findAndCreateRoom<object>(cd, onOk, onFail);
 
-            // db = new RealTimeDB(sc);
+           
 
         }
 
@@ -25,10 +25,11 @@ namespace RFNEet.realtimeDB {
         private void onOk(PingBundle arg1, RoomInfo<object> arg2) {
             Debug.Log("onOk=" + arg2);
             StompClientAll sc = new StompClientAll(arg1.genWsUrl());
-            db = new RealTimeDB(sc);
+            db = new RealTimeDB(arg1.ua, sc);
             db.init(s => { }, () => {
                 db.createConnect();
                 DBRefenece dr = db.createRootRef(arg2.roomId);
+                DBRefenece r= dr.parent();
                 test(dr);
             });
         }

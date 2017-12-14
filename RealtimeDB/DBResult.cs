@@ -4,8 +4,8 @@ using UnityEngine;
 namespace RFNEet.realtimeDB {
     public interface DBResult {
 
-        IEnumerable<DBResult> lisChildren();
-        string getKey();
+        IEnumerable<DBResult> children();
+        string key();
         string getRawJsonValue();
         object GetValue();
     }
