@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using BestHTTP;
 using UnityEngine;
 using UnityStomp;
+using System.Threading.Tasks;
+using surfm.tool;
 
 namespace RFNEet.realtimeDB {
-    public class DemoManager : MonoBehaviour {
+    public class DemoManager : MonoBehaviour, RemoteApierHandler {
 
         private RealTimeDB db;
         void Start() {
@@ -14,7 +16,7 @@ namespace RFNEet.realtimeDB {
             RoomService.CreateRoomData cd = genCreateRoomData();
             RFUtility.findAndCreateRoom<object>(cd, onOk, onFail);
 
-           
+
 
         }
 
@@ -24,17 +26,35 @@ namespace RFNEet.realtimeDB {
 
         private void onOk(PingBundle arg1, RoomInfo<object> arg2) {
             Debug.Log("onOk=" + arg2);
-            StompClientAll sc = new StompClientAll(arg1.genWsUrl());
-            db = new RealTimeDB(arg1.ua, sc);
-            db.init(s => { }, () => {
-                db.createConnect();
-                DBRefenece dr = db.createRootRef(arg2.roomId);
-                DBRefenece r= dr.parent();
-                test(dr);
+
+            /*RemoteApier ra = new RemoteApier(arg1.genWsUrl(), arg2.roomId, this, false);
+            ra.connect((d, l) => {
+                Debug.Log("connect ed");
+            });  */
+            StompClientAll sc = new StompClientAll(arg1.genWsUrl(), PidGeter.getPid());
+            sc.setOnErrorAndClose((s) => {
+            }, (s) => { });
+            db = new RealTimeDB(arg1.genWsUrl(), arg2.roomId);
+            db.connect((d, l) => {
+                Debug.Log("connect ed");
+            });
+            //db.init(s => { }, () => {
+            //    db.createConnect();
+            //    StartCoroutine(script(arg2));
+            //});
+        }
+
+        private IEnumerator script(RoomInfo<object> arg2) {
+            DBRefenece dr = db.createRootRef(arg2.roomId);
+            addListener(dr);
+            yield return new WaitForSeconds(3f);
+            Task t = dr.SetValueAsync("AAAA");
+            UnityUtils.setAsync(this, t, () => {
+                Debug.Log("OK~");
             });
         }
 
-        private void test(DBRefenece dr) {
+        private void addListener(DBRefenece dr) {
             dr.addValueChanged(r => {
                 Debug.Log("test=" + r.getRawJsonValue());
             });
@@ -49,6 +69,54 @@ namespace RFNEet.realtimeDB {
             ans.gameKind = gameKind;
             ans.maxPlayerCount = 4;
             return ans;
+        }
+
+        public void onNewPlayerJoined(RemoteBroadcastData broadcastData) {
+            throw new NotImplementedException();
+        }
+
+        public void onRemoteFirstSync(string sid, AllSyncDataResp allData) {
+            throw new NotImplementedException();
+        }
+
+        public void onPlayerLeaved(string sid, string hahverId) {
+            throw new NotImplementedException();
+        }
+
+        public void onPlayerLeavedByIndex(string sid) {
+            throw new NotImplementedException();
+        }
+
+        public void onRepairLostPlayer(string sid) {
+            throw new NotImplementedException();
+        }
+
+        public void onErrorCb(ErrorBundle error) {
+            throw new NotImplementedException();
+        }
+
+        public void onConnectClosedCb(string msg) {
+            throw new NotImplementedException();
+        }
+
+        public void onBroadcast(RemoteBroadcastData data) {
+            throw new NotImplementedException();
+        }
+
+        public void repairMissObject(string missWho, string moid) {
+            throw new NotImplementedException();
+        }
+
+        public void onNewPlayerReadyed(PlayerDto pDto) {
+            throw new NotImplementedException();
+        }
+
+        public void onRemotePlayTellMyObject(InboxTellObjectData iaod) {
+            throw new NotImplementedException();
+        }
+
+        public void onServerShutdown(float cutTime) {
+            throw new NotImplementedException();
         }
     }
 }

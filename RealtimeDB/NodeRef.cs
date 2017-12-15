@@ -73,7 +73,10 @@ namespace RFNEet.realtimeDB {
         }
 
         public Task SetValueAsync(object value) {
-            return null;
+            var t = Task<object>.Run(() => {
+                return db.rest.setValue(path,value);
+            });
+            return t;
         }
 
         private void addListener(ListenType t, Action<DBResult> a) {

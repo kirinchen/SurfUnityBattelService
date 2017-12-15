@@ -8,29 +8,71 @@ using UnityStomp;
 namespace RFNEet.realtimeDB {
     public class RealTimeDB : DBInit {
         public static string ROOT_KEY = "@ROOT";
-        private StompClient client;
+        private StompClient sc;
         public string meId { get; private set; }
         public string roomId { get; private set; }
         public bool ok { get; private set; }
         public RealtimeDBRest rest { get; private set; }
         public URestApi api { get; private set; }
         private Dictionary<string, NodeRef> nMap = new Dictionary<string, NodeRef>();
+        private Action<HandshakeDto, List<string>> handshakeCb;
 
-        public RealTimeDB(URestApi api, StompClient sc) {
-            this.api = api;
-            client = sc;
-            meId = client.getSessionId();
+        public RealTimeDB(string url, string roomId) {
+            sc = new StompClientAll(url, PidGeter.getPid());
+            sc.setOnErrorAndClose((s) => {
+            }, (s) => { });
+            meId = sc.getSessionId();
+            this.roomId = roomId;
         }
 
         public void init(Action<string> onFailInitializeFirebase, Action initializeFirebase) {
-            client.setOnErrorAndClose(onFailInitializeFirebase, onFailInitializeFirebase);
-            client.StompConnect((o) => {
-                initializeFirebase();
-                ok = true;
+            //client.setOnErrorAndClose(onFailInitializeFirebase, onFailInitializeFirebase);
+            sc.StompConnect(onConnected);
+        }
+
+        public void connect(Action<HandshakeDto, List<string>> handshakeCb) {
+            this.handshakeCb = handshakeCb;
+            sc.StompConnect(onConnected);
+        }
+
+        private void onConnected(object o) {
+            sc.Subscribe("/user/message/errors/", (message) => {
+                Debug.Log("/message/errors/" + message);
             });
+            sc.Subscribe("/app/" + roomId + "/joinBattle/" + Time.time, (message) => {
+                Debug.Log("joinBattle=" + message);
+            });
+            sc.Subscribe("/message/rooms/" + roomId + "/broadcast", (message) => {
+                RemoteBroadcastData d = JsonConvert.DeserializeObject<RemoteBroadcastData>(message);
+            });
+            sc.Subscribe("/message/rooms/" + roomId + "/player/leave", (message) => {
+            });
+
+            sc.Subscribe("/message/rooms/" + roomId + "/player/" + meId + "/inbox", (message) => {
+                
+            });
+
+            sc.Subscribe("/message/rooms/" + roomId + "/player/" + meId + "/sysinbox", (message) => {
+                Debug.Log("subscribeSysinbox=" + message);
+     
+            });
+
+            sc.Subscribe("/message/rooms/" + roomId + "/player/ready", (message) => {
+                Debug.Log("player/ready=" + message);
+            });
+
+            send("/app/" + roomId + "/ready", null);
+
         }
 
 
+        public void send(string path, object o) {
+            string json = "";
+            if (o != null) {
+                json = JsonConvert.SerializeObject(o);
+            }
+            sc.SendMessage(path, json);
+        }
 
         public void createConnect() {
 
@@ -52,14 +94,16 @@ namespace RFNEet.realtimeDB {
 
         internal void unlisten(ListenType t, string path) {
             string url = string.Format("/message/rooms/{0}/db/{1}/{2}", roomId, ROOT_KEY + path, t);
-            client.unSubscribe(url);
+            sc.unSubscribe(url);
         }
 
         internal List<Action<DBResult>> listen(ListenType t, string path, Action<DBResult> initA) {
+            Debug.Log("statrt listen=" + t);
             string url = string.Format("/message/rooms/{0}/db/{1}/{2}", roomId, ROOT_KEY + path, t);
             List<Action<DBResult>> ans = new List<Action<DBResult>>();
             ans.Add(initA);
-            client.Subscribe(url, d => {
+            sc.Subscribe(url, d => {
+                Debug.Log("listen=" + d);
                 DBResult nr = RealtimeDBRest.parseDBResult(d);
                 ans.ForEach(a => { a(nr); });
             });
@@ -79,13 +123,13 @@ namespace RFNEet.realtimeDB {
 
         public static string getPathByDirs(List<string> l) {
             string ans = string.Empty;
-            l.ForEach(s=> { ans += "/" + s; });
+            l.ForEach(s => { ans += "/" + s; });
             return ans;
         }
 
         public static List<string> getPathDirs(string path) {
             string[] ans = path.Split('/');
-            return new List<string>( ans);
+            return new List<string>(ans);
         }
     }
 }
