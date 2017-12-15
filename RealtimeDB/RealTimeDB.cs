@@ -15,23 +15,19 @@ namespace RFNEet.realtimeDB {
         public RealtimeDBRest rest { get; private set; }
         public URestApi api { get; private set; }
         private Dictionary<string, NodeRef> nMap = new Dictionary<string, NodeRef>();
-        private Action<HandshakeDto, List<string>> handshakeCb;
+        private Action initializeFirebase;
 
-        public RealTimeDB(string url, string roomId) {
-            sc = new StompClientAll(url, PidGeter.getPid());
-            sc.setOnErrorAndClose((s) => {
-            }, (s) => { });
+        public RealTimeDB(URestApi api, StompClient c, string roomId) {
+            sc = c;
+            this.api = api;
+            rest = new RealtimeDBRest(roomId, api);
             meId = sc.getSessionId();
             this.roomId = roomId;
         }
 
         public void init(Action<string> onFailInitializeFirebase, Action initializeFirebase) {
-            //client.setOnErrorAndClose(onFailInitializeFirebase, onFailInitializeFirebase);
-            sc.StompConnect(onConnected);
-        }
-
-        public void connect(Action<HandshakeDto, List<string>> handshakeCb) {
-            this.handshakeCb = handshakeCb;
+            this.initializeFirebase = initializeFirebase;
+            sc.setOnErrorAndClose(onFailInitializeFirebase, onFailInitializeFirebase);
             sc.StompConnect(onConnected);
         }
 
@@ -41,6 +37,7 @@ namespace RFNEet.realtimeDB {
             });
             sc.Subscribe("/app/" + roomId + "/joinBattle/" + Time.time, (message) => {
                 Debug.Log("joinBattle=" + message);
+                initializeFirebase();
             });
             sc.Subscribe("/message/rooms/" + roomId + "/broadcast", (message) => {
                 RemoteBroadcastData d = JsonConvert.DeserializeObject<RemoteBroadcastData>(message);
@@ -49,12 +46,12 @@ namespace RFNEet.realtimeDB {
             });
 
             sc.Subscribe("/message/rooms/" + roomId + "/player/" + meId + "/inbox", (message) => {
-                
+
             });
 
             sc.Subscribe("/message/rooms/" + roomId + "/player/" + meId + "/sysinbox", (message) => {
                 Debug.Log("subscribeSysinbox=" + message);
-     
+
             });
 
             sc.Subscribe("/message/rooms/" + roomId + "/player/ready", (message) => {
@@ -79,8 +76,6 @@ namespace RFNEet.realtimeDB {
         }
 
         public DBRefenece createRootRef(string roomId) {
-            rest = new RealtimeDBRest(roomId, api);
-            this.roomId = roomId;
             return getNode("");
         }
 
@@ -98,8 +93,8 @@ namespace RFNEet.realtimeDB {
         }
 
         internal List<Action<DBResult>> listen(ListenType t, string path, Action<DBResult> initA) {
-            Debug.Log("statrt listen=" + t);
             string url = string.Format("/message/rooms/{0}/db/{1}/{2}", roomId, ROOT_KEY + path, t);
+            Debug.Log("statrt listen=" + t + " url=" + url);
             List<Action<DBResult>> ans = new List<Action<DBResult>>();
             ans.Add(initA);
             sc.Subscribe(url, d => {

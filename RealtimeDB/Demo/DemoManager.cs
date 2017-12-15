@@ -32,16 +32,12 @@ namespace RFNEet.realtimeDB {
                 Debug.Log("connect ed");
             });  */
             StompClientAll sc = new StompClientAll(arg1.genWsUrl(), PidGeter.getPid());
-            sc.setOnErrorAndClose((s) => {
-            }, (s) => { });
-            db = new RealTimeDB(arg1.genWsUrl(), arg2.roomId);
-            db.connect((d, l) => {
-                Debug.Log("connect ed");
+            db = new RealTimeDB(arg1.ua, sc, arg2.roomId);
+
+            db.init(s => { }, () => {
+                db.createConnect();
+                StartCoroutine(script(arg2));
             });
-            //db.init(s => { }, () => {
-            //    db.createConnect();
-            //    StartCoroutine(script(arg2));
-            //});
         }
 
         private IEnumerator script(RoomInfo<object> arg2) {
