@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -7,9 +8,6 @@ namespace RFNEet.realtimeDB {
     public class NodeRef : DBRefenece {
 
         private RealTimeDB db;
-        //private List<Action<DBResult>> valueListeners;
-        //private List<Action<DBResult>> childAddListeners;
-        //private List<Action<DBResult>> childRemoveListeners;
         private Dictionary<ListenType, List<Action<DBResult>>> listenMap = new Dictionary<ListenType, List<Action<DBResult>>>();
         public string path { get; private set; }
         public NodeRef(RealTimeDB d, string k) {
@@ -63,18 +61,17 @@ namespace RFNEet.realtimeDB {
 
 
         public void removeMe() {
-            throw new NotImplementedException();
+            db.rest.setValue(path, null);
         }
 
-
-
         public Task SetRawJsonValueAsync(string s) {
-            throw new NotImplementedException();
+            Dictionary<string, object> m = JsonConvert.DeserializeObject<Dictionary<string, object>>(s);
+            return SetValueAsync(m);
         }
 
         public Task SetValueAsync(object value) {
             var t = Task<object>.Run(() => {
-                return db.rest.setValue(path,value);
+                return db.rest.setValue(path, value);
             });
             return t;
         }
