@@ -17,7 +17,7 @@ namespace RFNEet.realtimeDB {
 
         public IEnumerable<DBResult> children() {
             return snapshot.children.ConvertAll(c => {
-                return new SendEventArgs(c);
+                return (DBResult)new SendEventArgs(c);
             });
         }
 
