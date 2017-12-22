@@ -32,7 +32,7 @@ namespace RFNEet.realtimeDB {
                 Debug.Log("connect ed");
             });  */
             StompClientAll sc = new StompClientAll(arg1.genWsUrl(), PidGeter.getPid());
-            db = new RealTimeDB(arg1.ua, sc, arg2.roomId);
+            db = new RealTimeDB(arg1.service.api, sc, arg2.roomId);
 
             db.init(s => { }, () => {
                 db.createConnect();

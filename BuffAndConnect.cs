@@ -28,7 +28,9 @@ namespace RFNEet {
 
         private void runOnBuffAready() {
             if (onCustomPing == null) {
-                RFServerStorer.getInstance().findPingBetter(gameKindUid, onConnted, true);
+                RFServerStorer.getInstance().findPingBetter(gameKindUid, null, f => {
+                    onConnted(f.getBestRoom().pingBundle);
+                });
             } else {
                 onCustomPing(onConnted);
             }

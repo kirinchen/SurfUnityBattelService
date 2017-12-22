@@ -20,6 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4375384885776534}
   - component: {fileID: 114137573739950312}
+  - component: {fileID: 114407913076529968}
   m_Layer: 0
   m_Name: RFServerStorer
   m_TagString: Untagged
@@ -186,3 +187,15 @@ MonoBehaviour:
   port: 7878
   timeOut: 5
   authorization: 
+--- !u!114 &114407913076529968
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1472203286682714}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c825ff07864b8c24bbc3d328324c22f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scoreCalcClassName: RFNEet.DefaultPingScoreCalc

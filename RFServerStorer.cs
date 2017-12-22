@@ -7,10 +7,11 @@ namespace RFNEet {
 
         private static RFServerStorer instance;
         private List<URestApi> uApis = new List<URestApi>();
-
+        private PingDtoFinder pingFinder;
 
         void Awake() {
             instance = this;
+            pingFinder = GetComponent<PingDtoFinder>();
             injectUaBundles();
         }
 
@@ -23,21 +24,22 @@ namespace RFNEet {
             }
         }
 
-        public void findPingBetter(string gameKindUid, Action<PingBundle> onDone, bool calcRoomScore = false, string assignRoomId = null) {
+        public void findPingBetter(string gameKindUid, object filter, Action<PingDtoFinder> onDone, Predicate<PingDto.RoomI> roomFilter=null) {
+            roomFilter = roomFilter == null ? ri => { return true; } : roomFilter;
             List<PingBundle> pbs = new List<PingBundle>();
             foreach (URestApi a in uApis) {
-                PingBundle pb = new PingBundle(gameKindUid, a, calcRoomScore, assignRoomId);
+                PingBundle pb = new PingBundle(gameKindUid, filter, a, roomFilter);
                 pb.pingOne();
                 pbs.Add(pb);
             }
-            StartCoroutine(waitPings(onDone, pbs, assignRoomId));
+            StartCoroutine(waitPings(onDone, pbs));
         }
 
         public List<URestApi> listAll() {
             return uApis;
         }
 
-        private IEnumerator waitPings(Action<PingBundle> onDone, List<PingBundle> pbs, string assignRoomId) {
+        private IEnumerator waitPings(Action<PingDtoFinder> onDone, List<PingBundle> pbs) {
             int doneCount = 0;
             float startAt = Time.time;
             while (doneCount < uApis.Count && (Time.time - startAt) < 10) {
@@ -49,27 +51,15 @@ namespace RFNEet {
                     }
                 }
             }
-            onDone(getBest(pbs, assignRoomId));
-        }
-
-        private PingBundle getBest(List<PingBundle> pbs, string assignRoomId) {
-            PingBundle best = null;
-            float score = 999999999;
-            foreach (PingBundle pb in pbs) {
-                if (pb.isMathAssignRoomId(assignRoomId)) return pb;
-                if (pb.score < score) {
-                    score = pb.score;
-                    best = pb;
-                }
-            }
-            return best;
+            pingFinder.setup(pbs);
+            onDone(pingFinder);
         }
 
         public static RFServerStorer getInstance() {
             return instance;
         }
 
-        public static void createInstance(Transform p,string loadName= "RFServerStorer") {
+        public static void createInstance(Transform p, string loadName = "RFServerStorer") {
             RFServerStorer temp = Resources.Load<RFServerStorer>(loadName);
             Instantiate(temp, p);
         }

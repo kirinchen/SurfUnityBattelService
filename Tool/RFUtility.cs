@@ -6,16 +6,20 @@ namespace RFNEet {
     public class RFUtility {
 
         public static void findAndCreateRoom<T>(RoomService.CreateRoomData ans, Action<PingBundle, RoomInfo<T>> okcb, RoomService.OnFail onFail = null) {
-            RFServerStorer.getInstance().findPingBetter(ans.gameKindUid, (pb) => {
-                if (pb.bestRoom != null) {
-                    okcb(pb, pb.bestRoom.to<T>());
+            RFServerStorer.getInstance().findPingBetter(ans.gameKindUid, null, (pb) => {
+                PingDtoFinder.RoomScore rsore = pb.getBestRoom();
+                if (rsore != null) {
+                    okcb(rsore.pingBundle, rsore.room.to<T>());
                     return;
                 }
-                RoomService rs = new RoomService(pb.ua);
+                PingDtoFinder.ServerScore servs = pb.getBestServer();
+                RoomService rs = new RoomService(servs.api);
                 createRoom<T>(rs, ans, onFail, rinfo => {
-                    okcb(pb, rinfo);
+                    okcb(servs.pingBundle, rinfo);
                 });
-            }, true, ans.roomId);
+            }, r => {
+                return string.Equals(ans.roomId, r.roomId);
+            });
         }
 
         private static void createRoom<T>(RoomService rs, RoomService.CreateRoomData ans, RoomService.OnFail onFail, Action<RoomInfo<T>> onOK) {

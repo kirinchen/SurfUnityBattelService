@@ -14,7 +14,8 @@ namespace RFNEet {
         public delegate void OnFail(SurfMErrorDto sd, HTTPRequestStates s, HTTPResponse r, Exception e = null);
 
         public static readonly string SUFFIX_CREATE_ROON = "/api/v1/room/";
-        public static readonly string SUFFIX_QUERY_ROON = "/api/v1/room/{0}/querymultiple";
+        public static readonly string SUFFIX_QUERY_ROON_MULTIPLE = "/api/v1/room/{0}/querymultiple";
+        public static readonly string SUFFIX_QUERY_ROON = "/api/v1/room/{0}/query?timestamp={1}";
         internal URestApi api { get; private set; }
 
         public RoomService(URestApi a) {
@@ -30,19 +31,12 @@ namespace RFNEet {
             });
         }
 
-        public int query<T>(List<string> gameKindUids, object filter, QueryResult<T> qr, OnFail eCb) {
+        public int listRoom(string gameKindUid, object filter, Action<PingDto> cb, OnFail eCb) {
             float queryAt = Time.time;
-            string path = string.Format(SUFFIX_QUERY_ROON, JsonConvert.SerializeObject(gameKindUids));
-            return api.postJsonForHttpResp(path, filter, (resp) => {
-                string msg = resp.DataAsText;
-                List<RoomInfo<T>> list = JsonConvert.DeserializeObject<List<RoomInfo<T>>>(msg);
-                float cpu = .5f;
-                try { cpu = float.Parse(resp.GetHeaderValues(KEY_CPU)[0]); } catch (Exception e) { Debug.Log(e); }
-                list.ForEach(r => {
-                    r.ping = Time.time - queryAt;
-                    r.cpu = cpu;
-                });
-                qr(list);
+            string path = string.Format(SUFFIX_QUERY_ROON, gameKindUid, queryAt);
+            return api.postJson(path, filter, s => {
+                PingDto d = JsonConvert.DeserializeObject<PingDto>(s);
+                cb(d);
             }, (m, s, r, e) => {
                 handleError(m, s, r, eCb);
             });
