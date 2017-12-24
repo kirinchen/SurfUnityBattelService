@@ -14,10 +14,13 @@ namespace RFNEet.realtimeDB {
         void Start() {
             // StompClientAll sc = new StompClientAll("ws://127.0.0.1:7878") ;
             RoomService.CreateRoomData cd = genCreateRoomData();
-            RFUtility.findAndCreateRoom<object>(cd, onOk, onFail);
-
-
-
+            //RFUtility.findAndCreateRoom<object>(cd, onOk, onFail);
+            RFServerStorer.getInstance().
+                genPingBetter().
+                getRoomFindOrCreater<object>(cd).
+                setOnDone(onOk).
+                setOnFail(onFail).
+                findOrCreate();
         }
 
         private void onFail(RoomService.SurfMErrorDto sd, HTTPRequestStates s, HTTPResponse r, Exception e) {

@@ -3,14 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 namespace RFNEet {
-    public class PingDtoFinder : MonoBehaviour {
+    public class PingDtoFinder {
 
-        public string scoreCalcClassName = "RFNEet.DefaultPingScoreCalc";
+  
         private PingDto.ScoreCalc calc;
         private List<PingBundle> pings;
 
-        void Awake() {
-            calc = CommUtils.newInstance<PingDto.ScoreCalc>(scoreCalcClassName);
+       internal void init(PingDto.ScoreCalc c) {
+            calc = c;
         }
 
         internal void setup(List<PingBundle> p) {

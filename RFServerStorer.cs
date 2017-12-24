@@ -1,18 +1,31 @@
-﻿using System;
+﻿using surfm.tool;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 namespace RFNEet {
     public class RFServerStorer : MonoBehaviour {
 
+        public static readonly string KEY_LOAD_CONFIG = "RFNEet.load.name";
+        public static readonly string DEFAULT_CONFIG = "RFServerStorer";
+
         private static RFServerStorer instance;
         private List<URestApi> uApis = new List<URestApi>();
-        private PingDtoFinder pingFinder;
+        public string scoreCalcClassName = "RFNEet.DefaultPingScoreCalc";
+        public string pingDtoFinder = "RFNEet.PingDtoFinder";
+        private PingBetter currentPingBetter;
 
-        void Awake() {
-            instance = this;
-            pingFinder = GetComponent<PingDtoFinder>();
+
+        private PingDtoFinder newPingFinder() {
+            PingDto.ScoreCalc calc = CommUtils.newInstance<PingDto.ScoreCalc>(scoreCalcClassName);
+            PingDtoFinder ans = CommUtils.newInstance<PingDtoFinder>(pingDtoFinder);
+            ans.init(calc);
+            return ans;
+        }
+
+        private void init() {
             injectUaBundles();
+            DontDestroyOnLoad(gameObject);
         }
 
         private void injectUaBundles() {
@@ -24,44 +37,34 @@ namespace RFNEet {
             }
         }
 
-        public void findPingBetter(string gameKindUid, object filter, Action<PingDtoFinder> onDone, Predicate<PingDto.RoomI> roomFilter=null) {
-            roomFilter = roomFilter == null ? ri => { return true; } : roomFilter;
-            List<PingBundle> pbs = new List<PingBundle>();
-            foreach (URestApi a in uApis) {
-                PingBundle pb = new PingBundle(gameKindUid, filter, a, roomFilter);
-                pb.pingOne();
-                pbs.Add(pb);
+        public PingBetter genPingBetter() {
+            if (currentPingBetter != null) {
+                currentPingBetter.terminal();
+                currentPingBetter = null;
             }
-            StartCoroutine(waitPings(onDone, pbs));
+            currentPingBetter = new PingBetter(newPingFinder(), this, listAll());
+            return currentPingBetter;
         }
 
         public List<URestApi> listAll() {
             return uApis;
         }
 
-        private IEnumerator waitPings(Action<PingDtoFinder> onDone, List<PingBundle> pbs) {
-            int doneCount = 0;
-            float startAt = Time.time;
-            while (doneCount < uApis.Count && (Time.time - startAt) < 10) {
-                yield return new WaitForSeconds(0.35f);
-                doneCount = 0;
-                foreach (PingBundle ob in pbs) {
-                    if (ob.done) {
-                        doneCount++;
-                    }
-                }
-            }
-            pingFinder.setup(pbs);
-            onDone(pingFinder);
-        }
 
         public static RFServerStorer getInstance() {
+            if (instance == null) {
+                instance = createInstance();
+                instance.init();
+            }
             return instance;
         }
 
-        public static void createInstance(Transform p, string loadName = "RFServerStorer") {
-            RFServerStorer temp = Resources.Load<RFServerStorer>(loadName);
-            Instantiate(temp, p);
+        public static RFServerStorer createInstance() {
+            ConstantRepo cr = ConstantRepo.getInstance();
+            string rn = cr.opt<string>(KEY_LOAD_CONFIG, null);
+            rn = string.IsNullOrEmpty(rn) ? DEFAULT_CONFIG : rn;
+            RFServerStorer temp = Resources.Load<RFServerStorer>(rn);
+            return Instantiate(temp);
         }
     }
 }

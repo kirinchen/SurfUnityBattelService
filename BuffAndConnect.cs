@@ -10,11 +10,7 @@ namespace RFNEet {
 
         private List<PingBundle> bundles = new List<PingBundle>();
         private Action<PingBundle> onConnted;
-        public string loadName = "RFServerStorer";
 
-        void Awake() {
-            RFServerStorer.createInstance(transform, loadName);
-        }
 
         public void connect(Action<PingBundle> a) {
             onConnted = a;
@@ -28,9 +24,12 @@ namespace RFNEet {
 
         private void runOnBuffAready() {
             if (onCustomPing == null) {
-                RFServerStorer.getInstance().findPingBetter(gameKindUid, null, f => {
+                PingBetter pb= RFServerStorer.getInstance().genPingBetter();
+                pb.addOnDone(f=> {
                     onConnted(f.getBestRoom().pingBundle);
                 });
+                pb.ping(gameKindUid);
+
             } else {
                 onCustomPing(onConnted);
             }

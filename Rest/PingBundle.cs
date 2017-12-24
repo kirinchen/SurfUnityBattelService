@@ -33,8 +33,8 @@ namespace RFNEet {
             this.roomFilter = roomFilter;
         }
 
-        public void pingOne() {
-            service.listRoom(gameKindUid, filter, pd=> {
+        public int pingOne() {
+          return  service.listRoom(gameKindUid, filter, pd=> {
                 pd.list = pd.list.FindAll(roomFilter);
                 result = pd;
                 result.ping = Time.time - float.Parse(pd.timestamp);
@@ -46,8 +46,6 @@ namespace RFNEet {
             setDone(false);
         }
 
-
-
         public string genWsUrl() {
             return genWsUrl(service.api);
         }
@@ -55,19 +53,6 @@ namespace RFNEet {
         public static string genWsUrl(URestApi ua) {
             return "ws://" + ua.host + ":" + ua.port + "/rfws";
         }
-
-
-
-        //private float getRoomScore(PingDto.RoomI r) {
-        //    int alertMax = (int)(r.maxPlayerCount * 0.8f);
-        //    if (r.currentCount > alertMax) {
-        //        return r.currentCount * 150;
-        //    } else {
-        //        int half = r.maxPlayerCount / 2;
-        //        return Mathf.Abs(r.currentCount - half);
-        //    }
-        //}
-
 
 
         private void setDone(bool _ok) {
