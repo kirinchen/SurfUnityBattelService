@@ -8,71 +8,34 @@ using UnityStomp;
 namespace RFNEet.realtimeDB {
     public class RealTimeDB : DBInit {
         public static string ROOT_KEY = "@ROOT";
-        private StompClient sc;
+        private StompClient sc { get { return stompIniter.client; } }
         public string meId { get; private set; }
-        public string roomId { get; private set; }
+        public string roomId { get { return stompIniter.roomId; } }
+        private StompIniter stompIniter;
         public bool ok { get; private set; }
         public RealtimeDBRest rest { get; private set; }
         public URestApi api { get; private set; }
         private Dictionary<string, NodeRef> nMap = new Dictionary<string, NodeRef>();
         private Action initializeFirebase;
 
-        public RealTimeDB(URestApi api, StompClient c, string roomId) {
-            sc = c;
+        public RealTimeDB(URestApi api, StompIniter si) {
+            stompIniter = si;
             this.api = api;
             rest = new RealtimeDBRest(roomId, api);
             meId = sc.getSessionId();
-            this.roomId = roomId;
         }
 
         public void init(Action<string> onFailInitializeFirebase, Action initializeFirebase) {
             this.initializeFirebase = initializeFirebase;
             sc.setOnErrorAndClose(onFailInitializeFirebase, onFailInitializeFirebase);
-            sc.StompConnect(onConnected);
-        }
-
-        private void onConnected(object o) {
-            sc.Subscribe("/user/message/errors/", (message) => {
-                Debug.Log("/message/errors/" + message);
-            });
-            sc.Subscribe("/app/" + roomId + "/joinBattle/" + Time.time, (message) => {
-                Debug.Log("joinBattle=" + message);
+            stompIniter.addOnHandshake(m => {
+                Debug.Log("joinBattle=" + m);
                 initializeFirebase();
             });
-            sc.Subscribe("/message/rooms/" + roomId + "/broadcast", (message) => {
-                RemoteBroadcastData d = JsonConvert.DeserializeObject<RemoteBroadcastData>(message);
-            });
-            sc.Subscribe("/message/rooms/" + roomId + "/player/leave", (message) => {
-            });
-
-            sc.Subscribe("/message/rooms/" + roomId + "/player/" + meId + "/inbox", (message) => {
-
-            });
-
-            sc.Subscribe("/message/rooms/" + roomId + "/player/" + meId + "/sysinbox", (message) => {
-                Debug.Log("subscribeSysinbox=" + message);
-
-            });
-
-            sc.Subscribe("/message/rooms/" + roomId + "/player/ready", (message) => {
-                Debug.Log("player/ready=" + message);
-            });
-
-            send("/app/" + roomId + "/ready", null);
-
-        }
-
-
-        public void send(string path, object o) {
-            string json = "";
-            if (o != null) {
-                json = JsonConvert.SerializeObject(o);
-            }
-            sc.SendMessage(path, json);
+            stompIniter.connect();
         }
 
         public void createConnect() {
-
         }
 
         public DBRefenece createRootRef(string roomId) {

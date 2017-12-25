@@ -8,9 +8,10 @@ using System.Threading.Tasks;
 using surfm.tool;
 
 namespace RFNEet.realtimeDB {
-    public class DemoManager : MonoBehaviour, RemoteApierHandler {
+    public class DemoManager : AbsSyncHandler {
 
         private RealTimeDB db;
+        private RoomInfo<object> roomI;
         void Start() {
             // StompClientAll sc = new StompClientAll("ws://127.0.0.1:7878") ;
             RoomService.CreateRoomData cd = genCreateRoomData();
@@ -21,6 +22,7 @@ namespace RFNEet.realtimeDB {
                 setOnDone(onOk).
                 setOnFail(onFail).
                 findOrCreate();
+
         }
 
         private void onFail(RoomService.SurfMErrorDto sd, HTTPRequestStates s, HTTPResponse r, Exception e) {
@@ -29,17 +31,17 @@ namespace RFNEet.realtimeDB {
 
         private void onOk(PingBundle arg1, RoomInfo<object> arg2) {
             Debug.Log("onOk=" + arg2);
+            roomI = arg2;
+            connect(true, arg1.service.api, arg2.roomId);
+        }
 
-            /*RemoteApier ra = new RemoteApier(arg1.genWsUrl(), arg2.roomId, this, false);
-            ra.connect((d, l) => {
-                Debug.Log("connect ed");
-            });  */
-            StompClientAll sc = new StompClientAll(arg1.genWsUrl(), PidGeter.getPid());
-            db = new RealTimeDB(arg1.service.api, sc, arg2.roomId);
 
+        public override void onAllRemotePlayerReadyed(LocalPlayerRepo localRepo) {
+            base.onAllRemotePlayerReadyed(localRepo);
+            db = SyncCenter.getInstance().repo;
             db.init(s => { }, () => {
                 db.createConnect();
-                StartCoroutine(script(arg2));
+                StartCoroutine(script(roomI));
             });
         }
 
@@ -59,7 +61,7 @@ namespace RFNEet.realtimeDB {
             });
         }
 
-        private RoomService.CreateRoomData genCreateRoomData() {
+        public static RoomService.CreateRoomData genCreateRoomData() {
             RoomService.CreateRoomData ans = new RoomService.CreateRoomData();
             RoomService.GameKindDto gameKind = new RoomService.GameKindDto();
             gameKind.name = "Test";
@@ -70,52 +72,6 @@ namespace RFNEet.realtimeDB {
             return ans;
         }
 
-        public void onNewPlayerJoined(RemoteBroadcastData broadcastData) {
-            throw new NotImplementedException();
-        }
 
-        public void onRemoteFirstSync(string sid, AllSyncDataResp allData) {
-            throw new NotImplementedException();
-        }
-
-        public void onPlayerLeaved(string sid, string hahverId) {
-            throw new NotImplementedException();
-        }
-
-        public void onPlayerLeavedByIndex(string sid) {
-            throw new NotImplementedException();
-        }
-
-        public void onRepairLostPlayer(string sid) {
-            throw new NotImplementedException();
-        }
-
-        public void onErrorCb(ErrorBundle error) {
-            throw new NotImplementedException();
-        }
-
-        public void onConnectClosedCb(string msg) {
-            throw new NotImplementedException();
-        }
-
-        public void onBroadcast(RemoteBroadcastData data) {
-            throw new NotImplementedException();
-        }
-
-        public void repairMissObject(string missWho, string moid) {
-            throw new NotImplementedException();
-        }
-
-        public void onNewPlayerReadyed(PlayerDto pDto) {
-            throw new NotImplementedException();
-        }
-
-        public void onRemotePlayTellMyObject(InboxTellObjectData iaod) {
-            throw new NotImplementedException();
-        }
-
-        public void onServerShutdown(float cutTime) {
-            throw new NotImplementedException();
-        }
     }
 }

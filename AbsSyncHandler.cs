@@ -2,6 +2,7 @@
 using System.Collections;
 using System;
 using System.Collections.Generic;
+using surfm.tool;
 
 namespace RFNEet {
     public abstract class AbsSyncHandler : MonoBehaviour, SyncHandler {
@@ -25,31 +26,30 @@ namespace RFNEet {
             sc.initHandler(this, onError);
         }
 
-        public void connect(bool ok, string wsUrl, string roomId, bool localDebug = false) {
+        public void connect(bool ok, URestApi api, string roomId, bool localDebug = false) {
             state = Status.Connecting;
             try {
                 if (ok) {
-                    Debug.Log(wsUrl + " connected ");
-                    sc.init(wsUrl, roomId, localDebug);
+                    Debug.Log(PingBundle.genWsUrl(api) + " connected ");
+                    sc.init(api, roomId, localDebug);
                     sc.connect(onConnected);
                 } else {
-                    onPingError(wsUrl, roomId);
+                    onPingError(PingBundle.genWsUrl(api), roomId);
                 }
             } catch (Exception e) {
-                onPingError(wsUrl, roomId);
+                onPingError(PingBundle.genWsUrl(api), roomId);
             }
         }
 
-        private List<Action> onConnectCbs = new List<Action>();
+        private CallbackList onConnectCbs = new CallbackList();
         public void addOnConnectedCb(Action a) {
-            if (onConnectCbs == null) a(); else onConnectCbs.Add(a);
+            onConnectCbs.add(a);
         }
         internal HandshakeDto handshakeDto { get; private set; }
         internal virtual void onConnected(HandshakeDto hd, LocalPlayerRepo lpr) {
             try {
                 handshakeDto = hd;
-                onConnectCbs.ForEach(a => { a(); });
-                onConnectCbs = null;
+                onConnectCbs.done();
             } catch (Exception e) {
                 Debug.Log(e);
             }
@@ -78,16 +78,15 @@ namespace RFNEet {
             onSelfInRoomCbs = null;
         }
 
-        public void addOnAllInRoomCb(Action a) { if (isAllInRoomed()) a(); else onAllInRoomCbs.Add(a); }
-        private List<Action> onAllInRoomCbs = new List<Action>();
+        public void addOnAllInRoomCb(Action a) { onAllInRoomCbs.add(a); }
+        private CallbackList onAllInRoomCbs = new CallbackList();
         public virtual void onAllRemotePlayerReadyed(LocalPlayerRepo localRepo) {
-            onAllInRoomCbs.ForEach(a => { a(); });
-            onAllInRoomCbs = null;
+            onAllInRoomCbs.done();
             Debug.Log("onAllRemotePlayerReadyed");
         }
 
         public bool isAllInRoomed() {
-            return onAllInRoomCbs == null;
+            return onAllInRoomCbs.isDone();
         }
 
         public virtual RemoteObject onNewRemoteObjectCreated(RemotePlayerRepo rpr, RemoteData rd) {

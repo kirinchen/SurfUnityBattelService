@@ -16,16 +16,10 @@ namespace RFNEet {
         public static readonly string KEY_TYPE_NEW_PLAYER_JOINED = "NewPlayerJoined";
         public static readonly string KEY_TYPE_GENERAL = "General";
         public static readonly string KEY_TYPE_SHOTDOWN = "ShutDown";
-        private StompClient sc;
-        internal string roomId
-        {
-            get; private set;
-        }
-        internal string meId
-        {
-            get; private set;
-        }
-        internal string url { get; private set; }
+        private StompClient sc { get { return stompIniter.client; } }
+        internal string roomId { get { return stompIniter.roomId; } }
+        internal string meId { get; private set; }
+        private StompIniter stompIniter;
         internal float lastSyncServerTime;
         internal float lastSyncLocalTime;
         public float ping { get; private set; }
@@ -33,11 +27,9 @@ namespace RFNEet {
         private RemoteApierHandler handler;
         private bool localDebug = false;
 
-        public RemoteApier(string url, string roomId, RemoteApierHandler handler, bool ld) {
+        public RemoteApier( StompIniter si, RemoteApierHandler handler) {
             this.handler = handler;
-            this.url = url;
-            localDebug = ld;
-            sc = localDebug ? (StompClient)new StompClientDebug(url) : (StompClient)new StompClientAll(url,PidGeter.getPid());
+            stompIniter = si;
             sc.setOnErrorAndClose((s) => {
                 try {
                     throwErrorBundle(ErrorBundle.Type.SeverError, s);
@@ -46,12 +38,14 @@ namespace RFNEet {
                 }
             }, handler.onConnectClosedCb);
             meId = sc.getSessionId();
-            this.roomId = roomId;
         }
 
         public void connect(Action<HandshakeDto, List<string>> handshakeCb) {
             this.handshakeCb = handshakeCb;
-            sc.StompConnect(onConnected);
+            stompIniter.
+                addOnConnects(onConnected).
+                addOnHandshake(parseHandshake).
+                connect();
         }
 
         private void throwErrorBundle(ErrorBundle.Type t, string msg) {
@@ -59,16 +53,12 @@ namespace RFNEet {
             eb.message = msg;
             handler.onErrorCb(eb);
         }
-
         private void onConnected(object o) {
             sc.Subscribe("/user/message/errors/", (message) => {
                 Debug.Log("/message/errors/" + message);
                 throwErrorBundle(ErrorBundle.Type.Runtime, message);
             });
-            sc.Subscribe("/app/" + roomId + "/joinBattle/" + Time.time, (message) => {
-                Debug.Log("joinBattle=" + message);
-                parseHandshake(message);
-            });
+
             sc.Subscribe("/message/rooms/" + roomId + "/broadcast", (message) => {
                 RemoteBroadcastData d = JsonConvert.DeserializeObject<RemoteBroadcastData>(message);
                 d.setSource(message);
@@ -111,7 +101,6 @@ namespace RFNEet {
                     handler.onRemotePlayTellMyObject(iaod);
                 }
             });
-
             sc.Subscribe("/message/rooms/" + roomId + "/player/" + meId + "/sysinbox", (message) => {
                 Debug.Log("subscribeSysinbox=" + message);
                 SysInboxDto sdto = JsonConvert.DeserializeObject<SysInboxDto>(message);
@@ -124,7 +113,6 @@ namespace RFNEet {
                     handler.onRepairLostPlayer(sdto.lostPlayerId);
                 }
             });
-
             sc.Subscribe("/message/rooms/" + roomId + "/player/ready", (message) => {
                 Debug.Log("player/ready=" + message);
                 PlayerDto pdto = JsonConvert.DeserializeObject<PlayerDto>(message);
@@ -132,9 +120,6 @@ namespace RFNEet {
                     handler.onNewPlayerReadyed(pdto);
                 }
             });
-
-            send("/app/" + roomId + "/ready", null);
-
         }
 
         internal void checkPlayerList(List<string> ps) {
@@ -201,14 +186,8 @@ namespace RFNEet {
             send(path, o);
         }
 
-
-
         public void send(string path, object o) {
-            string json = "";
-            if (o != null) {
-                json = JsonConvert.SerializeObject(o);
-            }
-            sc.SendMessage(path, json);
+            StompIniter.send(sc, path, o);
         }
 
         internal void close() {
@@ -220,7 +199,6 @@ namespace RFNEet {
         public static object parse(string msg, string key) {
             Dictionary<string, object> d = JsonConvert.DeserializeObject<Dictionary<string, object>>(msg);
             return d[key];
-
         }
 
         public void command(CommandDto.Command cmd) {

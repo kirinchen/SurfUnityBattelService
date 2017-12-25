@@ -2,6 +2,8 @@
 using System.Collections;
 using System;
 using System.Collections.Generic;
+using UnityStomp;
+using RFNEet.realtimeDB;
 
 namespace RFNEet {
 
@@ -15,10 +17,8 @@ namespace RFNEet {
             get; private set;
         }
         internal Dictionary<string, RemotePlayerRepo> remoteRepos = new Dictionary<string, RemotePlayerRepo>();
-        internal RemoteApier api
-        {
-            get; private set;
-        }
+        internal RemoteApier api { get; private set; }
+        public RealTimeDB repo { get; private set; }
         private int commDataTellerNum = 3;
         private SyncHandler hanlder;
         public bool connected { get; private set; }
@@ -31,8 +31,12 @@ namespace RFNEet {
             errorCb = ecb;
         }
 
-        public void init(string url, string roomId, bool localDebug = false) {
-            api = new RemoteApier(url, roomId, this, localDebug);
+        public void init(URestApi ua, string roomId, bool localDebug = false) {
+            string wsurl = PingBundle.genWsUrl(ua);
+            StompClient sc = localDebug ? (StompClient)new StompClientDebug(wsurl) : (StompClient)new StompClientAll(wsurl, PidGeter.getPid());
+            StompIniter si = new StompIniter(sc, roomId);
+            api = new RemoteApier(si, this);
+            repo = new RealTimeDB(ua, si);
             queryUitls = new QueryUtils(this);
         }
 
@@ -55,6 +59,7 @@ namespace RFNEet {
         public void addOnConnectedCb(Action<CommRemoteRepo> cb) { if (connected) cb(getCommRemoteRepo()); else onConnectedCbs.Add(cb); }
         private List<Action<CommRemoteRepo>> onConnectedCbs = new List<Action<CommRemoteRepo>>();
         public void connect(Action<HandshakeDto, LocalPlayerRepo> handshakeCb) {
+            
             api.connect((hd, list) => {
                 connected = true;
                 localRepo = new LocalPlayerRepo(hd.meId, api);
@@ -193,8 +198,6 @@ namespace RFNEet {
             RemotePlayerRepo rpr = remoteRepos.ContainsKey(lostPis) ? remoteRepos[lostPis] : addRemoteRepo(lostPis);
             tellNewPlayerMyInfo(rpr, false);
         }
-
-
 
         /* old player tell self it`s information */
         public void onRemoteFirstSync(string sid, AllSyncDataResp asdr) {
