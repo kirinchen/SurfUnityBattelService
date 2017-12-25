@@ -21,12 +21,12 @@ namespace RFNEet {
             ok = false;
             done = false;
             filter = null;
-           result = null;
+            result = null;
         }
 
 
         public PingBundle() { }
-        public PingBundle(string gameKindUid,object f, URestApi ua, Predicate<PingDto.RoomI> roomFilter = null) {
+        public PingBundle(string gameKindUid, object f, URestApi ua, Predicate<PingDto.RoomI> roomFilter = null) {
             this.filter = f;
             this.gameKindUid = gameKindUid;
             service = new RoomService(ua);
@@ -34,7 +34,7 @@ namespace RFNEet {
         }
 
         public int pingOne() {
-          return  service.listRoom(gameKindUid, filter, pd=> {
+            return service.listRoom(gameKindUid, filter, pd => {
                 pd.list = pd.list.FindAll(roomFilter);
                 result = pd;
                 result.ping = Time.time - float.Parse(pd.timestamp);
@@ -51,6 +51,7 @@ namespace RFNEet {
         }
 
         public static string genWsUrl(URestApi ua) {
+            if (ua == null) return "NULL";
             return "ws://" + ua.host + ":" + ua.port + "/rfws";
         }
 
