@@ -9,6 +9,7 @@ namespace RFNEet {
 
         private PingBetter pingBetter;
         private RoomService.CreateRoomData createData;
+        private bool findExist = true;
         private OnDone onDone;
         private RoomService.OnFail onFail = (a, s, d, f) => {
             Debug.Log(string.Format("a={0} s={1} d={2} f={3}", a, s, d, f));
@@ -29,15 +30,22 @@ namespace RFNEet {
             return this;
         }
 
+        public RoomFindOrCreater<T> disableFindExist() {
+            findExist = false;
+            return this;
+        }
+
         public void findOrCreate() {
             pingBetter.addOnDone(onFinded).ping(createData.gameKindUid);
         }
 
         private void onFinded(PingDtoFinder pb) {
-            PingDtoFinder.RoomScore rsore = pb.getBestRoom();
-            if (rsore != null) {
-                if (onDone != null) onDone(rsore.pingBundle, rsore.room.to<T>());
-                return;
+            if (findExist) {
+                PingDtoFinder.RoomScore rsore = pb.getBestRoom();
+                if (rsore != null) {
+                    if (onDone != null) onDone(rsore.pingBundle, rsore.room.to<T>());
+                    return;
+                }
             }
             PingDtoFinder.ServerScore servs = pb.getBestServer();
             RoomService rs = new RoomService(servs.api);
@@ -45,6 +53,11 @@ namespace RFNEet {
         }
 
         private void createRoom(RoomService rs, PingBundle pingBundle) {
+            if (onFail == null) {
+                onFail = (a, s, d, f) => {
+                    Debug.Log(string.Format("a={0} s={1} d={2} f={3}", a, s, d, f));
+                };
+            }
             rs.create<T>(createData, rinfo => {
                 onDone(pingBundle, rinfo);
             }, onFail);

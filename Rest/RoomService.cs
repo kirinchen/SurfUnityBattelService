@@ -16,6 +16,7 @@ namespace RFNEet {
         public static readonly string SUFFIX_CREATE_ROON = "/api/v1/room/";
         public static readonly string SUFFIX_QUERY_ROON_MULTIPLE = "/api/v1/room/{0}/querymultiple";
         public static readonly string SUFFIX_QUERY_ROON = "/api/v1/room/{0}/query?timestamp={1}";
+        public static readonly string SUFFIX_QUERY_ROON_MUL = "/api/v1/room/{0}/querymultiple?timestamp={1}";
         internal URestApi api { get; private set; }
 
         public RoomService(URestApi a) {
@@ -34,6 +35,18 @@ namespace RFNEet {
         public int listRoom(string gameKindUid, object filter, Action<PingDto> cb, OnFail eCb) {
             float queryAt = Time.time;
             string path = string.Format(SUFFIX_QUERY_ROON, gameKindUid, queryAt);
+            return api.postJson(path, filter, s => {
+                PingDto d = JsonConvert.DeserializeObject<PingDto>(s);
+                cb(d);
+            }, (m, s, r, e) => {
+                handleError(m, s, r, eCb);
+            });
+        }
+
+        public int listRoom(List<string> gameKindUids, object filter, Action<PingDto> cb, OnFail eCb) {
+            float queryAt = Time.time;
+            string ids = JsonConvert.SerializeObject(gameKindUids);
+            string path = string.Format(SUFFIX_QUERY_ROON_MUL, ids, queryAt);
             return api.postJson(path, filter, s => {
                 PingDto d = JsonConvert.DeserializeObject<PingDto>(s);
                 cb(d);

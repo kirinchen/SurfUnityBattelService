@@ -24,6 +24,18 @@ public class URestApi : MonoBehaviour {
     private Dictionary<int, RequestBundle> map = new Dictionary<int, RequestBundle>();
     public string authorization;
 
+    public struct B {
+        public bool noned;
+        public string host;
+        public string port;
+        public float timeOut;
+        public string authorization;
+    }
+
+
+
+
+
     void Start() { }
 
     public void abortAll() {
@@ -163,7 +175,26 @@ public class URestApi : MonoBehaviour {
         }, onError);
     }
 
+    public B getB() {
+        return new B() {
+            authorization = authorization,
+            host = host,
+            port = port,
+            timeOut = timeOut
+        };
+    }
 
+    public static URestApi newInstance(B b) {
+        if (b.noned) return null;
+        string s = string.Format("h={0} p={1} t={2} a={3}", b.host, b.port, b.timeOut, b.authorization);
+        GameObject go = new GameObject(s);
+        URestApi ans = go.AddComponent<URestApi>();
+        ans.host = b.host;
+        ans.port = b.port;
+        ans.timeOut = b.timeOut;
+        ans.authorization = b.authorization;
+        return ans;
+    }
 
     public class RequestBundle {
         public HTTPRequest www;
