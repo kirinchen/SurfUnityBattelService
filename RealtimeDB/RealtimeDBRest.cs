@@ -47,6 +47,7 @@ namespace RFNEet.realtimeDB {
         }
 
         internal object setValue(string path, object value) {
+            Debug.Log("setValue="+ value);
             path = RealTimeDB.ROOT_KEY + path;
             ManualResetEvent _stopped = new ManualResetEvent(false);
             object ans = null;

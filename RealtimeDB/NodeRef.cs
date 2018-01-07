@@ -70,6 +70,9 @@ namespace RFNEet.realtimeDB {
         }
 
         public Task SetValueAsync(object value) {
+            if (value is Enum) {
+                value = value.ToString();
+            }
             var t = Task<object>.Run(() => {
                 return db.rest.setValue(path, value);
             });
