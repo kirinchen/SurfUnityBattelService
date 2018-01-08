@@ -57,7 +57,6 @@ namespace RFNEet.realtimeDB {
 
         internal List<Action<DBResult>> listen(ListenType t, string path, Action<DBResult> initA) {
             string url = string.Format("/message/rooms/{0}/db/{1}/{2}", roomId, ROOT_KEY + path, t);
-            Debug.Log("statrt listen=" + t + " url=" + url);
             List<Action<DBResult>> ans = new List<Action<DBResult>>();
             ans.Add(initA);
             sc.Subscribe(url, d => {

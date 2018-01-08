@@ -16,7 +16,7 @@ namespace RFNEet.realtimeDB {
         }
 
         public IEnumerable<DBResult> children() {
-            return snapshot.children.ConvertAll(c => {
+            return snapshot.listChildren().ConvertAll(c => {
                 return (DBResult)new SendEventArgs(c);
             });
         }
@@ -38,7 +38,37 @@ namespace RFNEet.realtimeDB {
 
             public string key;
             public object value;
-            public List<NodeData> children;
+
+            public List<NodeData> listChildren() {
+                if (value is Dictionary<string, object>) {
+                    return listChildren((Dictionary<string, object>)value);
+                } else if (value is List<object>) {
+                    return listChildren((List<object>)value);
+                }
+                return new List<NodeData>();
+            }
+
+            private static List<NodeData> listChildren(List<object> value) {
+                List<NodeData> ans = new List<NodeData>();
+                for (int i = 0; i < value.Count; i++) {
+                    NodeData nd = new NodeData();
+                    nd.key = i + "";
+                    nd.value = value[i];
+                    ans.Add(nd);
+                }
+                return ans;
+            }
+
+            private static List<NodeData> listChildren(Dictionary<string, object> value) {
+                List<NodeData> ans = new List<NodeData>();
+                foreach (string k in value.Keys) {
+                    NodeData nd = new NodeData();
+                    nd.key = k;
+                    nd.value = value[k];
+                    ans.Add(nd);
+                }
+                return ans;
+            }
         }
     }
 }

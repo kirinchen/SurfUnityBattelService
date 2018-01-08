@@ -13,6 +13,10 @@ public class URestApi : MonoBehaviour {
         public HTTPRequestStates s;
         public HTTPResponse resp;
         public Exception e;
+
+        public override string ToString() {
+            return string.Format("error={0} s={1} resp={2} e={3}", error, s, resp, e);
+        }
     }
 
     public delegate void OnError(string error, HTTPRequestStates s, HTTPResponse resp, Exception e);

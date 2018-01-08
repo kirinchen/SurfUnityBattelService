@@ -70,6 +70,9 @@ namespace RFNEet.realtimeDB {
         }
 
         public Task SetValueAsync(object value) {
+            if (value is Enum) {
+                value = value.ToString();
+            }
             var t = Task<object>.Run(() => {
                 return db.rest.setValue(path, value);
             });
@@ -80,7 +83,7 @@ namespace RFNEet.realtimeDB {
             if (listenMap.ContainsKey(t)) {
                 listenMap[t].Add(a);
             } else {
-                listenMap.Add(t, db.listen(ListenType.ValueChange, path, a));
+                listenMap.Add(t, db.listen(t, path, a));
             }
         }
 

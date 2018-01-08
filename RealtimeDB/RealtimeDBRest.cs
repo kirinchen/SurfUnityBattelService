@@ -36,15 +36,18 @@ namespace RFNEet.realtimeDB {
                     resp = s,
                     error = msg
                 };
+                Debug.Log("fetchNode=" + se.databaseError);
                 a(se);
             });
         }
 
         public static DBResult parseDBResult(string s) {
-            return JsonConvert.DeserializeObject<SendEventArgs>(s);
+            DBResult ans = JsonConvert.DeserializeObject<SendEventArgs>(s);
+            return ans;
         }
 
         internal object setValue(string path, object value) {
+            Debug.Log("setValue="+ value);
             path = RealTimeDB.ROOT_KEY + path;
             ManualResetEvent _stopped = new ManualResetEvent(false);
             object ans = null;
