@@ -21,6 +21,26 @@ public class URestApi : MonoBehaviour {
 
     public delegate void OnError(string error, HTTPRequestStates s, HTTPResponse resp, Exception e);
 
+    public delegate void OnErrorBundle(ErrorBundle eb);
+
+    public class OnErrorB {
+
+        private OnErrorBundle ob;
+
+        public OnErrorB(OnErrorBundle o) {
+            ob = o;
+        }
+
+        public void  onError(string error, HTTPRequestStates s, HTTPResponse resp, Exception e) {
+            ErrorBundle eb = new ErrorBundle();
+            eb.s = s;
+            eb.error = error;
+            eb.resp = resp;
+            eb.e = e;
+            ob(eb);
+        }
+    }
+
     public string host;
     public string port;
     public float timeOut = 5f;

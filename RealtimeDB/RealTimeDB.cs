@@ -60,7 +60,6 @@ namespace RFNEet.realtimeDB {
             List<Action<DBResult>> ans = new List<Action<DBResult>>();
             ans.Add(initA);
             sc.Subscribe(url, d => {
-                Debug.Log("listen=" + d);
                 DBResult nr = RealtimeDBRest.parseDBResult(d);
                 ans.ForEach(a => { a(nr); });
             });
