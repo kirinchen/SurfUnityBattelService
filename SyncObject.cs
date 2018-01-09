@@ -7,13 +7,7 @@ namespace RFNEet {
 
         internal string pid;
         internal string oid;
-        internal RemoteApier api
-        {
-            get
-            {
-                return SyncCenter.getInstance().api;
-            }
-        }
+        internal RemoteApier api { get { return SyncCenter.getInstance() == null ? null : SyncCenter.getInstance().api; } }
         internal SyncObjectListener listener;
         public bool _destoryedMe { get; private set; }
 
