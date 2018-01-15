@@ -8,6 +8,7 @@ namespace RFNEet.realtimeDB {
 
         public NodeData snapshot;
         public object databaseError;
+        public long sid;
 
         public SendEventArgs() { }
 

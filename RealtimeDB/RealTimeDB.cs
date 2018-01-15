@@ -16,6 +16,8 @@ namespace RFNEet.realtimeDB {
         public RealtimeDBRest rest { get; private set; }
         public URestApi api { get; private set; }
         private Dictionary<string, NodeRef> nMap = new Dictionary<string, NodeRef>();
+        private Dictionary<string, long> _valueVersion = new Dictionary<string, long>();
+
         private Action initializeFirebase;
 
         public RealTimeDB(URestApi api, StompIniter si) {
@@ -60,18 +62,32 @@ namespace RFNEet.realtimeDB {
             List<Action<DBResult>> ans = new List<Action<DBResult>>();
             ans.Add(initA);
             sc.Subscribe(url, d => {
-                DBResult nr = RealtimeDBRest.parseDBResult(d);
+                SendEventArgs nr = RealtimeDBRest.parseDBResult(d);
+                if (!checkValueVersion(url, nr)) return;
                 ans.ForEach(a => { a(nr); });
             });
             if (t == ListenType.ValueChange) {
                 rest.fetchNode(path, n => {
+                    if (!checkValueVersion(url, n)) return;
                     ans.ForEach(a => { a(n); });
                 });
             }
             return ans;
         }
 
-
+        private bool checkValueVersion(string url, SendEventArgs nr) {
+            if (!_valueVersion.ContainsKey(url)) {
+                _valueVersion.Add(url, nr.sid);
+                return true;
+            }
+            long cs = _valueVersion[url];
+            if (nr.sid > cs) {
+                _valueVersion.Remove(url);
+                _valueVersion.Add(url, nr.sid);
+                return true;
+            }
+            return false;
+        }
 
         public bool isOK() {
             return ok;

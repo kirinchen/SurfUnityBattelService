@@ -21,7 +21,7 @@ namespace RFNEet.realtimeDB {
             api = a;
         }
 
-        public void fetchNode(string path, Action<DBResult> a) {
+        public void fetchNode(string path, Action<SendEventArgs> a) {
             path = RealTimeDB.ROOT_KEY + path;
             byte[] bytes = Encoding.UTF8.GetBytes(path);
             string bp = Convert.ToBase64String(bytes);
@@ -41,8 +41,8 @@ namespace RFNEet.realtimeDB {
             });
         }
 
-        public static DBResult parseDBResult(string s) {
-            DBResult ans = JsonConvert.DeserializeObject<SendEventArgs>(s);
+        public static SendEventArgs parseDBResult(string s) {
+            SendEventArgs ans = JsonConvert.DeserializeObject<SendEventArgs>(s);
             return ans;
         }
 
