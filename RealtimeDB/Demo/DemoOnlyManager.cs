@@ -40,8 +40,7 @@ namespace RFNEet.realtimeDB {
             DBRefenece dr = db.createRootRef(arg2.roomId);
             addListener(dr);
             yield return new WaitForSeconds(3f);
-            Task t = dr.SetValueAsync("AAAA");
-            UnityUtils.setAsync(this, t, () => {
+            dr.SetValueAsync("AAAA", (d, o) => {
                 Debug.Log("OK~");
             });
         }

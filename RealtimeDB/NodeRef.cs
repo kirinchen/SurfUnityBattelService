@@ -61,22 +61,19 @@ namespace RFNEet.realtimeDB {
 
 
         public void removeMe() {
-            db.rest.setValue(path, null);
+            db.rest.setValue(path, null,(b,o)=> { });
         }
 
-        public Task SetRawJsonValueAsync(string s) {
+        public void SetRawJsonValueAsync(string s, Action<bool, object> cb=null) {
             Dictionary<string, object> m = JsonConvert.DeserializeObject<Dictionary<string, object>>(s);
-            return SetValueAsync(m);
+             SetValueAsync(m,cb);
         }
 
-        public Task SetValueAsync(object value) {
+        public void SetValueAsync(object value,Action<bool,object> cb=null) {
             if (value is Enum) {
                 value = value.ToString();
             }
-            var t = Task<object>.Run(() => {
-                return db.rest.setValue(path, value);
-            });
-            return t;
+            db.rest.setValue(path, value, cb);
         }
 
         private void addListener(ListenType t, Action<DBResult> a) {

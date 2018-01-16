@@ -24,8 +24,8 @@ namespace RFNEet.realtimeDB {
 
         DBRefenece parent();
         DBRefenece Child(string pid);
-        Task SetValueAsync(object value);
-        Task SetRawJsonValueAsync(string s);
+        void SetValueAsync(object value,Action<bool,object> cb=null);
+        void SetRawJsonValueAsync(string s, Action<bool,object> cb=null);
         void removeMe();
     }
 }

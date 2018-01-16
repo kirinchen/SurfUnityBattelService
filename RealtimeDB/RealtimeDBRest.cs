@@ -46,31 +46,17 @@ namespace RFNEet.realtimeDB {
             return ans;
         }
 
-        internal object setValue(string path, object value) {
-            Debug.Log("setValue="+ value);
+        internal void setValue(string path, object value, Action<bool, object> cb) {
+            Debug.Log("setValue=" + value);
             path = RealTimeDB.ROOT_KEY + path;
-            ManualResetEvent _stopped = new ManualResetEvent(false);
-            object ans = null;
             string url = URL_ROOT + URL_SET_VALUE;
             SetValueDto dto = new SetValueDto();
             dto.roomId = roomId;
             dto.path = path;
             dto.value = value;
             api.postJson(url, dto, s => {
-                ans = "";
-                _stopped.Set();
-            }, (msg, b, s, d) => {
-                URestApi.ErrorBundle databaseError = new URestApi.ErrorBundle() {
-                    s = b,
-                    e = d,
-                    resp = s,
-                    error = msg
-                };
-                ans = databaseError;
-                _stopped.Set();
-            });
-            _stopped.WaitOne();
-            return ans;
+                if (cb != null) cb(true, s);
+            }, new URestApi.OnErrorB(b => { if (cb != null) cb(false, b); }).onError);
         }
     }
 }
