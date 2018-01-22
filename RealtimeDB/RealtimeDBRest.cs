@@ -21,7 +21,7 @@ namespace RFNEet.realtimeDB {
             api = a;
         }
 
-        public void fetchNode(string path, Action<SendEventArgs> a) {
+        public void fetchNode(string path, Action<DBResult> a) {
             path = RealTimeDB.ROOT_KEY + path;
             byte[] bytes = Encoding.UTF8.GetBytes(path);
             string bp = Convert.ToBase64String(bytes);

@@ -7,7 +7,7 @@ namespace RFNEet.realtimeDB {
         void init(Action<string> onFailInitializeFirebase, Action initializeFirebase);
         void createConnect();
 
-        DBRefenece createRootRef(string roomId);
+        DBRefenece createRootRef(MonoBehaviour mb,string roomId);
         bool isOK();
     }
 }
