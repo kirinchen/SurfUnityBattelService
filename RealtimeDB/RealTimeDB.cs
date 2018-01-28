@@ -40,7 +40,7 @@ namespace RFNEet.realtimeDB {
         public void createConnect() {
         }
 
-        public DBRefenece createRootRef(string roomId) {
+        public DBRefenece createRootRef(MonoBehaviour mb,string roomId) {
             return getNode("");
         }
 
@@ -68,7 +68,7 @@ namespace RFNEet.realtimeDB {
             });
             if (t == ListenType.ValueChange) {
                 rest.fetchNode(path, n => {
-                    if (!checkValueVersion(url, n)) return;
+                    if (!checkValueVersion(url, (SendEventArgs)n)) return;
                     ans.ForEach(a => { a(n); });
                 });
             }

@@ -46,7 +46,7 @@ namespace RFNEet.realtimeDB {
         }
 
         private IEnumerator script(RoomInfo<object> arg2) {
-            DBRefenece dr = db.createRootRef(arg2.roomId);
+            DBRefenece dr = db.createRootRef(this,arg2.roomId);
             addListener(dr);
             yield return new WaitForSeconds(3f);
             dr.SetValueAsync("AAAA", (b, o) => {
