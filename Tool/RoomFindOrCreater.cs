@@ -35,6 +35,11 @@ namespace RFNEet {
             return this;
         }
 
+        public void create() {
+            disableFindExist();
+            pingBetter.addOnDone(onFinded).ping(createData.gameKindUid);
+        }
+
         public void findOrCreate() {
             pingBetter.addOnDone(onFinded).ping(createData.gameKindUid);
         }
