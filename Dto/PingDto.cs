@@ -27,6 +27,11 @@ namespace RFNEet {
                 return JsonConvert.DeserializeObject<RoomInfo<T>>(p);
             }
 
+            public T convert<T>() {
+                string p = JsonConvert.SerializeObject(this);
+                return JsonConvert.DeserializeObject<T>(p);
+            }
+
             public int getScore(ScoreCalc c) {
                 return c.getRoomScore(this);
             }
