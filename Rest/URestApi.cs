@@ -8,7 +8,7 @@ using BestHTTP;
 
 public class URestApi : MonoBehaviour {
 
-    public struct ErrorBundle {
+    public class ErrorBundle {
         public string error;
         public HTTPRequestStates s;
         public HTTPResponse resp;
@@ -25,19 +25,25 @@ public class URestApi : MonoBehaviour {
 
     public class OnErrorB {
 
-        private OnErrorBundle ob;
+        protected OnErrorBundle ob;
 
         public OnErrorB(OnErrorBundle o) {
             ob = o;
         }
 
-        public void  onError(string error, HTTPRequestStates s, HTTPResponse resp, Exception e) {
+        public virtual void onError(string error, HTTPRequestStates s, HTTPResponse resp, Exception e) {
             ErrorBundle eb = new ErrorBundle();
             eb.s = s;
             eb.error = error;
             eb.resp = resp;
             eb.e = e;
-            ob(eb);
+            if (!onCustom(eb)) {
+                ob(eb);
+            }
+        }
+
+        protected virtual bool onCustom(ErrorBundle eb) {
+            return false;
         }
     }
 
