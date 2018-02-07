@@ -43,6 +43,22 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1283023728493602
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4540706066399976}
+  - component: {fileID: 114463891278335966}
+  m_Layer: 0
+  m_Name: SingaporeRC
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1472203286682714
 GameObject:
   m_ObjectHideFlags: 0
@@ -85,7 +101,7 @@ GameObject:
   - component: {fileID: 4064894728694708}
   - component: {fileID: 114185561304774328}
   m_Layer: 0
-  m_Name: SingaporeRC
+  m_Name: NewYorkRC
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -147,7 +163,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4375384885776534}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4103038913174054
 Transform:
@@ -190,9 +206,23 @@ Transform:
   - {fileID: 4103038913174054}
   - {fileID: 4933584924564794}
   - {fileID: 4022016429102682}
+  - {fileID: 4540706066399976}
   - {fileID: 4064894728694708}
   m_Father: {fileID: 0}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &4540706066399976
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1283023728493602}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4375384885776534}
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4845555675870040
 Transform:
@@ -241,7 +271,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1942248177345536}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e8bbdfbd11d81104bbd101e0fe68dec1, type: 3}
   m_Name: 
@@ -269,12 +299,12 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1738366256901484}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e8bbdfbd11d81104bbd101e0fe68dec1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  host: 139.162.61.173
+  host: 45.56.100.80
   port: 9191
   timeOut: 5
   authorization: 
@@ -306,6 +336,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   host: 139.162.61.173
   port: 7878
+  timeOut: 5
+  authorization: 
+--- !u!114 &114463891278335966
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1283023728493602}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8bbdfbd11d81104bbd101e0fe68dec1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  host: 139.162.61.173
+  port: 9191
   timeOut: 5
   authorization: 
 --- !u!114 &114692097682725720
