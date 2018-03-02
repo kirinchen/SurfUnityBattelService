@@ -139,6 +139,7 @@ namespace RFNEet {
 
         internal float debugLocalMonitorPing;
         public void syncTime() {
+            
             if (localDebug) {
                 lastSyncLocalTime = Time.time;
                 lastSyncServerTime = Time.time;
@@ -162,6 +163,7 @@ namespace RFNEet {
             lastSyncServerTime = playedTime * 0.001f;
             ping = (lastSyncLocalTime - beforeLT) * 0.5f;
             lastSyncServerTime += ping;
+            Debug.Log("lastSyncServerTime="+ lastSyncServerTime);
         }
 
         public float getCurrentServerTime() {

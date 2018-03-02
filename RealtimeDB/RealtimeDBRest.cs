@@ -47,7 +47,7 @@ namespace RFNEet.realtimeDB {
         }
 
         internal void setValue(string path, object value, Action<bool, object> cb) {
-            Debug.Log("setValue=" + value);
+            Debug.Log("path="+ path + "setValue=" + value);
             path = RealTimeDB.ROOT_KEY + path;
             string url = URL_ROOT + URL_SET_VALUE;
             SetValueDto dto = new SetValueDto();
