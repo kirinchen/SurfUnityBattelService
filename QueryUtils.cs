@@ -95,7 +95,11 @@ namespace RFNEet {
                     if (oAt < meStartAt) {
                         return false;
                     } else if (oAt == meStartAt) {
-                        throw new Exception(string.Format("same time meID={0} meAt={1} oID={2} oAt={3}", pid, meStartAt, k, oAt));
+                        int bi = string.Compare(k, pid);
+                        if (bi > 0) {
+                            Debug.Log(string.Format("same time meID={0} meAt={1} oID={2} oAt={3}", pid, meStartAt, k, oAt));
+                            return false;
+                        }
                     }
                 }
             }

@@ -59,7 +59,7 @@ namespace RFNEet {
         public void addOnConnectedCb(Action<CommRemoteRepo> cb) { if (connected) cb(getCommRemoteRepo()); else onConnectedCbs.Add(cb); }
         private List<Action<CommRemoteRepo>> onConnectedCbs = new List<Action<CommRemoteRepo>>();
         public void connect(Action<HandshakeDto, LocalPlayerRepo> handshakeCb) {
-            
+
             api.connect((hd, list) => {
                 connected = true;
                 localRepo = new LocalPlayerRepo(hd.meId, api);
@@ -101,9 +101,13 @@ namespace RFNEet {
         }
 
         internal RemotePlayerRepo addRemoteRepo(string sid) {
-            RemotePlayerRepo rpr = new RemotePlayerRepo(sid, api, hanlder.onNewRemoteObjectCreated);
-            remoteRepos.Add(sid, rpr);
-            return rpr;
+            if (remoteRepos.ContainsKey(sid)) {
+                return remoteRepos[sid];
+            } else {
+                RemotePlayerRepo rpr = new RemotePlayerRepo(sid, api, hanlder.onNewRemoteObjectCreated);
+                remoteRepos.Add(sid, rpr);
+                return rpr;
+            }
         }
 
         /*some player leaved*/
