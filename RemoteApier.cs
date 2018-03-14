@@ -27,7 +27,7 @@ namespace RFNEet {
         private RemoteApierHandler handler;
         private bool localDebug = false;
 
-        public RemoteApier( StompIniter si, RemoteApierHandler handler) {
+        public RemoteApier(StompIniter si, RemoteApierHandler handler) {
             this.handler = handler;
             stompIniter = si;
             sc.setOnErrorAndClose((s) => {
@@ -79,6 +79,7 @@ namespace RFNEet {
                     Dictionary<string, string> d = JsonConvert.DeserializeObject<Dictionary<string, string>>(message);
                     string sid = d[KEY_SESSION_ID];
                     string hid = d[KEY_HANDOVER_ID];
+                    Debug.Log("/player/leave" + message);
                     handler.onPlayerLeaved(sid, hid);
                 } catch (Exception e) {
                     Debug.Log(e);
@@ -139,7 +140,7 @@ namespace RFNEet {
 
         internal float debugLocalMonitorPing;
         public void syncTime() {
-            
+
             if (localDebug) {
                 lastSyncLocalTime = Time.time;
                 lastSyncServerTime = Time.time;
@@ -163,7 +164,7 @@ namespace RFNEet {
             lastSyncServerTime = playedTime * 0.001f;
             ping = (lastSyncLocalTime - beforeLT) * 0.5f;
             lastSyncServerTime += ping;
-            Debug.Log("lastSyncServerTime="+ lastSyncServerTime);
+            Debug.Log("lastSyncServerTime=" + lastSyncServerTime);
         }
 
         public float getCurrentServerTime() {
