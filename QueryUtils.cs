@@ -46,8 +46,6 @@ namespace RFNEet {
             return sortPids()[0].Equals(sc.api.meId);
         }
 
-
-
         public bool isEnterFirstSelf() {
             return isEnterFirst(sc.localRepo.pid);
         }
@@ -78,6 +76,13 @@ namespace RFNEet {
                 if (!string.Equals(rpr.pid, CommRemoteRepo.COMM_PID) && isEnterFirst(rpr.pid)) return rpr.pid;
             }
             throw new NullReferenceException("not find getEnterFirst");
+        }
+
+        public float getStartAt(string pid) {
+            if (string.Equals(pid, sc.localRepo.pid)) {
+                return sc.localRepo.getStartAt();
+            }
+            return sc.remoteRepos[pid].getStartAt();
         }
 
         public bool isEnterFirst(string pid) {

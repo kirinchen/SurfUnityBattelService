@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 namespace RFNEet {
     public class WsPlayerQueuer : CommRemoteObject, PlayerQueuer.DataProvider {
-        public static WsPlayerQueuer instance { get; private set; }
+        //public static WsPlayerQueuer instance { get; private set; }
         private PlayerQueuer ceneter;
         public static readonly string KEY_OID = "@WsPlayerQueuer";
         public static readonly string KEY_TAG = "@FPQ";
@@ -15,15 +15,16 @@ namespace RFNEet {
 
         void Awake() {
             specifyOid = KEY_OID;
-            instance = this;
+            //instance = this;
             meId = PidGeter.getPid();
             ceneter = gameObject.AddComponent<PlayerQueuer>();
             ceneter.setDataProvider(this);
         }
 
+
+
         public void addPlayer(string id) {
-            DateTime d = NistService.getTime();
-            data.intoMap.Add(id, d);
+            data.token = SyncCenter.getInstance().queryUitls.getEnterFirst();
             post(genInitDto());
         }
 
@@ -34,9 +35,15 @@ namespace RFNEet {
         }
 
         public List<string> playerIds() {
-            List<string> realPids = new List<string>(data.intoMap.Keys);
+            SyncCenter sc = SyncCenter.getInstance();
+
+            List<string> realPids = new List<string>(sc.remoteRepos.Keys);
+            realPids.Add(sc.localRepo.pid);
+
             realPids.Sort((a, b) => {
-                return data.intoMap[a].CompareTo(data.intoMap[b]);
+                float aAt = sc.queryUitls.getStartAt(a);
+                float bAt = sc.queryUitls.getStartAt(b);
+                return aAt.CompareTo(bAt);
             });
             debugIds = realPids;
             return realPids;
@@ -44,7 +51,9 @@ namespace RFNEet {
 
         public void setTokenPlayer(string v, PlayerQueuer.TokePost postD) {
             data.token = v;
-            post(genInitDto());
+            if (postD == PlayerQueuer.TokePost.POST) {
+                post(genInitDto());
+            }
         }
 
         public string tokenPlayer() {
@@ -53,6 +62,10 @@ namespace RFNEet {
 
         internal override void onRemoteUpdate(RemoteData s) {
             Data _d = s.to<Data>();
+            Debug.Log(s.getSource());
+            if (!string.Equals(_d.token, data.token)) {
+                ceneter.setTokenChange(_d.token,PlayerQueuer.TokePost.NONE);
+            }
             data = _d;
         }
 
@@ -60,9 +73,12 @@ namespace RFNEet {
             Debug.Log("onRemoved");
         }
 
+        public string getMeId() {
+            return SyncCenter.getInstance().api.meId;
+        }
+
         [System.Serializable]
         public class Data : RemoteData {
-            public Dictionary<string, DateTime> intoMap = new Dictionary<string, DateTime>();
             public string token;
         }
 

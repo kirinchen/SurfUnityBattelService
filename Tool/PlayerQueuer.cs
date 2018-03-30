@@ -9,15 +9,9 @@ namespace RFNEet {
         public delegate void OnTokenChange(string orgT, string newT);
         private List<OnTokenChange> tokenPlayerChangeListeners = new List<OnTokenChange>();
         private List<Action<string>> playerIntoListeners = new List<Action<string>>();
-        public string _meId;
+
         public string meId
-        {
-            get { return _meId; }
-            set
-            {
-                _meId = value;
-            }
-        }
+        { get { return data.getMeId(); } }
 
         public DataProvider data { get; private set; }
 
@@ -30,13 +24,8 @@ namespace RFNEet {
         }
 
         public void addPlayer(string id) {
-            meId = id;
-            if (data.playerIds().Contains(id)) return;
             data.addPlayer(id);
             playerIntoListeners.ForEach(a => { a(id); });
-            if (data.playerIds().Count == 1) {
-                setTokenChange(data.playerIds()[0], TokePost.FIELD);
-            }
         }
 
         public bool isToken() {
@@ -54,7 +43,7 @@ namespace RFNEet {
             if (data.playerIds().Count <= 1) return;
             int ci = getTokenIdx();
             ci = (ci + 1) % getSize();
-            setTokenChange(getTokenByIdx(ci), TokePost.ALL);
+            setTokenChange(getTokenByIdx(ci), TokePost.POST);
         }
 
         public string getTokenByIdx(int idx) {
@@ -100,11 +89,12 @@ namespace RFNEet {
 
 
         public enum TokePost {
-            NONE, ALL, FIELD
+            NONE, POST
         }
 
         public interface DataProvider {
             void addPlayer(string id);
+            string getMeId();
             List<string> playerIds();
             void setTokenPlayer(string v, TokePost post);
             string tokenPlayer();
