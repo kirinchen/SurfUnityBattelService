@@ -9,14 +9,13 @@ namespace RFNEet {
         private PlayerQueuer ceneter;
         public static readonly string KEY_OID = "@WsPlayerQueuer";
         public static readonly string KEY_TAG = "@FPQ";
-        public string meId { get; private set; }
+        public string meId { get { return SyncCenter.getInstance().api.meId; } }
         public Data data = new Data();
         public List<string> debugIds = new List<string>();
 
         void Awake() {
             specifyOid = KEY_OID;
             //instance = this;
-            meId = PidGeter.getPid();
             ceneter = gameObject.AddComponent<PlayerQueuer>();
             ceneter.setDataProvider(this);
         }
@@ -64,7 +63,7 @@ namespace RFNEet {
             Data _d = s.to<Data>();
             Debug.Log(s.getSource());
             if (!string.Equals(_d.token, data.token)) {
-                ceneter.setTokenChange(_d.token,PlayerQueuer.TokePost.NONE);
+                ceneter.setTokenChange(_d.token, PlayerQueuer.TokePost.NONE);
             }
             data = _d;
         }
