@@ -37,7 +37,9 @@ namespace RFNEet {
             SyncCenter sc = SyncCenter.getInstance();
 
             List<string> realPids = new List<string>(sc.remoteRepos.Keys);
+            realPids.RemoveAll(s => { return CommRemoteRepo.COMM_PID.Equals(s); });
             realPids.Add(sc.localRepo.pid);
+
 
             realPids.Sort((a, b) => {
                 float aAt = sc.queryUitls.getStartAt(a);
